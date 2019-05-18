@@ -1,0 +1,39 @@
+// Copyright (c) 2019 Stefan Fabian. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+#ifndef ROS_BABEL_FISH_MESSAGE_TEMPLATE_H
+#define ROS_BABEL_FISH_MESSAGE_TEMPLATE_H
+
+#include "ros_babel_fish/message.h"
+
+#include <map>
+
+namespace ros_babel_fish
+{
+
+struct MessageTemplate
+{
+  typedef std::shared_ptr<MessageTemplate> Ptr;
+  typedef std::shared_ptr<const MessageTemplate> ConstPtr;
+
+  MessageType type{};
+  std::map<std::string, Message::ConstPtr> constants{};
+  struct
+  {
+    std::string datatype;
+    std::vector<std::string> names;
+    std::vector<MessageTemplate::ConstPtr> types;
+  } compound{};
+  struct
+  {
+    ssize_t length;
+    MessageType element_type;
+    /*!
+     * Element template for complex elements like Array, Compound or String.
+     */
+    MessageTemplate::ConstPtr element_template;
+  } array{};
+};
+} // ros_babel_fish
+
+#endif //ROS_BABEL_FISH_MESSAGE_TEMPLATE_H

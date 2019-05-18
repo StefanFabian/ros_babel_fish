@@ -97,6 +97,7 @@ public:
     if ( !from_stream_ ) return;
     auto data = reinterpret_cast<const T *>(stream_);
     values_.clear();
+    values_.reserve(length_);
     for ( size_t i = 0; i < length_; ++i )
     {
       values_.push_back( *data );
@@ -155,6 +156,22 @@ inline void ArrayMessage<Message>::detachFromStream()
 {
   /* So compiler won't complain. This specialization can not be from stream anyway. */
 }
+
+//! Specialization for Bool
+template<>
+bool ArrayMessage<bool>::operator[]( size_t index );
+
+template<>
+bool ArrayMessage<bool>::operator[]( size_t index ) const;
+
+template<>
+size_t ArrayMessage<bool>::size() const;
+
+template<>
+void ArrayMessage<bool>::detachFromStream();
+
+template<>
+size_t ArrayMessage<bool>::writeToStream( uint8_t *stream ) const;
 
 //! Specialization for Time
 template<>

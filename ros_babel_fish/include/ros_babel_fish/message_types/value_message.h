@@ -66,6 +66,19 @@ protected:
   mutable bool from_stream_;
 };
 
+// Bool specialization
+template<>
+bool ValueMessage<bool>::getValue() const;
+
+template<>
+size_t ValueMessage<bool>::size() const;
+
+template<>
+ValueMessage<bool> *ValueMessage<bool>::fromData( const uint8_t *data, size_t &bytes_read );
+
+template<>
+size_t ValueMessage<bool>::writeToStream( uint8_t *stream ) const;
+
 // Time specialization
 template<>
 ros::Time ValueMessage<ros::Time>::getValue() const;

@@ -15,6 +15,8 @@ Message *createValueMessageFromDataRaw( MessageType type, const uint8_t *stream,
 {
   switch ( type )
   {
+    case MessageTypes::Bool:
+      return ValueMessage<message_type_traits::value_type<MessageTypes::Bool>::value>::fromData( stream, bytes_read );
     case MessageTypes::UInt8:
       return ValueMessage<message_type_traits::value_type<MessageTypes::UInt8>::value>::fromData( stream, bytes_read );
     case MessageTypes::UInt16:
@@ -92,6 +94,10 @@ Message *createMessageFromTemplateRaw( const MessageTemplate &msg_template, cons
     size_t read = 0;
     switch ( msg_template.array.element_type )
     {
+      case MessageTypes::Bool:
+        result = new ArrayMessage<bool>( MessageTypes::Bool, fixed_size, array_length, stream );
+        read = array_length * sizeof( uint8_t );
+        break;
       case MessageTypes::UInt8:
         result = new ArrayMessage<uint8_t>( MessageTypes::UInt8, fixed_size, array_length, stream );
         read = array_length * sizeof( uint8_t );
@@ -196,6 +202,9 @@ Message *createEmptyMessageFromTemplateRaw( const MessageTemplate &msg_template 
     Message *result;
     switch ( msg_template.array.element_type )
     {
+      case MessageTypes::Bool:
+        result = new ArrayMessage<bool>( MessageTypes::Bool, fixed_size, array_length );
+        break;
       case MessageTypes::UInt8:
         result = new ArrayMessage<uint8_t>( MessageTypes::UInt8, fixed_size, array_length );
         break;
@@ -260,6 +269,8 @@ Message *createEmptyMessageFromTemplateRaw( const MessageTemplate &msg_template 
 
   switch ( msg_template.type )
   {
+    case MessageTypes::Bool:
+      return new ValueMessage<message_type_traits::value_type<MessageTypes::Bool>::value>();
     case MessageTypes::UInt8:
       return new ValueMessage<message_type_traits::value_type<MessageTypes::UInt8>::value>();
     case MessageTypes::UInt16:

@@ -62,6 +62,74 @@ size_t ArrayMessage<Message>::writeToStream( uint8_t *stream ) const
   return offset;
 }
 
+//! ============== Bool Specialization ==============
+
+template<>
+bool ArrayMessage<bool>::operator[]( size_t index )
+{
+  if ( index >= length_ ) throw std::runtime_error( "Index out of message array bounds!" );
+  if ( from_stream_ )
+  {
+    return *stream_ != 0;
+  }
+  return values_[index];
+}
+
+template<>
+bool ArrayMessage<bool>::operator[]( size_t index ) const
+{
+  if ( index >= length_ ) throw std::runtime_error( "Index out of message array bounds!" );
+  if ( from_stream_ )
+  {
+    return *stream_ != 0;
+  }
+  return values_[index];
+}
+
+template<>
+size_t ArrayMessage<bool>::size() const
+{
+  return sizeof( uint8_t ) * length_ + (fixed_length_ ? 0 : 4);
+}
+
+template<>
+void ArrayMessage<bool>::detachFromStream()
+{
+  if ( !from_stream_ ) return;
+  const uint8_t *data = stream_;
+  values_.clear();
+  values_.reserve(length_);
+  for ( size_t i = 0; i < length_; ++i )
+  {
+    values_.push_back( *data != 0 );
+    ++data;
+  }
+  from_stream_ = false;
+}
+
+template<>
+size_t ArrayMessage<bool>::writeToStream( uint8_t *stream ) const
+{
+  size_t length = size();
+  size_t count = length;
+  if ( !fixed_length_ )
+  {
+    *reinterpret_cast<uint32_t *>(stream) = length_;
+    stream += 4;
+    count -= 4;
+  }
+  if ( from_stream_ )
+  {
+    std::memcpy( stream, stream_, count );
+    return length;
+  }
+  for (size_t i = 0; i < length_; ++i)
+  {
+    *stream = static_cast<uint8_t>(values_[i] ? 1 : 0);
+    ++stream;
+  }
+  return length;
+}
 
 //! ============== Time Specialization ==============
 

@@ -742,7 +742,7 @@ MessageDescription::Ptr makeDescription( const std::string &name, MessageType ty
 void BabelFish::initBuiltInTypes()
 {
   builtin_types_.insert( "bool" );
-  message_descriptions_.push_back( makeDescription( "bool", MessageTypes::UInt8 ));
+  message_descriptions_.push_back( makeDescription( "bool", MessageTypes::Bool ));
 
   builtin_types_.insert( "uint8" );
   message_descriptions_.push_back( makeDescription( "uint8", MessageTypes::UInt8 ));

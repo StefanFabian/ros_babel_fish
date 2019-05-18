@@ -16,21 +16,22 @@ namespace MessageTypes
 enum MessageType : uint32_t
 {
   None = 0x0000,
-  UInt8 = 0x0001, // Also bool
-  UInt16 = 0x0002,
-  UInt32 = 0x0004,
-  UInt64 = 0x0008,
-  Int8 = 0x0010,
-  Int16 = 0x0020,
-  Int32 = 0x0040,
-  Int64 = 0x0080,
-  Float32 = 0x0100,
-  Float64 = 0x0200,
-  String = 0x0400,
-  Time = 0x0800,
-  Duration = 0x1000,
-  Compound = 0x2000,
-  Array = 0x4000
+  Bool = 0x0001,
+  UInt8 = 0x0002,
+  UInt16 = 0x0004,
+  UInt32 = 0x0008,
+  UInt64 = 0x0010,
+  Int8 = 0x0020,
+  Int16 = 0x0040,
+  Int32 = 0x0080,
+  Int64 = 0x0100,
+  Float32 = 0x0200,
+  Float64 = 0x0400,
+  String = 0x0800,
+  Time = 0x1000,
+  Duration = 0x2000,
+  Compound = 0x4000,
+  Array = 0x8000
 };
 }
 typedef MessageTypes::MessageType MessageType;
@@ -101,6 +102,7 @@ struct message_type
 };
 #define DECLARE_MESSAGE_TYPE_FOR_TYPE( __message_type, __type )\
 template<> struct message_type<__type> { static constexpr MessageType value = __message_type; }
+DECLARE_MESSAGE_TYPE_FOR_TYPE( MessageTypes::Bool, bool );
 DECLARE_MESSAGE_TYPE_FOR_TYPE( MessageTypes::UInt8, uint8_t );
 DECLARE_MESSAGE_TYPE_FOR_TYPE( MessageTypes::UInt16, uint16_t );
 DECLARE_MESSAGE_TYPE_FOR_TYPE( MessageTypes::UInt32, uint32_t );
@@ -123,6 +125,7 @@ struct member_type
 };
 #define DECLARE_MEMBER_TYPE_FOR_MESSAGE_TYPE( __message_type, __type ) \
  template<> struct member_type<__message_type> { typedef __type value; }
+DECLARE_MEMBER_TYPE_FOR_MESSAGE_TYPE( MessageTypes::Bool, bool );
 DECLARE_MEMBER_TYPE_FOR_MESSAGE_TYPE( MessageTypes::UInt8, uint8_t );
 DECLARE_MEMBER_TYPE_FOR_MESSAGE_TYPE( MessageTypes::UInt16, uint16_t );
 DECLARE_MEMBER_TYPE_FOR_MESSAGE_TYPE( MessageTypes::UInt32, uint32_t );
@@ -147,6 +150,7 @@ struct value_type
 };
 #define DECLARE_VALUE_TYPE_FOR_MESSAGE_TYPE( __message_type, __type ) \
  template<> struct value_type<__message_type> { typedef __type value; }
+DECLARE_VALUE_TYPE_FOR_MESSAGE_TYPE( MessageTypes::Bool, bool );
 DECLARE_VALUE_TYPE_FOR_MESSAGE_TYPE( MessageTypes::UInt8, uint8_t );
 DECLARE_VALUE_TYPE_FOR_MESSAGE_TYPE( MessageTypes::UInt16, uint16_t );
 DECLARE_VALUE_TYPE_FOR_MESSAGE_TYPE( MessageTypes::UInt32, uint32_t );

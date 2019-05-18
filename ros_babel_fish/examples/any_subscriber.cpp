@@ -98,6 +98,9 @@ void dumpMessageContent( const Message &message, const std::string &prefix = "" 
     {
       case MessageTypes::None:
         break;
+      case MessageTypes::Bool:
+        printArray<bool>( base.as<ArrayMessage<bool>>());
+        break;
       case MessageTypes::UInt8:
         printArray<uint8_t>( base.as<ArrayMessage<uint8_t>>());
         break;
@@ -154,6 +157,9 @@ void dumpMessageContent( const Message &message, const std::string &prefix = "" 
     switch ( message.type())
     {
       case MessageTypes::None:
+        break;
+      case MessageTypes::Bool:
+        std::cout << (message.as<ValueMessage<bool>>().getValue() ? "true" : "false");
         break;
       case MessageTypes::UInt8:
         std::cout << static_cast<unsigned int>(message.as<ValueMessage<uint8_t>>().getValue());

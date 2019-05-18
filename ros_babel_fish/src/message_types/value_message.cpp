@@ -6,6 +6,40 @@
 namespace ros_babel_fish
 {
 
+//! ============== Bool Specialization ==============
+
+template<>
+bool ValueMessage<bool>::getValue() const
+{
+  if ( from_stream_ )
+  {
+    return *reinterpret_cast<const uint8_t *>(stream_) != 0;
+  }
+  return value_;
+}
+
+template<>
+size_t ValueMessage<bool>::size() const { return 1; }
+
+template<>
+ValueMessage<bool> *ValueMessage<bool>::fromData( const uint8_t *data, size_t &bytes_read )
+{
+  bytes_read = 1;
+  return new ValueMessage<bool>( *reinterpret_cast<const uint8_t *>(data) != 0 );
+}
+
+template<>
+size_t ValueMessage<bool>::writeToStream( uint8_t *stream ) const
+{
+  if ( from_stream_ )
+  {
+    *stream = *stream_;
+    return 1;
+  }
+  *stream = static_cast<uint8_t >(value_ ? 1 : 0);
+  return 1;
+}
+
 //! ============== Time Specialization ==============
 
 template<>

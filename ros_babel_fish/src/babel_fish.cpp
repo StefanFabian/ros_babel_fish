@@ -547,6 +547,12 @@ ssize_t BabelFish::loadService( const std::string &type )
   PyObject *spec = PyObject_CallObject( static_cast<PyObject *>(genmsg_load_srv_by_type_), args );
   Py_DECREF( args );
   Py_DECREF( type_py );
+  if ( spec == nullptr )
+  {
+    // Couldn't find service
+    ROS_ERROR( "Failed to look up service of type '%s'!", type.c_str());
+    return -1;
+  }
 
   // Load depends
   args = PyTuple_Pack( 3, msg_context_, spec, msg_search_paths_ );

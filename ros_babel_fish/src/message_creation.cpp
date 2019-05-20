@@ -146,8 +146,22 @@ Message *createMessageFromTemplateRaw( const MessageTemplate &msg_template, cons
         result = new ArrayMessage<ros::Duration>( MessageTypes::Duration, fixed_size, array_length, stream );
         read = array_length * 2 * sizeof( int32_t );
         break;
-      case MessageTypes::String:
       case MessageTypes::Compound:
+      {
+        const MessageTemplate::ConstPtr &element_template = msg_template.array.element_template;
+        auto *array_message = new CompoundArrayMessage( element_template->compound.datatype, fixed_size, array_length );
+        for ( size_t i = 0; i < array_length; ++i )
+        {
+          array_message->setItem( i,
+                                  createMessageFromTemplateRaw( *element_template, stream + read, length - read,
+                                                                read ));
+          if ( read > length )
+            throw std::runtime_error( "Unexpected end of stream while reading message from stream!" );
+        }
+        result = array_message;
+        break;
+      }
+      case MessageTypes::String:
       case MessageTypes::Array:
       {
         auto *array_message = new ArrayMessage<Message>( msg_template.array.element_type, fixed_size, array_length );
@@ -241,8 +255,25 @@ Message *createEmptyMessageFromTemplateRaw( const MessageTemplate &msg_template 
       case MessageTypes::Duration:
         result = new ArrayMessage<ros::Duration>( MessageTypes::Duration, fixed_size, array_length );
         break;
-      case MessageTypes::String:
       case MessageTypes::Compound:
+      {
+        const MessageTemplate::ConstPtr &element_template = msg_template.array.element_template;
+        auto *array_message = new CompoundArrayMessage( element_template->compound.datatype, fixed_size, array_length );
+        for ( size_t i = 0; i < array_length; ++i )
+        {
+          if ( fixed_size )
+          {
+            array_message->setItem( i, createEmptyMessageFromTemplateRaw( *element_template ));
+          }
+          else
+          {
+            array_message->addItem( createEmptyMessageFromTemplateRaw( *element_template ));
+          }
+        }
+        result = array_message;
+        break;
+      }
+      case MessageTypes::String:
       case MessageTypes::Array:
       {
         auto *array_message = new ArrayMessage<Message>( msg_template.array.element_type, fixed_size, array_length );

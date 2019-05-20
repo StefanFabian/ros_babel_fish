@@ -97,7 +97,7 @@ public:
     if ( !from_stream_ ) return;
     auto data = reinterpret_cast<const T *>(stream_);
     values_.clear();
-    values_.reserve(length_);
+    values_.reserve( length_ );
     for ( size_t i = 0; i < length_; ++i )
     {
       values_.push_back( *data );
@@ -156,6 +156,21 @@ inline void ArrayMessage<Message>::detachFromStream()
 {
   /* So compiler won't complain. This specialization can not be from stream anyway. */
 }
+
+//! Specialization for CompoundMessage
+class CompoundArrayMessage : public ArrayMessage<Message>
+{
+public:
+  CompoundArrayMessage( std::string datatype, bool fixed_length, size_t length, const uint8_t *stream = nullptr )
+    : ArrayMessage<Message>( MessageTypes::Compound, fixed_length, length, stream ), datatype_( std::move( datatype ))
+  {
+  }
+
+  const std::string &elementDataType() const { return datatype_; }
+
+private:
+  std::string datatype_;
+};
 
 //! Specialization for Bool
 template<>

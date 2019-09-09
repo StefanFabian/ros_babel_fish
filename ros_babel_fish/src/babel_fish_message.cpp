@@ -10,6 +10,30 @@ BabelFishMessage::BabelFishMessage()
 {
 }
 
+BabelFishMessage::BabelFishMessage( const BabelFishMessage &other )
+  : md5_( other.md5_ ), server_md5_( other.server_md5_ ), datatype_( other.datatype_ )
+    , service_datatype_( other.service_datatype_ ), definition_( other.definition_ ), latched_( other.latched_ )
+    , buffer_size_( other.buffer_used_ ), buffer_used_( other.buffer_used_ )
+{
+  buffer_ = new uint8_t[other.buffer_used_];
+  std::memcpy( buffer_, other.buffer_, other.buffer_used_ );
+}
+
+BabelFishMessage &BabelFishMessage::operator=( const BabelFishMessage &other )
+{
+  if ( this == &other ) return *this;
+
+  md5_ = other.md5_;
+  server_md5_ = other.server_md5_;
+  datatype_ = other.datatype_;
+  service_datatype_ = other.service_datatype_;
+  definition_ = other.definition_;
+  latched_ = other.latched_;
+  allocate( other.buffer_used_ );
+  std::memcpy( buffer_, other.buffer_, other.buffer_used_ );
+  return *this;
+}
+
 BabelFishMessage::~BabelFishMessage()
 {
   delete[] buffer_;
@@ -69,5 +93,15 @@ void BabelFishMessage::morph( const MessageDescription::ConstPtr &description, c
 uint32_t BabelFishMessage::size() const
 {
   return buffer_used_;
+}
+
+void BabelFishMessage::allocate( size_t size )
+{
+  buffer_used_ = size;
+  // Only reallocate if necessary
+  if ( buffer_size_ > size ) return;
+  delete[] buffer_;
+  buffer_ = new uint8_t[size];
+  buffer_size_ = size;
 }
 }

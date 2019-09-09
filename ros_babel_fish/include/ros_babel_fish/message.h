@@ -4,6 +4,8 @@
 #ifndef ROS_BABEL_FISH_MESSAGE_H
 #define ROS_BABEL_FISH_MESSAGE_H
 
+
+#include "ros_babel_fish/exceptions.h"
 #include <ros/time.h>
 
 #include <memory>
@@ -36,62 +38,221 @@ enum MessageType : uint32_t
 }
 typedef MessageTypes::MessageType MessageType;
 
+/*!
+ * Message representation used by BabelFish.
+ * By default a translated message is lazy constructed. That means the data is not copied but a reference to the
+ * message's internal buffer is stored. If data is changed or added, the data is copied.
+ * Copying can be forced by calling Message::detachFromStream which will detach the message from the buffer at which
+ * point the buffer can be safely destroyed.
+ */
 class Message
 {
 public:
   typedef std::shared_ptr<Message> Ptr;
   typedef std::shared_ptr<const Message> ConstPtr;
 
-  Message( const Message &other ) = delete;
-
-  Message &operator=( const Message &other ) = delete;
+  Message( Message &other ) = delete;
 
   explicit Message( MessageType type, const uint8_t *stream = nullptr );
 
   virtual ~Message();
 
-  uint32_t type() const { return type_; }
+  MessageType type() const { return type_; }
 
   const uint8_t *data() const { return stream_; }
 
+  /*!
+   * @return Size of the message in bytes if serizalized in ROS message binary format
+   */
   virtual size_t size() const = 0;
 
+  /*!
+   * @return Whether or not the message is detached from the stream. If false, the message is not fully copied and still relies on the translated message.
+   */
   virtual bool isDetachedFromStream() const = 0;
 
-  /*!
+  /**
    * Detaches the message from the underlying stream.
    * All values are copied to an internal storage and the stream is no longer needed.
    */
   virtual void detachFromStream() = 0;
 
-  // TODO WriteToStream method documentation
+  /**
+   * Writes the message's content to the given stream using the ROS message binary format.
+   * The stream has to be able to fit at least the number of bytes returned by size().
+   * @param stream The stream the message is written to
+   * @return The number of bytes written
+   */
   virtual size_t writeToStream( uint8_t *stream ) const = 0;
 
-  /* Some convenience access functions */
+  /**
+   * Convenience method to access the child with the given key  of a CompoundMessage.
+   * @param key The name or path of the child
+   * @return The child message accessed by the given key
+   *
+   * @throws BabelFishException If child access by key is not supported.
+   */
   virtual Message &operator[]( const std::string &key );
 
+  //!@copydoc Message::operator[](const std::string&)
   virtual const Message &operator[]( const std::string &key ) const;
 
+  /**
+   * Copies the content of other to this message.
+   * @param other The other message
+   * @return A reference to this message
+   */
+  Message &operator=( const Message &other )
+  {
+    assign( other );
+    return *this;
+  }
+
+  /**
+   * @defgroup Convenience methods for ValueMessage
+   * @brief Will try to set the value of ValueMessage to the given value.
+   * Incompatible types are checked at runtime. If the type of ValueMessage can not fit the passed value prints an error.
+   *
+   * @throws BabelFishException If bool is assigned to non-boolean ValueMessage or non-boolean value to bool ValueMessage
+   * @throws BabelFishException If ros::Time / ros::Duration value is set to a different type of ValueMessage.
+   * @{
+   */
+  Message &operator=( bool value );
+
+  Message &operator=( uint8_t value );
+
+  Message &operator=( uint16_t value );
+
+  Message &operator=( uint32_t value );
+
+  Message &operator=( uint64_t value );
+
+  Message &operator=( int8_t value );
+
+  Message &operator=( int16_t value );
+
+  Message &operator=( int32_t value );
+
+  Message &operator=( int64_t value );
+
+  Message &operator=( float value );
+
+  Message &operator=( double value );
+
+  Message &operator=( const char *value )
+  {
+    *this = std::string( value );
+    return *this;
+  }
+
+  Message &operator=( const std::string &value );
+
+  Message &operator=( const ros::Time &value );
+
+  Message &operator=( const ros::Duration &value );
+
+  /**@}*/
+
+  /**
+   * Convenience method to obtain the content of a ValueMessage as the given type.
+   * A type conversion is done if the type doesn't match exactly. If the target type can not fit the source type, a
+   * warning is printed.
+   *
+   * @tparam T The type as which the value is retrieved
+   * @return The value casted to the given type T
+   *
+   * @throws BabelFishException If the message is not a ValueMessage
+   * @throws BabelFishException If the type of the ValueMessage can not be casted to a different type which is the case for bool, std::string, ros::Time and ros::Duration
+   */
+  template<typename T>
+  T value() const;
+
+
+  /**
+   * Clones the message including its content. The cloned message will be a full copy including for each part whether
+   * it is detached from the stream or not.
+   * @return A clone of the message.
+   */
+  virtual Message *clone() const = 0;
+
+  /*!
+   * Convenience method that casts the message to the given type.
+   * Example:
+   * @code
+   * Message &msg = getMessage();
+   * CompoundMessage &compound = msg.as<CompoundMessage>();
+   * @endcode
+   * @tparam T Target type
+   * @return Message casted to the target type as reference
+   *
+   * @throws BabelFishException If the message can not be casted to the target type
+   */
   template<typename T>
   T &as()
   {
     T *result = dynamic_cast<T *>(this);
-    if ( result == nullptr ) throw std::runtime_error( "Tried to cast message to incompatible type!" );
+    if ( result == nullptr ) throw BabelFishException( "Tried to cast message to incompatible type!" );
     return *result;
   }
 
+  //! @copydoc Message::as()
   template<typename T>
   const T &as() const
   {
     const T *result = dynamic_cast<const T *>(this);
-    if ( result == nullptr ) throw std::runtime_error( "Tried to cast message to incompatible type!" );
+    if ( result == nullptr ) throw BabelFishException( "Tried to cast message to incompatible type!" );
     return *result;
   }
 
 protected:
-  MessageType type_;
+  virtual void assign( const Message &other ) = 0;
+
+  const MessageType type_;
   const uint8_t *stream_; // TODO regard endianness
 };
+
+
+template<>
+bool Message::value() const;
+
+template<>
+uint8_t Message::value() const;
+
+template<>
+uint16_t Message::value() const;
+
+template<>
+uint32_t Message::value() const;
+
+template<>
+uint64_t Message::value() const;
+
+template<>
+int8_t Message::value() const;
+
+template<>
+int16_t Message::value() const;
+
+template<>
+int32_t Message::value() const;
+
+template<>
+int64_t Message::value() const;
+
+template<>
+float Message::value() const;
+
+template<>
+double Message::value() const;
+
+template<>
+std::string Message::value() const;
+
+template<>
+ros::Time Message::value() const;
+
+template<>
+ros::Duration Message::value() const;
 
 namespace message_type_traits
 {
@@ -138,7 +299,7 @@ DECLARE_MEMBER_TYPE_FOR_MESSAGE_TYPE( MessageTypes::Float32, float );
 DECLARE_MEMBER_TYPE_FOR_MESSAGE_TYPE( MessageTypes::Float64, double );
 DECLARE_MEMBER_TYPE_FOR_MESSAGE_TYPE( MessageTypes::Time, ros::Time );
 DECLARE_MEMBER_TYPE_FOR_MESSAGE_TYPE( MessageTypes::Duration, ros::Duration );
-DECLARE_MEMBER_TYPE_FOR_MESSAGE_TYPE( MessageTypes::String, Message );
+DECLARE_MEMBER_TYPE_FOR_MESSAGE_TYPE( MessageTypes::String, std::string );
 DECLARE_MEMBER_TYPE_FOR_MESSAGE_TYPE( MessageTypes::Compound, Message );
 DECLARE_MEMBER_TYPE_FOR_MESSAGE_TYPE( MessageTypes::Array, Message );
 #undef DECLARE_MEMBER_TYPE_FOR_MESSAGE_TYPE
@@ -176,6 +337,14 @@ struct array_type
   typedef T ConstReturnType;
   typedef T ArgumentType;
   typedef T StorageType;
+};
+template<>
+struct array_type<std::string>
+{
+  typedef std::string ReturnType;
+  typedef std::string ConstReturnType;
+  typedef const std::string &ArgumentType;
+  typedef std::string StorageType;
 };
 template<>
 struct array_type<ros::Time>

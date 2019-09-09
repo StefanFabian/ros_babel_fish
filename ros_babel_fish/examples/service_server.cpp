@@ -15,13 +15,14 @@ int main( int argc, char **argv )
   BabelFish fish;
 
   ros::ServiceServer server = fish.advertiseService(
-    nh, "hector_std_msgs/PoseService", "/ros_babel_fish/service",
-    []( Message::Ptr &req, Message::Ptr & ) -> bool
+    nh, "roscpp_tutorials/TwoInts", "/ros_babel_fish/service",
+    []( Message &req, Message &res ) -> bool
     {
-      auto &msg = req->as<CompoundMessage>();
-      std::cout << "Received request: ";
-      std::cout << msg["param"]["position"]["x"].as<ValueMessage<double>>().getValue();
-      std::cout << std::endl;
+      auto &msg = req.as<CompoundMessage>();
+      std::cout << "Received request: " << std::endl;
+      std::cout << "a: " << msg["a"].value<long>() << std::endl;
+      std::cout << "b: " << msg["b"].value<long>() << std::endl;
+      res["sum"] = 42;
       return true;
     } );
   ros::spin();

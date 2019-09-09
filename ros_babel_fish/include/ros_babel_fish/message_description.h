@@ -4,7 +4,7 @@
 #ifndef ROS_BABEL_FISH_MESSAGE_DESCRIPTION_H
 #define ROS_BABEL_FISH_MESSAGE_DESCRIPTION_H
 
-#include "ros_babel_fish/message_template.h"
+#include "ros_babel_fish/generation/message_template.h"
 
 namespace ros_babel_fish
 {

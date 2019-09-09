@@ -5,7 +5,7 @@
 #define ROS_BABEL_FISH_MESSAGE_CREATION_H
 
 #include "ros_babel_fish/message.h"
-#include "ros_babel_fish/message_template.h"
+#include "message_template.h"
 
 namespace ros_babel_fish
 {

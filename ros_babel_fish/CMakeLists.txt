@@ -1,5 +1,12 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.10)
 project(ros_babel_fish)
+
+option(WARN_ON_INCOMPATIBLE_TYPE "If ON a warning is printed if a value message is set or accessed with a type that does not allow casting without loss of information" ON)
+# If the value doesn't fit, an exception is thrown in any case because that could result in unexpected behavior and can not be ignored lightly
+
+if (WARN_ON_INCOMPATIBLE_TYPE)
+  add_definitions(-DRBF_WARN_ON_INCOMPATIBLE_TYPE)
+endif()
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 add_compile_options(-std=c++11)
@@ -11,9 +18,12 @@ add_definitions(-Wall -Wextra)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED roscpp)
+find_package(catkin REQUIRED COMPONENTS roscpp)
 
-find_package(PythonLibs REQUIRED)
+find_package(PythonInterp)
+find_package(PythonLibs 2.7 EXACT REQUIRED)
+
+message(STATUS "Using Python ${PYTHON_VERSION_STRING}")
 
 ###################################
 ## catkin specific configuration ##
@@ -44,13 +54,15 @@ include_directories(
 )
 
 set(SOURCES
-  src/message_types/array_message.cpp
-  src/message_types/compound_message.cpp
-  src/message_types/value_message.cpp
+  src/generation/providers/embedded_python_description_provider.cpp
+  src/generation/description_provider.cpp
+  src/generation/message_creation.cpp
+  src/messages/array_message.cpp
+  src/messages/compound_message.cpp
+  src/messages/value_message.cpp
   src/babel_fish.cpp
   src/babel_fish_message.cpp
   src/message.cpp
-  src/message_creation.cpp
 )
 
 ## Declare a C++ library
@@ -76,6 +88,19 @@ target_link_libraries(service_server ${PROJECT_NAME} ${catkin_LIBRARIES})
 
 add_executable(service_client examples/service_client.cpp)
 target_link_libraries(service_client ${PROJECT_NAME} ${catkin_LIBRARIES})
+
+find_package(actionlib)
+
+if(${actionlib_FOUND})
+  add_executable(action_client examples/action_client.cpp)
+  target_link_libraries(action_client ${PROJECT_NAME} ${catkin_LIBRARIES} ${actionlib_LIBRARIES})
+  add_executable(simple_action_client examples/simple_action_client.cpp)
+  target_link_libraries(simple_action_client ${PROJECT_NAME} ${catkin_LIBRARIES} ${actionlib_LIBRARIES})
+  #add_executable(action_server examples/action_server.cpp)
+  #target_link_libraries(action_server ${PROJECT_NAME} ${catkin_LIBRARIES} ${actionlib_LIBRARIES})
+endif()
+
+
 
 #############
 ## Install ##
@@ -104,3 +129,39 @@ install(DIRECTORY include/${PROJECT_NAME}/
   FILES_MATCHING PATTERN "*.h"
   PATTERN ".svn" EXCLUDE
 )
+
+#############
+## Testing ##
+#############
+
+if (CATKIN_ENABLE_TESTING)
+  find_package(rostest REQUIRED)
+  find_package(ros_babel_fish_test_msgs REQUIRED)
+  include_directories(${ros_babel_fish_test_msgs_INCLUDE_DIRS})
+
+  add_rostest_gtest(test_message test/test_message.test test/message.cpp)
+  target_link_libraries(test_message ${PROJECT_NAME})
+
+  add_rostest_gtest(test_message_decoding test/test_message_decoding.test test/message_decoding.cpp)
+  target_link_libraries(test_message_decoding ${PROJECT_NAME} ${ros_babel_fish_test_msgs_LIBRARIES})
+
+  add_rostest_gtest(test_message_encoding test/test_message_encoding.test test/message_encoding.cpp)
+  target_link_libraries(test_message_encoding ${PROJECT_NAME} ${ros_babel_fish_test_msgs_LIBRARIES})
+
+  add_rostest_gtest(test_service_client test/test_service_client.test test/service_client.cpp)
+  target_link_libraries(test_service_client ${PROJECT_NAME})
+
+  add_executable(test_service_client_services test/service_client_test_services.cpp)
+  target_link_libraries(test_service_client_services ${PROJECT_NAME})
+endif()
+
+# to run: catkin build -DENABLE_COVERAGE_TESTING=ON -DCMAKE_BUILD_TYPE=Debug -v --catkin-make-args ros_babel_fish_coverage
+# Path to results overview will be printed in the build process
+# Big thanks to the moveit people from whose docs I've obtained the information and code to get the coverage
+if(CATKIN_ENABLE_TESTING AND ENABLE_COVERAGE_TESTING)
+  find_package(code_coverage REQUIRED)   # catkin package ros-*-code-coverage
+  include(CodeCoverage)
+  APPEND_COVERAGE_COMPILER_FLAGS()
+  set(COVERAGE_EXCLUDES "*/${PROJECT_NAME}/test*" "*/${PROJECT_NAME}/examples*")
+  add_code_coverage(NAME ${PROJECT_NAME}_coverage)
+endif()

@@ -4,6 +4,7 @@
 #ifndef ROS_BABEL_FISH_VALUE_MESSAGE_H
 #define ROS_BABEL_FISH_VALUE_MESSAGE_H
 
+#include "ros_babel_fish/exceptions.h"
 #include "ros_babel_fish/message.h"
 
 #include <ros/time.h>
@@ -61,7 +62,31 @@ public:
     return new ValueMessage<T>( *reinterpret_cast<const T *>(data));
   }
 
+  ValueMessage<T> &operator=( const T &value )
+  {
+    setValue( value );
+    return *this;
+  }
+
+  ValueMessage<T> &operator=( const ValueMessage<T> &other )
+  {
+    setValue( other.getValue());
+    return *this;
+  }
+
+  Message *clone() const override
+  {
+    if ( isDetachedFromStream()) return new ValueMessage<T>( getValue());
+    return new ValueMessage<T>( stream_ );
+  }
+
 protected:
+  void assign( const Message &other ) override
+  {
+    if ( type != other.type()) throw BabelFishException( "Tried to assign incompatible message to ValueMessage!" );
+    setValue( other.as<ValueMessage<T>>().getValue());
+  }
+
   mutable T value_;
   mutable bool from_stream_;
 };

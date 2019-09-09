@@ -1,12 +1,12 @@
 // Copyright (c) 2019 Stefan Fabian. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-#include <ros_babel_fish/message_template.h>
-#include "ros_babel_fish/message_creation.h"
+#include <ros_babel_fish/generation/message_template.h>
+#include "ros_babel_fish/generation/message_creation.h"
 
-#include "ros_babel_fish/message_types/array_message.h"
-#include "ros_babel_fish/message_types/compound_message.h"
-#include "ros_babel_fish/message_types/value_message.h"
+#include "ros_babel_fish/messages/array_message.h"
+#include "ros_babel_fish/messages/compound_message.h"
+#include "ros_babel_fish/messages/value_message.h"
 
 namespace ros_babel_fish
 {
@@ -48,9 +48,9 @@ Message *createValueMessageFromDataRaw( MessageType type, const uint8_t *stream,
                                                                                                      bytes_read );
     case MessageTypes::Compound:
     case MessageTypes::Array:
-      throw std::runtime_error( "Array and compound are not value message types!" );
+      throw BabelFishException( "Array and compound are not value message types!" );
     default:
-      throw std::runtime_error( "Can not create value message from unknown message type!" );
+      throw BabelFishException( "Can not create value message from unknown message type!" );
   }
 }
 
@@ -64,7 +64,7 @@ Message *createMessageFromTemplateRaw( const MessageTemplate &msg_template, cons
 {
   if ( msg_template.type == MessageTypes::Compound )
   {
-    CompoundMessage *message = new CompoundMessage( msg_template.compound.datatype, stream );
+    auto *message = new CompoundMessage( msg_template.compound.datatype, stream );
     for ( size_t i = 0; i < msg_template.compound.names.size(); ++i )
     {
       size_t read = 0;
@@ -72,7 +72,7 @@ Message *createMessageFromTemplateRaw( const MessageTemplate &msg_template, cons
                        createMessageFromTemplateRaw( *msg_template.compound.types[i], stream, length, read ));
       bytes_read += read;
       stream += read;
-      if ( read > length ) throw std::runtime_error( "Unexpected end of stream while reading message from stream!" );
+      if ( read > length ) throw BabelFishException( "Unexpected end of stream while reading message from stream!" );
       length -= read;
     }
     return message;
@@ -87,7 +87,7 @@ Message *createMessageFromTemplateRaw( const MessageTemplate &msg_template, cons
       stream += sizeof( uint32_t );
       bytes_read += sizeof( uint32_t );
       if ( length < sizeof( uint32_t ))
-        throw std::runtime_error( "Unexpected end of stream while reading message from stream!" );
+        throw BabelFishException( "Unexpected end of stream while reading message from stream!" );
       length -= sizeof( uint32_t );
     }
     Message *result;
@@ -95,92 +95,97 @@ Message *createMessageFromTemplateRaw( const MessageTemplate &msg_template, cons
     switch ( msg_template.array.element_type )
     {
       case MessageTypes::Bool:
-        result = new ArrayMessage<bool>( MessageTypes::Bool, fixed_size, array_length, stream );
+        result = new ArrayMessage<bool>( array_length, fixed_size, stream );
         read = array_length * sizeof( uint8_t );
         break;
       case MessageTypes::UInt8:
-        result = new ArrayMessage<uint8_t>( MessageTypes::UInt8, fixed_size, array_length, stream );
+        result = new ArrayMessage<uint8_t>( array_length, fixed_size, stream );
         read = array_length * sizeof( uint8_t );
         break;
       case MessageTypes::UInt16:
-        result = new ArrayMessage<uint16_t>( MessageTypes::UInt16, fixed_size, array_length, stream );
+        result = new ArrayMessage<uint16_t>( array_length, fixed_size, stream );
         read = array_length * sizeof( uint16_t );
         break;
       case MessageTypes::UInt32:
-        result = new ArrayMessage<uint32_t>( MessageTypes::UInt32, fixed_size, array_length, stream );
+        result = new ArrayMessage<uint32_t>( array_length, fixed_size, stream );
         read = array_length * sizeof( uint32_t );
         break;
       case MessageTypes::UInt64:
-        result = new ArrayMessage<uint64_t>( MessageTypes::UInt64, fixed_size, array_length, stream );
+        result = new ArrayMessage<uint64_t>( array_length, fixed_size, stream );
         read = array_length * sizeof( uint64_t );
         break;
       case MessageTypes::Int8:
-        result = new ArrayMessage<int8_t>( MessageTypes::Int8, fixed_size, array_length, stream );
+        result = new ArrayMessage<int8_t>( array_length, fixed_size, stream );
         read = array_length * sizeof( int8_t );
         break;
       case MessageTypes::Int16:
-        result = new ArrayMessage<int16_t>( MessageTypes::Int16, fixed_size, array_length, stream );
+        result = new ArrayMessage<int16_t>( array_length, fixed_size, stream );
         read = array_length * sizeof( int16_t );
         break;
       case MessageTypes::Int32:
-        result = new ArrayMessage<int32_t>( MessageTypes::Int32, fixed_size, array_length, stream );
+        result = new ArrayMessage<int32_t>( array_length, fixed_size, stream );
         read = array_length * sizeof( int32_t );
         break;
       case MessageTypes::Int64:
-        result = new ArrayMessage<int64_t>( MessageTypes::Int64, fixed_size, array_length, stream );
+        result = new ArrayMessage<int64_t>( array_length, fixed_size, stream );
         read = array_length * sizeof( int64_t );
         break;
       case MessageTypes::Float32:
-        result = new ArrayMessage<float>( MessageTypes::Float32, fixed_size, array_length, stream );
+        result = new ArrayMessage<float>( array_length, fixed_size, stream );
         read = array_length * sizeof( float );
         break;
       case MessageTypes::Float64:
-        result = new ArrayMessage<double>( MessageTypes::Float64, fixed_size, array_length, stream );
+        result = new ArrayMessage<double>( array_length, fixed_size, stream );
         read = array_length * sizeof( double );
         break;
       case MessageTypes::Time:
-        result = new ArrayMessage<ros::Time>( MessageTypes::Time, fixed_size, array_length, stream );
+        result = new ArrayMessage<ros::Time>( array_length, fixed_size, stream );
         read = array_length * 2 * sizeof( uint32_t );
         break;
       case MessageTypes::Duration:
-        result = new ArrayMessage<ros::Duration>( MessageTypes::Duration, fixed_size, array_length, stream );
+        result = new ArrayMessage<ros::Duration>( array_length, fixed_size, stream );
         read = array_length * 2 * sizeof( int32_t );
         break;
       case MessageTypes::Compound:
       {
         const MessageTemplate::ConstPtr &element_template = msg_template.array.element_template;
-        auto *array_message = new CompoundArrayMessage( element_template->compound.datatype, fixed_size, array_length );
+        auto *array_message = new CompoundArrayMessage( element_template->compound.datatype, array_length, fixed_size );
         for ( size_t i = 0; i < array_length; ++i )
         {
           array_message->setItem( i,
                                   createMessageFromTemplateRaw( *element_template, stream + read, length - read,
                                                                 read ));
           if ( read > length )
-            throw std::runtime_error( "Unexpected end of stream while reading message from stream!" );
+            throw BabelFishException( "Unexpected end of stream while reading message from stream!" );
         }
         result = array_message;
         break;
       }
       case MessageTypes::String:
-      case MessageTypes::Array:
-      {
-        auto *array_message = new ArrayMessage<Message>( msg_template.array.element_type, fixed_size, array_length );
-        const MessageTemplate::ConstPtr &element_template = msg_template.array.element_template;
-        for ( size_t i = 0; i < array_length; ++i )
-        {
-          array_message->setItem( i,
-                                  createMessageFromTemplateRaw( *element_template, stream + read, length - read,
-                                                                read ));
-          if ( read > length )
-            throw std::runtime_error( "Unexpected end of stream while reading message from stream!" );
-        }
-        result = array_message;
+        result = new ArrayMessage<std::string>( array_length, fixed_size, stream );
+        read = result->size();
+        if ( !fixed_size ) read -= sizeof( uint32_t );
         break;
-      }
+        // This is actually not supported by the msg format (yet)
+//      case MessageTypes::Array:
+//      {
+//        auto *array_message = new ArrayMessage<Message>( msg_template.array.element_type, array_length, fixed_size );
+//        const MessageTemplate::ConstPtr &element_template = msg_template.array.element_template;
+//        for ( size_t i = 0; i < array_length; ++i )
+//        {
+//          array_message->setItem( i,
+//                                  createMessageFromTemplateRaw( *element_template, stream + read, length - read,
+//                                                                read ));
+//          if ( read > length )
+//            throw BabelFishException( "Unexpected end of stream while reading message from stream!" );
+//        }
+//        result = array_message;
+//        break;
+//      }
       default:
-        throw std::runtime_error( "Unknown type while decoding message!" );
+        throw BabelFishException( "Unknown type while decoding message!" );
     }
-    if ( read > length ) throw std::runtime_error( "Unexpected end of stream while reading message from stream!" );
+    if ( read > length ) throw BabelFishException( "Unexpected end of stream while reading message from stream!" );
     bytes_read += read;
     return result;
   }
@@ -194,6 +199,8 @@ Message *createMessageFromTemplateRaw( const MessageTemplate &msg_template, cons
 Message::Ptr createMessageFromTemplate( const MessageTemplate &msg_template, const uint8_t *stream, size_t length,
                                         size_t &bytes_read )
 {
+  bytes_read = 0;
+  if ( stream == nullptr ) return Message::Ptr( createEmptyMessageFromTemplate( msg_template ));
   return Message::Ptr( createMessageFromTemplateRaw( msg_template, stream, length, bytes_read ));
 }
 
@@ -201,7 +208,7 @@ Message *createEmptyMessageFromTemplateRaw( const MessageTemplate &msg_template 
 {
   if ( msg_template.type == MessageTypes::Compound )
   {
-    CompoundMessage *message = new CompoundMessage( msg_template.compound.datatype );
+    auto *message = new CompoundMessage( msg_template.compound.datatype );
     for ( size_t i = 0; i < msg_template.compound.names.size(); ++i )
     {
       message->insert( msg_template.compound.names[i],
@@ -217,83 +224,82 @@ Message *createEmptyMessageFromTemplateRaw( const MessageTemplate &msg_template 
     switch ( msg_template.array.element_type )
     {
       case MessageTypes::Bool:
-        result = new ArrayMessage<bool>( MessageTypes::Bool, fixed_size, array_length );
+        result = new ArrayMessage<bool>( array_length, fixed_size );
         break;
       case MessageTypes::UInt8:
-        result = new ArrayMessage<uint8_t>( MessageTypes::UInt8, fixed_size, array_length );
+        result = new ArrayMessage<uint8_t>( array_length, fixed_size );
         break;
       case MessageTypes::UInt16:
-        result = new ArrayMessage<uint16_t>( MessageTypes::UInt16, fixed_size, array_length );
+        result = new ArrayMessage<uint16_t>( array_length, fixed_size );
         break;
       case MessageTypes::UInt32:
-        result = new ArrayMessage<uint32_t>( MessageTypes::UInt32, fixed_size, array_length );
+        result = new ArrayMessage<uint32_t>( array_length, fixed_size );
         break;
       case MessageTypes::UInt64:
-        result = new ArrayMessage<uint64_t>( MessageTypes::UInt64, fixed_size, array_length );
+        result = new ArrayMessage<uint64_t>( array_length, fixed_size );
         break;
       case MessageTypes::Int8:
-        result = new ArrayMessage<int8_t>( MessageTypes::Int8, fixed_size, array_length );
+        result = new ArrayMessage<int8_t>( array_length, fixed_size );
         break;
       case MessageTypes::Int16:
-        result = new ArrayMessage<int16_t>( MessageTypes::Int16, fixed_size, array_length );
+        result = new ArrayMessage<int16_t>( array_length, fixed_size );
         break;
       case MessageTypes::Int32:
-        result = new ArrayMessage<int32_t>( MessageTypes::Int32, fixed_size, array_length );
+        result = new ArrayMessage<int32_t>( array_length, fixed_size );
         break;
       case MessageTypes::Int64:
-        result = new ArrayMessage<int64_t>( MessageTypes::Int64, fixed_size, array_length );
+        result = new ArrayMessage<int64_t>( array_length, fixed_size );
         break;
       case MessageTypes::Float32:
-        result = new ArrayMessage<float>( MessageTypes::Float32, fixed_size, array_length );
+        result = new ArrayMessage<float>( array_length, fixed_size );
         break;
       case MessageTypes::Float64:
-        result = new ArrayMessage<double>( MessageTypes::Float64, fixed_size, array_length );
+        result = new ArrayMessage<double>( array_length, fixed_size );
         break;
       case MessageTypes::Time:
-        result = new ArrayMessage<ros::Time>( MessageTypes::Time, fixed_size, array_length );
+        result = new ArrayMessage<ros::Time>( array_length, fixed_size );
         break;
       case MessageTypes::Duration:
-        result = new ArrayMessage<ros::Duration>( MessageTypes::Duration, fixed_size, array_length );
+        result = new ArrayMessage<ros::Duration>( array_length, fixed_size );
         break;
       case MessageTypes::Compound:
       {
         const MessageTemplate::ConstPtr &element_template = msg_template.array.element_template;
-        auto *array_message = new CompoundArrayMessage( element_template->compound.datatype, fixed_size, array_length );
-        for ( size_t i = 0; i < array_length; ++i )
+        auto *array_message = new CompoundArrayMessage( element_template->compound.datatype, array_length, fixed_size );
+        if ( fixed_size )
         {
-          if ( fixed_size )
+          for ( size_t i = 0; i < array_length; ++i )
           {
             array_message->setItem( i, createEmptyMessageFromTemplateRaw( *element_template ));
-          }
-          else
-          {
-            array_message->addItem( createEmptyMessageFromTemplateRaw( *element_template ));
           }
         }
         result = array_message;
         break;
       }
       case MessageTypes::String:
-      case MessageTypes::Array:
-      {
-        auto *array_message = new ArrayMessage<Message>( msg_template.array.element_type, fixed_size, array_length );
-        const MessageTemplate::ConstPtr &element_template = msg_template.array.element_template;
-        for ( size_t i = 0; i < array_length; ++i )
-        {
-          if ( fixed_size )
-          {
-            array_message->setItem( i, createEmptyMessageFromTemplateRaw( *element_template ));
-          }
-          else
-          {
-            array_message->addItem( createEmptyMessageFromTemplateRaw( *element_template ));
-          }
-        }
-        result = array_message;
+        result = new ArrayMessage<std::string>( array_length, fixed_size );
         break;
-      }
+        // This is actually not supported by the msg format (yet)
+//      case MessageTypes::Array:
+//      {
+//        auto *array_message = new ArrayMessage<Message>( msg_template.array.element_type, array_length, fixed_size );
+//        const MessageTemplate::ConstPtr &element_template = msg_template.array.element_template;
+//        for ( size_t i = 0; i < array_length; ++i )
+//        {
+//          if ( fixed_size )
+//          {
+//            array_message->setItem( i, createEmptyMessageFromTemplateRaw( *element_template ));
+//          }
+//          else
+//          {
+//            array_message->addItem( createEmptyMessageFromTemplateRaw( *element_template ));
+//          }
+//        }
+//        result = array_message;
+//        break;
+//      }
       default:
-        throw std::runtime_error( "Unknown type while creating empty message!" );
+        throw BabelFishException( "Unknown type while creating empty message!" );
     }
     return result;
   }
@@ -329,7 +335,7 @@ Message *createEmptyMessageFromTemplateRaw( const MessageTemplate &msg_template 
     case MessageTypes::Duration:
       return new ValueMessage<message_type_traits::value_type<MessageTypes::Duration>::value>();
     default:
-      throw std::runtime_error( "Can not create value message from unknown message type!" );
+      throw BabelFishException( "Can not create value message from unknown message type!" );
   }
 }
 

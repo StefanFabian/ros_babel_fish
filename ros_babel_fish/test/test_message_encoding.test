@@ -1,0 +1,3 @@
+<launch>
+  <test test-name="message_encoding" pkg="ros_babel_fish" type="test_message_encoding"/>
+</launch>

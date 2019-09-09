@@ -1,7 +1,7 @@
 // Copyright (c) 2019 Stefan Fabian. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-#include "ros_babel_fish/message_types/value_message.h"
+#include "ros_babel_fish/messages/value_message.h"
 
 namespace ros_babel_fish
 {
@@ -154,7 +154,7 @@ size_t ValueMessage<std::string>::writeToStream( uint8_t *stream ) const
 {
   if ( from_stream_ )
   {
-    uint32_t len = *reinterpret_cast<const uint32_t *>(stream_) + 4;
+    uint32_t len = *reinterpret_cast<const uint32_t *>(stream_) + sizeof( uint32_t );
     std::memcpy( stream, stream_, len );
     return len;
   }

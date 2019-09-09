@@ -12,15 +12,21 @@ int main( int argc, char **argv )
   {
     std::cout << "Invalid argument!" << std::endl;
     std::cout << "Usage: message_info [MESSAGE TYPE]" << std::endl;
+    std::cout << "Example: message_info std_msgs/Header" << std::endl;
     return 1;
   }
 
   BabelFish babel_fish;
-  MessageDescription::ConstPtr message_description = babel_fish.getMessageDescription( argv[1] );
+  MessageDescription::ConstPtr message_description = babel_fish.descriptionProvider()->getMessageDescription( argv[1] );
+  if (message_description == nullptr)
+  {
+    std::cerr << "No message definition for '" << argv[1] << "' found!" << std::endl;
+    return 1;
+  }
   std::cout << "Data Type:" << std::endl;
-  std::cout << message_description->datatype << std::endl;
+  std::cout << message_description->datatype << std::endl << std::endl;
   std::cout << "MD5:" << std::endl;
-  std::cout << message_description->md5 << std::endl;
+  std::cout << message_description->md5 << std::endl << std::endl;
   std::cout << "Message Definition:" << std::endl;
   std::cout << message_description->message_definition << std::endl;
   std::cout << std::endl;

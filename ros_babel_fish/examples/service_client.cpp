@@ -13,8 +13,11 @@ int main( int argc, char **argv )
   ros::NodeHandle nh;
 
   BabelFish fish;
-  Message::Ptr req = fish.createServiceRequest( "hector_std_msgs/PoseService" );
-  req->as<CompoundMessage>()["param"]["position"]["x"].as<ValueMessage<double>>().setValue( 3.14 );
+  Message::Ptr req = fish.createServiceRequest( "roscpp_tutorials/TwoInts" );
+  req->as<CompoundMessage>()["a"] = 314;
+  (*req)["b"] = 1337;
   TranslatedMessage::Ptr res;
   std::cout << "Call result: " << fish.callService( "/ros_babel_fish/service", req, res ) << std::endl;
+  std::cout << "Response:" << std::endl;
+  std::cout << "  sum: " << res->translated_message->as<CompoundMessage>()["sum"].value<long>() << std::endl;
 }

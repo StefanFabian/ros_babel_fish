@@ -27,29 +27,13 @@ public:
 
   const Message &operator[]( const std::string &key ) const override;
 
-  bool containsKey( const std::string &key ) const
-  {
-    return std::find( keys_.begin(), keys_.end(), key ) != keys_.end();
-  }
+  bool containsKey( const std::string &key ) const;
 
   const std::vector<std::string> &keys() const { return keys_; }
 
   const std::vector<Message *> &values() const { return values_; }
 
-  void insert( const std::string &key, Message *value )
-  {
-    for ( size_t i = 0; i < keys_.size(); ++i )
-    {
-      if ( keys_[i] == key )
-      {
-        delete values_[i];
-        values_[i] = value;
-        return;
-      }
-    }
-    keys_.push_back( key );
-    values_.push_back( value );
-  }
+  void insert( const std::string &key, Message *value );
 
   size_t size() const override;
 
@@ -58,6 +42,13 @@ public:
   void detachFromStream() override;
 
   size_t writeToStream( uint8_t *stream ) const override;
+
+  CompoundMessage &operator=( const CompoundMessage &other );
+
+  Message *clone() const override;
+
+protected:
+  void assign( const Message &other ) override;
 
 private:
   std::string datatype_;

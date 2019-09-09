@@ -1,9 +1,9 @@
 // Copyright (c) 2019 Stefan Fabian. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-#include <ros_babel_fish/message_types/array_message.h>
-#include <ros_babel_fish/message_types/compound_message.h>
-#include <ros_babel_fish/message_types/value_message.h>
+#include <ros_babel_fish/messages/array_message.h>
+#include <ros_babel_fish/messages/compound_message.h>
+#include <ros_babel_fish/messages/value_message.h>
 #include <ros_babel_fish/babel_fish.h>
 #include <ros_babel_fish/babel_fish_message.h>
 #include <ros/ros.h>
@@ -156,6 +156,8 @@ void dumpMessageContent( const Message &message, const std::string &prefix = "" 
   {
     switch ( message.type())
     {
+      case MessageTypes::Array:
+      case MessageTypes::Compound:
       case MessageTypes::None:
         break;
       case MessageTypes::Bool:
@@ -165,40 +167,40 @@ void dumpMessageContent( const Message &message, const std::string &prefix = "" 
         std::cout << static_cast<unsigned int>(message.as<ValueMessage<uint8_t>>().getValue());
         break;
       case MessageTypes::UInt16:
-        std::cout << message.as<ValueMessage<uint16_t>>().getValue();
+        std::cout << message.value<uint16_t>(); // The statement above can be simplified using this convenience method
         break;
       case MessageTypes::UInt32:
-        std::cout << message.as<ValueMessage<uint32_t>>().getValue();
+        std::cout << message.value<uint32_t>();
         break;
       case MessageTypes::UInt64:
-        std::cout << message.as<ValueMessage<uint64_t>>().getValue();
+        std::cout << message.value<uint64_t>();
         break;
       case MessageTypes::Int8:
-        std::cout << message.as<ValueMessage<int8_t >>().getValue();
+        std::cout << message.value<int8_t >();
         break;
       case MessageTypes::Int16:
-        std::cout << message.as<ValueMessage<int16_t >>().getValue();
+        std::cout << message.value<int16_t >();
         break;
       case MessageTypes::Int32:
-        std::cout << message.as<ValueMessage<int32_t >>().getValue();
+        std::cout << message.value<int32_t >();
         break;
       case MessageTypes::Int64:
-        std::cout << message.as<ValueMessage<int64_t >>().getValue();
+        std::cout << message.value<int64_t >();
         break;
       case MessageTypes::Float32:
-        std::cout << message.as<ValueMessage<float>>().getValue();
+        std::cout << message.value<float>();
         break;
       case MessageTypes::Float64:
-        std::cout << message.as<ValueMessage<double>>().getValue();
+        std::cout << message.value<double>();
         break;
       case MessageTypes::Time:
-        std::cout << message.as<ValueMessage<ros::Time>>().getValue();
+        std::cout << message.value<ros::Time>();
         break;
       case MessageTypes::Duration:
-        std::cout << message.as<ValueMessage<ros::Duration>>().getValue();
+        std::cout << message.value<ros::Duration>();
         break;
       case MessageTypes::String:
-        std::cout << message.as<ValueMessage<std::string>>().getValue();
+        std::cout << message.value<std::string>();
         break;
     }
   }

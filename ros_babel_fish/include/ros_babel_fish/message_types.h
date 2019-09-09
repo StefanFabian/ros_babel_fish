@@ -4,8 +4,8 @@
 #ifndef ROS_BABEL_FISH_MESSAGE_TYPES_H
 #define ROS_BABEL_FISH_MESSAGE_TYPES_H
 
-#include "ros_babel_fish/message_types/array_message.h"
-#include "ros_babel_fish/message_types/compound_message.h"
-#include "ros_babel_fish/message_types/value_message.h"
+#include "ros_babel_fish/messages/array_message.h"
+#include "ros_babel_fish/messages/compound_message.h"
+#include "ros_babel_fish/messages/value_message.h"
 
 #endif //ROS_BABEL_FISH_MESSAGE_TYPES_H

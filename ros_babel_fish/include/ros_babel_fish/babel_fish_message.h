@@ -13,6 +13,10 @@
 namespace ros_babel_fish
 {
 
+/*!
+ * A message that can store any type of message.
+ * The message contents can be retrieved by translating it with a BabelFish.
+ */
 class BabelFishMessage
 {
 public:
@@ -20,6 +24,10 @@ public:
   typedef boost::shared_ptr<const BabelFishMessage> ConstPtr;
 
   BabelFishMessage();
+
+  BabelFishMessage(const BabelFishMessage &other);
+
+  BabelFishMessage &operator=(const BabelFishMessage &other);
 
   virtual ~BabelFishMessage();
 
@@ -76,15 +84,7 @@ public:
 
   const uint8_t *buffer() const { return buffer_; }
 
-  void allocate( size_t size )
-  {
-    buffer_used_ = size;
-    // Only reallocate if necessary
-    if ( buffer_size_ > size ) return;
-    delete buffer_;
-    buffer_ = new uint8_t[size];
-    buffer_size_ = size;
-  }
+  void allocate( size_t size );
 
 private:
   std::string md5_;
@@ -104,20 +104,6 @@ class BabelFishMessageException : public ros::Exception
 public:
   explicit BabelFishMessageException( const std::string &msg ) : ros::Exception( msg ) { }
 };
-
-struct ServiceSpec
-{
-  typedef BabelFishMessage RequestType;
-  typedef BabelFishMessage ResponseType;
-  typedef boost::shared_ptr<RequestType> RequestPtr;
-  typedef boost::shared_ptr<ResponseType> ResponsePtr;
-  typedef boost::function<bool( RequestPtr &, ResponsePtr & )> CallbackType;
-
-  static bool call( const CallbackType &cb, ros::ServiceSpecCallParams<RequestType, ResponseType> &params )
-  {
-    return cb( params.request, params.response );
-  }
-};
 } // ros_babel_fish
 
 // Message and service traits for serialization API
@@ -127,53 +113,53 @@ namespace message_traits
 {
 
 template<>
-struct IsMessage<ros_babel_fish::BabelFishMessage> : TrueType
+struct IsMessage<::ros_babel_fish::BabelFishMessage> : TrueType
 {
 };
 template<>
-struct IsMessage<const ros_babel_fish::BabelFishMessage> : TrueType
+struct IsMessage<const ::ros_babel_fish::BabelFishMessage> : TrueType
 {
 };
 
 template<>
-struct MD5Sum<ros_babel_fish::BabelFishMessage>
+struct MD5Sum<::ros_babel_fish::BabelFishMessage>
 {
-  static const char *value( const ros_babel_fish::BabelFishMessage &m ) { return m.__getServerMD5Sum().c_str(); }
+  static const char *value( const ::ros_babel_fish::BabelFishMessage &m ) { return m.__getServerMD5Sum().c_str(); }
 
-  // Used statically, a shapeshifter appears to be of any type
+  // A BabelFishMessage can be of any type
   static const char *value() { return "*"; }
 };
 
 template<>
-struct DataType<ros_babel_fish::BabelFishMessage>
+struct DataType<::ros_babel_fish::BabelFishMessage>
 {
-  static const char *value( const ros_babel_fish::BabelFishMessage &m ) { return m.dataType().c_str(); }
+  static const char *value( const ::ros_babel_fish::BabelFishMessage &m ) { return m.dataType().c_str(); }
 
-  // Used statically, a shapeshifter appears to be of any type
+  // A BabelFishMessage can be of any type
   static const char *value() { return "*"; }
 };
 
 template<>
-struct Definition<ros_babel_fish::BabelFishMessage>
+struct Definition<::ros_babel_fish::BabelFishMessage>
 {
-  static const char *value( const ros_babel_fish::BabelFishMessage &m ) { return m.definition().c_str(); }
+  static const char *value( const ::ros_babel_fish::BabelFishMessage &m ) { return m.definition().c_str(); }
 };
 } // message_traits
 
 namespace service_traits
 {
 template<>
-struct MD5Sum<ros_babel_fish::BabelFishMessage>
+struct MD5Sum<::ros_babel_fish::BabelFishMessage>
 {
-  static const char *value( const ros_babel_fish::BabelFishMessage &m ) { return m.__getServerMD5Sum().c_str(); }
+  static const char *value( const ::ros_babel_fish::BabelFishMessage &m ) { return m.__getServerMD5Sum().c_str(); }
 
   static const char *value() { return "*"; }
 };
 
 template<>
-struct DataType<ros_babel_fish::BabelFishMessage>
+struct DataType<::ros_babel_fish::BabelFishMessage>
 {
-  static const char *value( const ros_babel_fish::BabelFishMessage &m ) { return m.__getServiceDatatype().c_str(); }
+  static const char *value( const ::ros_babel_fish::BabelFishMessage &m ) { return m.__getServiceDatatype().c_str(); }
 
   static const char *value() { return "*"; }
 };
@@ -184,21 +170,21 @@ namespace serialization
 {
 
 template<>
-struct Serializer<ros_babel_fish::BabelFishMessage>
+struct Serializer<::ros_babel_fish::BabelFishMessage>
 {
   template<typename Stream>
-  inline static void write( Stream &stream, const ros_babel_fish::BabelFishMessage &m )
+  inline static void write( Stream &stream, const ::ros_babel_fish::BabelFishMessage &m )
   {
     m.write( stream );
   }
 
   template<typename Stream>
-  inline static void read( Stream &stream, ros_babel_fish::BabelFishMessage &m )
+  inline static void read( Stream &stream, ::ros_babel_fish::BabelFishMessage &m )
   {
     m.read( stream );
   }
 
-  inline static uint32_t serializedLength( const ros_babel_fish::BabelFishMessage &m )
+  inline static uint32_t serializedLength( const ::ros_babel_fish::BabelFishMessage &m )
   {
     return m.size();
   }
@@ -206,9 +192,9 @@ struct Serializer<ros_babel_fish::BabelFishMessage>
 
 
 template<>
-struct PreDeserialize<ros_babel_fish::BabelFishMessage>
+struct PreDeserialize<::ros_babel_fish::BabelFishMessage>
 {
-  static void notify( const PreDeserializeParams<ros_babel_fish::BabelFishMessage> &params )
+  static void notify( const PreDeserializeParams<::ros_babel_fish::BabelFishMessage> &params )
   {
     std::string md5 = (*params.connection_header)["md5sum"];
     std::string datatype = (*params.connection_header)["type"];

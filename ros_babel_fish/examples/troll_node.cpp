@@ -1,9 +1,9 @@
 // Copyright (c) 2019 Stefan Fabian. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-#include <ros_babel_fish/message_types/array_message.h>
-#include <ros_babel_fish/message_types/compound_message.h>
-#include <ros_babel_fish/message_types/value_message.h>
+#include <ros_babel_fish/messages/array_message.h>
+#include <ros_babel_fish/messages/compound_message.h>
+#include <ros_babel_fish/messages/value_message.h>
 #include <ros_babel_fish/babel_fish.h>
 #include <ros/ros.h>
 
@@ -52,6 +52,7 @@ int main( int argc, char **argv )
 }
 
 static constexpr int song_text_length = 56;
+//! The lyrics of Rick Astley's masterpiece "Never Gonna Give You Up" (written and produced by Stock Aitken Waterman)
 std::string song_text[song_text_length] = {
   "We're no strangers to love",
   "You know the rules and so do I",
@@ -117,7 +118,7 @@ void updateMessage( Message &message )
 {
   if ( message.type() == MessageTypes::String )
   {
-    message.as<ValueMessage<std::string>>().setValue( song_text[song_text_index] );
+    message = song_text[song_text_index];
     ++song_text_index;
     if ( song_text_index >= song_text_length ) song_text_index = 0;
     return;

@@ -91,14 +91,14 @@ target_link_libraries(service_client ${PROJECT_NAME} ${catkin_LIBRARIES})
 
 find_package(actionlib)
 
-if(${actionlib_FOUND})
-  add_executable(action_client examples/action_client.cpp)
-  target_link_libraries(action_client ${PROJECT_NAME} ${catkin_LIBRARIES} ${actionlib_LIBRARIES})
-  add_executable(simple_action_client examples/simple_action_client.cpp)
-  target_link_libraries(simple_action_client ${PROJECT_NAME} ${catkin_LIBRARIES} ${actionlib_LIBRARIES})
+#if(${actionlib_FOUND})
+#  add_executable(action_client examples/action_client.cpp)
+#  target_link_libraries(action_client ${PROJECT_NAME} ${catkin_LIBRARIES} ${actionlib_LIBRARIES})
+#  add_executable(simple_action_client examples/simple_action_client.cpp)
+#  target_link_libraries(simple_action_client ${PROJECT_NAME} ${catkin_LIBRARIES} ${actionlib_LIBRARIES})
   #add_executable(action_server examples/action_server.cpp)
   #target_link_libraries(action_server ${PROJECT_NAME} ${catkin_LIBRARIES} ${actionlib_LIBRARIES})
-endif()
+#endif()
 
 
 

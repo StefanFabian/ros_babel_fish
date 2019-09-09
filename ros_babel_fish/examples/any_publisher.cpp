@@ -45,7 +45,8 @@ int main( int argc, char **argv )
     // where you should pay attention to the datatype. It will be casted to the actual type of the ValueMessage but
     // this may throw an exception if not possible, e.g., bool, string, time and duration can not be assigned  to a
     // different type. If it may result in a loss of information, e.g., assigning a double value to a int32 field,
-    // a warning is printed and it should be avoided.
+    // a warning is printed and it should be avoided. If it does result in a loss of information, e.g., out of the
+    // target types bounds or assigning a double value to a float ValueMessage, it will throw an exception.
 
     compound["orientation"]["w"] = 0.384;
     compound["orientation"]["x"] = -0.003;

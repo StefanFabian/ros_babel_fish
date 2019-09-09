@@ -1,5 +1,7 @@
 # ros_babel_fish
 
+### ALPHA: This library is currently in alpha stadium. Tests for >90% line coverage are written but it requires more testing.
+
 This library enables ROS nodes written in C++ to communicate using message types that are unknown at compile time.
 
 You can subscribe and even publish any available message type.  
@@ -56,8 +58,9 @@ pub_pose.publish( translated_message );
 - [x] Publishing messages with at compile time unknown message type
 - [x] Calling a service with at compile time unknown service definition
 - [x] Advertising a service with at compile time unknown service definition
-- [x] Creating a service client with at compile time unknown service definition
+- [ ] Creating a service client with at compile time unknown service definition
 - [x] Add more error checks to fail gracefully in case of errors
 - [ ] Documentation
+- [ ] Benchmark
 - [ ] Calling actions
 - [ ] Providing an action server(?)

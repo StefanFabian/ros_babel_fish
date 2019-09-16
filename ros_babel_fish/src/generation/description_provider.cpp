@@ -42,25 +42,20 @@ MessageDescription::ConstPtr DescriptionProvider::getMessageDescription( const B
   {
     if ( it->second->md5 != md5 )
     {
-      ROS_WARN_ONCE( "BabelFish knows a message of the type '%s' but with a different md5 sum!", type.c_str());
+      throw BabelFishException("Message found but MD5 sum differed!");
     }
     return it->second;
   }
 
-  const std::string &message_definition = msg.definition();
-  std::string::size_type end_of_message = message_definition.find( "\n==================" );
-  std::string specification = message_definition.substr( 0, end_of_message );
+  MessageDescription::ConstPtr result = getMessageDescriptionImpl( msg );
+  if ( result == nullptr ) return result;
 
-  MessageDescription::Ptr description = std::make_shared<MessageDescription>();
-  description->datatype = type;
-  description->message_definition = message_definition;
-  description->md5 = md5;
-  description->specification = specification;
-  description->message_template = createTemplate( type, specification );
-  if ( description->message_template == nullptr ) return nullptr;
-
-  message_descriptions_.insert( { type, description } );
-  return description;
+  it = message_descriptions_.find( type );
+  if ( it == message_descriptions_.end())
+  {
+    message_descriptions_.insert( { type, result } );
+  }
+  return result;
 }
 
 ServiceDescription::ConstPtr DescriptionProvider::getServiceDescription( const std::string &type )
@@ -80,6 +75,18 @@ ServiceDescription::ConstPtr DescriptionProvider::getServiceDescription( const s
   return result;
 }
 
+MessageDescription::ConstPtr DescriptionProvider::getMessageDescriptionImpl( const BabelFishMessage &msg )
+{
+  const std::string &type = msg.dataType();
+  const std::string &md5 = msg.md5Sum();
+
+  const std::string &message_definition = msg.definition();
+  std::string::size_type end_of_message = message_definition.find( "\n==================" );
+  std::string specification = message_definition.substr( 0, end_of_message );
+
+  return registerMessage( type, message_definition, md5, specification );
+}
+
 MessageTemplate::Ptr DescriptionProvider::createTemplate( const std::string &type, const std::string &specification )
 {
   size_t start = 0;
@@ -87,23 +94,23 @@ MessageTemplate::Ptr DescriptionProvider::createTemplate( const std::string &typ
   MessageTemplate::Ptr msg_template = std::make_shared<MessageTemplate>();
   msg_template->type = MessageTypes::Compound;
   msg_template->compound.datatype = type;
-  std::regex constant_regex( R"(^\s*(\w+)\s+(\w+)\s*=\s*(.*)\s*$)" );
+  std::regex constant_regex( R"(^\s*(\w+)\s+(\w+)\s*=\s*(".*"|[\w\d\s]*[\w\d])\s*#?.*$)" );
   std::regex field_regex( R"(^\s*(\w+\/?\w+)\s*(\[\d*\])?\s*(\w+)\s*)" );
+  std::smatch match;
   while ( true )
   {
     end = specification.find( '\n', start );
-    std::smatch match;
     std::string::const_iterator first = specification.begin() + start;
     std::string::const_iterator last = end == std::string::npos ? specification.end() : specification.begin() + end;
     if ( std::regex_search( first, last, match, constant_regex ) && match.size() > 3 )
     {
       std::string name = match.str( 2 );
       Message::Ptr value;
-      if ( match.str( 1 ) == "bool" || match.str( 1 ) == "uint8" )
+      if ( match.str( 1 ) == "bool" || match.str( 1 ) == "uint8" || match.str( 1 ) == "char" )
       {
         value = std::make_shared<ValueMessage<uint8_t>>( static_cast<uint8_t>(std::stoi( match.str( 3 ))));
       }
-      else if ( match.str( 1 ) == "int8" )
+      else if ( match.str( 1 ) == "int8" || match.str( 1 ) == "byte" )
       {
         value = std::make_shared<ValueMessage<int8_t>>( static_cast<int8_t>(std::stoi( match.str( 3 ))));
       }
@@ -199,6 +206,7 @@ MessageDescription::ConstPtr DescriptionProvider::registerMessage( const std::st
   description->message_definition = definition;
   description->md5 = md5;
   description->specification = specification;
+
   description->message_template = createTemplate( type, specification );
   if ( description->message_template == nullptr ) return nullptr;
 
@@ -288,5 +296,12 @@ void DescriptionProvider::initBuiltInTypes()
 
   builtin_types_.insert( "duration" );
   message_descriptions_.insert( makeDescription( "duration", MessageTypes::Duration ));
+
+  // Deprecated
+  builtin_types_.insert( "char" );
+  message_descriptions_.insert( makeDescription( "char", MessageTypes::UInt8 ));
+
+  builtin_types_.insert( "byte" );
+  message_descriptions_.insert( makeDescription( "byte", MessageTypes::Int8 ));
 }
 } // ros_babel_fish

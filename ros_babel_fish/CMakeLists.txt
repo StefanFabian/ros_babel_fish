@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.10)
 project(ros_babel_fish)
 
 option(WARN_ON_INCOMPATIBLE_TYPE "If ON a warning is printed if a value message is set or accessed with a type that does not allow casting without loss of information" ON)
+option(ENABLE_EMBEDDED_PYTHON "Enables support for embedded python description provider" OFF)
+option(COMPILE_BENCHMARKS "If ON benchmarks are compiled and available to run" OFF)
 # If the value doesn't fit, an exception is thrown in any case because that could result in unexpected behavior and can not be ignored lightly
 
 if (WARN_ON_INCOMPATIBLE_TYPE)
@@ -13,17 +15,24 @@ add_compile_options(-std=c++11)
 
 add_definitions(-Wall -Wextra)
 
-set(CMAKE_BUILD_TYPE "Debug")
+#set(CMAKE_BUILD_TYPE "Debug")
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED COMPONENTS roscpp)
+find_package(catkin REQUIRED COMPONENTS roscpp roslib)
+find_package(OpenSSL REQUIRED)
 
-find_package(PythonInterp)
-find_package(PythonLibs 2.7 EXACT REQUIRED)
+set(DEPENDS )
 
-message(STATUS "Using Python ${PYTHON_VERSION_STRING}")
+if (ENABLE_EMBEDDED_PYTHON)
+  find_package(PythonInterp)
+  find_package(PythonLibs 2.7 EXACT REQUIRED)
+
+  message(STATUS "Using Python ${PYTHON_VERSION_STRING}")
+
+  add_definitions(-DRBF_ENABLE_EMBEDDED_PYTHON)
+endif()
 
 ###################################
 ## catkin specific configuration ##
@@ -37,8 +46,8 @@ message(STATUS "Using Python ${PYTHON_VERSION_STRING}")
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES ros_babel_fish
-  CATKIN_DEPENDS roscpp
-  DEPENDS PYTHON
+  CATKIN_DEPENDS roscpp roslib
+  DEPENDS ${DEPENDS}
 )
 
 ###########
@@ -50,11 +59,17 @@ catkin_package(
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}
-  ${PYTHON_INCLUDE_DIRS}
+  ${OpenSSL_INCLUDE_DIRS}
+)
+
+set(LIBRARIES
+  ${catkin_LIBRARIES}
+  OpenSSL::SSL
+  stdc++fs
 )
 
 set(SOURCES
-  src/generation/providers/embedded_python_description_provider.cpp
+  src/generation/providers/integrated_description_provider.cpp
   src/generation/description_provider.cpp
   src/generation/message_creation.cpp
   src/messages/array_message.cpp
@@ -65,31 +80,38 @@ set(SOURCES
   src/message.cpp
 )
 
+if (ENABLE_EMBEDDED_PYTHON)
+  include_directories(${PYTHON_INCLUDE_DIRS})
+  set(LIBRARIES ${LIBRARIES} ${PYTHON_LIBRARIES})
+  set(SOURCES ${SOURCES} src/generation/providers/embedded_python_description_provider.cpp)
+endif()
+
+
 ## Declare a C++ library
 add_library(${PROJECT_NAME} ${SOURCES})
-target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${PYTHON_LIBRARIES} ${BOOST_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} ${LIBRARIES})
 
 ## Declare examples as C++ executables
 add_executable(any_publisher examples/any_publisher.cpp)
 ## Specify libraries to link a library or executable target against
-target_link_libraries(any_publisher ${PROJECT_NAME} ${catkin_LIBRARIES})
+target_link_libraries(any_publisher ${PROJECT_NAME} ${LIBRARIES})
 
 add_executable(any_subscriber examples/any_subscriber.cpp)
-target_link_libraries(any_subscriber ${PROJECT_NAME} ${catkin_LIBRARIES})
+target_link_libraries(any_subscriber ${PROJECT_NAME} ${LIBRARIES})
 
 add_executable(message_info examples/message_info.cpp)
-target_link_libraries(message_info ${PROJECT_NAME} ${catkin_LIBRARIES})
+target_link_libraries(message_info ${PROJECT_NAME} ${LIBRARIES})
 
 add_executable(troll_node examples/troll_node.cpp)
-target_link_libraries(troll_node ${PROJECT_NAME} ${catkin_LIBRARIES})
+target_link_libraries(troll_node ${PROJECT_NAME} ${LIBRARIES})
 
 add_executable(service_server examples/service_server.cpp)
-target_link_libraries(service_server ${PROJECT_NAME} ${catkin_LIBRARIES})
+target_link_libraries(service_server ${PROJECT_NAME} ${LIBRARIES})
 
 add_executable(service_client examples/service_client.cpp)
-target_link_libraries(service_client ${PROJECT_NAME} ${catkin_LIBRARIES})
+target_link_libraries(service_client ${PROJECT_NAME} ${LIBRARIES})
 
-find_package(actionlib)
+#find_package(actionlib)
 
 #if(${actionlib_FOUND})
 #  add_executable(action_client examples/action_client.cpp)
@@ -100,6 +122,40 @@ find_package(actionlib)
   #target_link_libraries(action_server ${PROJECT_NAME} ${catkin_LIBRARIES} ${actionlib_LIBRARIES})
 #endif()
 
+if (COMPILE_BENCHMARKS)
+  find_package(ros_type_introspection)
+  add_executable(benchmark_image_simple_base benchmarks/benchmark_image_simple_base.cpp)
+  target_link_libraries(benchmark_image_simple_base ${PROJECT_NAME} ${catkin_LIBRARIES})
+
+  add_executable(benchmark_image_simple_rbf benchmarks/benchmark_image_simple_rbf.cpp)
+  target_link_libraries(benchmark_image_simple_rbf ${PROJECT_NAME} ${catkin_LIBRARIES})
+
+  add_executable(benchmark_float_msg_base benchmarks/benchmark_float_msg_base.cpp)
+  target_link_libraries(benchmark_float_msg_base ${PROJECT_NAME} ${catkin_LIBRARIES})
+
+  add_executable(benchmark_float_msg_rbf benchmarks/benchmark_float_msg_rbf.cpp)
+  target_link_libraries(benchmark_float_msg_rbf ${PROJECT_NAME} ${catkin_LIBRARIES})
+
+  add_executable(benchmark_joint_state_base benchmarks/benchmark_joint_state_base.cpp)
+  target_link_libraries(benchmark_joint_state_base ${PROJECT_NAME} ${catkin_LIBRARIES})
+
+  add_executable(benchmark_joint_state_rbf benchmarks/benchmark_joint_state_rbf.cpp)
+  target_link_libraries(benchmark_joint_state_rbf ${PROJECT_NAME} ${catkin_LIBRARIES})
+
+  if (ros_type_introspection_FOUND)
+    find_package(topic_tools REQUIRED)
+    set(RTI_LIBRARIES ${ros_type_introspection_LIBRARIES} ${topic_tools_LIBRARIES})
+
+    add_executable(benchmark_image_simple_rti benchmarks/benchmark_image_simple_rti.cpp)
+    target_link_libraries(benchmark_image_simple_rti ${PROJECT_NAME} ${catkin_LIBRARIES} ${RTI_LIBRARIES})
+
+    add_executable(benchmark_float_msg_rti benchmarks/benchmark_float_msg_rti.cpp)
+    target_link_libraries(benchmark_float_msg_rti ${PROJECT_NAME} ${catkin_LIBRARIES} ${RTI_LIBRARIES})
+
+    add_executable(benchmark_joint_state_rti benchmarks/benchmark_joint_state_rti.cpp)
+    target_link_libraries(benchmark_joint_state_rti ${PROJECT_NAME} ${catkin_LIBRARIES} ${RTI_LIBRARIES})
+  endif()
+endif()
 
 
 #############
@@ -130,6 +186,7 @@ install(DIRECTORY include/${PROJECT_NAME}/
   PATTERN ".svn" EXCLUDE
 )
 
+
 #############
 ## Testing ##
 #############
@@ -148,6 +205,12 @@ if (CATKIN_ENABLE_TESTING)
   add_rostest_gtest(test_message_encoding test/test_message_encoding.test test/message_encoding.cpp)
   target_link_libraries(test_message_encoding ${PROJECT_NAME} ${ros_babel_fish_test_msgs_LIBRARIES})
 
+  add_rostest_gtest(test_message_lookup test/test_message_lookup.test test/message_lookup.cpp)
+  target_link_libraries(test_message_lookup ${PROJECT_NAME} ${ros_babel_fish_test_msgs_LIBRARIES})
+
+  add_rostest_gtest(test_service_lookup test/test_service_lookup.test test/service_lookup.cpp)
+  target_link_libraries(test_service_lookup ${PROJECT_NAME} ${ros_babel_fish_test_msgs_LIBRARIES})
+
   add_rostest_gtest(test_service_client test/test_service_client.test test/service_client.cpp)
   target_link_libraries(test_service_client ${PROJECT_NAME})
 
@@ -162,6 +225,6 @@ if(CATKIN_ENABLE_TESTING AND ENABLE_COVERAGE_TESTING)
   find_package(code_coverage REQUIRED)   # catkin package ros-*-code-coverage
   include(CodeCoverage)
   APPEND_COVERAGE_COMPILER_FLAGS()
-  set(COVERAGE_EXCLUDES "*/${PROJECT_NAME}/test*" "*/${PROJECT_NAME}/examples*")
+  set(COVERAGE_EXCLUDES "*/${PROJECT_NAME}/test*" "*/${PROJECT_NAME}/examples*" "*/${PROJECT_NAME}/benchmarks*")
   add_code_coverage(NAME ${PROJECT_NAME}_coverage)
 endif()

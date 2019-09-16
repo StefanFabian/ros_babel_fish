@@ -27,6 +27,8 @@ protected:
 
   virtual MessageDescription::ConstPtr getMessageDescriptionImpl( const std::string &type ) = 0;
 
+  virtual MessageDescription::ConstPtr getMessageDescriptionImpl( const BabelFishMessage &msg );
+
   virtual ServiceDescription::ConstPtr getServiceDescriptionImpl( const std::string &type ) = 0;
 
   MessageTemplate::Ptr createTemplate( const std::string &type, const std::string &specification );

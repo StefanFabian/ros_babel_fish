@@ -7,20 +7,45 @@ This library enables ROS nodes written in C++ to communicate using message types
 You can subscribe and even publish any available message type.  
 It also supports both providing and calling a service.
 
-You most likely don't need this library.  
+Please strongly consider whether you actually need this library because there may be a better solution.   
 Possible use cases where you do need it are:
 * UIs displaying the content of various at compile time unknown messages
-* Plugins for script languages that can not access the C++ message definitions without modification
+* Plugins for (script) languages that can not access the C++ message definitions without modification
   * Spot for shameless self-advertising: Check out my ROS QML plugin which uses this library to allow subscribing, publishing and more directly in QML 
 
 The main focus of this library was usability but it is also very performant since it uses a lazy copy mechanism for bigger fields such as big arrays.  
 Instead of copying the message it will retain a pointer at the start of the field. A copy is only made if explicitly requested or a value in the
 field is changed.  
-Check out the examples in the example folder to find out how to use this library.
 
-Here's an example on how to publish a message:
+## Examples
+### Subscribing
+```C++
+NodeHandle nh;
+BabelFish fish;
+// Subscribe topic /pose
+ros::Subscriber sub = nh.subscribe<ros_babel_fish::BabelFishMessage>( topic, 1, &callback );
 
+/* ... */
+
+void callback( const ros_babel_fish::BabelFishMessage::ConstPtr &msg )
+{
+  std::cout << "Message received!" << std::endl;
+  std::cout << "Data Type:" << msg->dataType() << std::endl; // geometry_msgs/Pose
+  std::cout << "MD5:" << msg->md5Sum() << std::endl; // e45d45a5a1ce597b249e23fb30fc871f
+  std::cout << "Message Definition:" << std::endl;
+  std::cout << msg->definition() << std::endl;
+  std::cout << "Message Content:" << std::endl;
+  TranslatedMessage::Ptr translated = fish->translateMessage( msg );
+  auto &compound = translated->translated_message->as<CompoundMessage>();
+  std::cout << "Position: " << compound["position"]["x"].value<double>() << ", " << compound["position"]["y"].value<double>() << ", "
+            << compound["position"]["z"].value<double>() << std::endl;
+  std::cout << "Orientation: " << compound["orientation"]["w"].value<double>() << ", " << compound["orientation"]["x"].value<double>() << ", "
+            << compound["orientation"]["y"].value<double>() << ", " << compound["orientation"]["z"].value<double>() << std::endl;
+};
 ```
+
+### Publishing
+```C++
 NodeHandle nh;
 BabelFish fish;
 // Advertise a publisher on topic /pose
@@ -52,14 +77,20 @@ BabelFishMessage::Ptr translated_message = fish.translateMessage( message );
 pub_pose.publish( translated_message );
 ```
 
+For more in-depth examples check the example folder.
+
+
+## Benchmarks
+Check the [benchmark.md](benchmarks/benchmark.md) in the benchmarks folder for a description of the benchmarks and benchmark results.
+The performance when accessing content of received messages was benchmarked against a baseline where the message is known and 
+ros_type_introspection which also allows receiving and evaluating messages of at compile time unknown types.
+
 ## Current TODOs
 
-- [x] Subscribing topics with at compile time unknown message type
-- [x] Publishing messages with at compile time unknown message type
 - [x] Calling a service with at compile time unknown service definition
 - [x] Advertising a service with at compile time unknown service definition
 - [ ] Creating a service client with at compile time unknown service definition
-- [x] Add more error checks to fail gracefully in case of errors
+- [ ] Search more paths when looking up message definitions
 - [ ] Documentation
 - [ ] Benchmark
 - [ ] Calling actions

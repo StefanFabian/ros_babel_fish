@@ -3,7 +3,7 @@
 
 #include "ros_babel_fish/babel_fish.h"
 
-#include "ros_babel_fish/generation/providers/embedded_python_description_provider.h"
+#include "ros_babel_fish/generation/providers/integrated_description_provider.h"
 #include "ros_babel_fish/generation/message_creation.h"
 #include "ros_babel_fish/message_types.h"
 
@@ -16,7 +16,7 @@
 namespace ros_babel_fish
 {
 
-BabelFish::BabelFish() : BabelFish( std::make_shared<EmbeddedPythonDescriptionProvider>()) { }
+BabelFish::BabelFish() : BabelFish( std::make_shared<IntegratedDescriptionProvider>()) { }
 
 BabelFish::BabelFish( DescriptionProvider::Ptr description_provider )
   : description_provider_( std::move( description_provider ))
@@ -30,10 +30,6 @@ BabelFish::~BabelFish() = default;
 TranslatedMessage::Ptr BabelFish::translateMessage( const BabelFishMessage::ConstPtr &msg )
 {
   MessageDescription::ConstPtr message_description = description_provider_->getMessageDescription( *msg );
-  if ( message_description->md5 != msg->md5Sum())
-  {
-    ROS_WARN_ONCE( "BabelFish knows a message of the type '%s' but with a different md5 sum!", msg->dataType().c_str());
-  }
   MessageTemplate::ConstPtr msg_template = message_description->message_template;
   const uint8_t *stream = msg->buffer();
   size_t bytes_read = 0;
@@ -45,28 +41,20 @@ TranslatedMessage::Ptr BabelFish::translateMessage( const BabelFishMessage::Cons
 
   Message::Ptr translated = createMessageFromTemplate( *msg_template, stream, msg->size(), bytes_read );
   if ( bytes_read != msg->size())
-  {
-    ROS_ERROR( "Translated message did not consume all message bytes! BabelFish made a mistake!" );
-  }
+    throw BabelFishException( "Translated message did not consume all message bytes!" );
   return std::make_shared<TranslatedMessage>( msg, translated );
 }
 
 Message::Ptr BabelFish::translateMessage( const BabelFishMessage &msg )
 {
   MessageDescription::ConstPtr message_description = description_provider_->getMessageDescription( msg );
-  if ( message_description->md5 != msg.md5Sum())
-  {
-    ROS_WARN_ONCE( "BabelFish knows a message of the type '%s' but with a different md5 sum!", msg.dataType().c_str());
-  }
   MessageTemplate::ConstPtr msg_template = message_description->message_template;
   const uint8_t *stream = msg.buffer();
   size_t bytes_read = 0;
 
   Message::Ptr translated = createMessageFromTemplate( *msg_template, stream, msg.size(), bytes_read );
   if ( bytes_read != msg.size())
-  {
-    ROS_ERROR( "Translated message did not consume all message bytes! BabelFish made a mistake!" );
-  }
+    throw BabelFishException( "Translated message did not consume all message bytes!" );
   return translated;
 }
 

@@ -26,9 +26,14 @@ class EmbeddedPythonDescriptionProvider : public DescriptionProvider
     PythonContext();
 
     ~PythonContext();
+
+    void initialize();
+
+  private:
+    bool initialized_ = false;
   };
 
-  static const PythonContext context_;
+  static PythonContext context_;
 
 public:
   EmbeddedPythonDescriptionProvider();

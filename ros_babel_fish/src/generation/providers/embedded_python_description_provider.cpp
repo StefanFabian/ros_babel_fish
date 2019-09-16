@@ -8,18 +8,22 @@
 namespace ros_babel_fish
 {
 
-const EmbeddedPythonDescriptionProvider::PythonContext EmbeddedPythonDescriptionProvider::context_ = EmbeddedPythonDescriptionProvider::PythonContext();
+EmbeddedPythonDescriptionProvider::PythonContext EmbeddedPythonDescriptionProvider::context_ = EmbeddedPythonDescriptionProvider::PythonContext();
 
-EmbeddedPythonDescriptionProvider::PythonContext::PythonContext()
-{
-  // Makes sure two instances don't kill each others context, still not my favorite approach since it risks clashing
-  // with other libraries if they use embedded python
-  Py_Initialize();
-}
+EmbeddedPythonDescriptionProvider::PythonContext::PythonContext() = default;
 
 EmbeddedPythonDescriptionProvider::PythonContext::~PythonContext()
 {
   Py_Finalize();
+}
+
+void EmbeddedPythonDescriptionProvider::PythonContext::initialize()
+{
+  if ( initialized_ ) return;
+  initialized_ = true;
+  // Makes sure two instances don't kill each others context, still not my favorite approach since it risks clashing
+  // with other libraries if they use embedded python
+  Py_Initialize();
 }
 
 namespace
@@ -33,45 +37,45 @@ PyObject *importModule( const char *name )
 }
 
 // Used for debugging
-//void checkError()
-//{
-//  PyObject *err = PyErr_Occurred();
-//  if ( err != nullptr )
-//  {
-//    PyObject *ptype, *pvalue, *ptraceback;
-//    PyObject *pystr, *module_name, *pyth_module, *pyth_func;
-//    char *str;
-//
-//    PyErr_Fetch( &ptype, &pvalue, &ptraceback );
-//    pystr = PyObject_Str( pvalue );
-//    str = PyString_AsString( pystr );
-//    char *error_description = strdup( str );
-//    std::cout << "Error description:" << std::endl << error_description << std::endl;
-//
-//    /* See if we can get a full traceback */
-//    module_name = PyString_FromString( "traceback" );
-//    pyth_module = PyImport_Import( module_name );
-//    Py_DECREF( module_name );
-//
-//    if ( pyth_module != nullptr )
-//    {
-//      pyth_func = PyObject_GetAttrString( pyth_module, "format_exception" );
-//      if ( pyth_func && PyCallable_Check( pyth_func ))
-//      {
-//        PyObject *pyth_val;
-//
-//        pyth_val = PyObject_CallFunctionObjArgs( pyth_func, ptype, pvalue, ptraceback, NULL );
-//
-//        pystr = PyObject_Str( pyth_val );
-//        str = PyString_AsString( pystr );
-//        char *full_backtrace = strdup( str );
-//        Py_XDECREF( pyth_val );
-//        std::cout << "Full backtrace:" << std::endl << full_backtrace << std::endl;
-//      }
-//      Py_DECREF( pyth_func );
-//    }
-//  }
-//}
+void checkError()
+{
+  PyObject *err = PyErr_Occurred();
+  if ( err != nullptr )
+  {
+    PyObject *ptype, *pvalue, *ptraceback;
+    PyObject *pystr, *module_name, *pyth_module, *pyth_func;
+    char *str;
+
+    PyErr_Fetch( &ptype, &pvalue, &ptraceback );
+    pystr = PyObject_Str( pvalue );
+    str = PyString_AsString( pystr );
+    char *error_description = strdup( str );
+    std::cout << "Error description:" << std::endl << error_description << std::endl;
+
+    /* See if we can get a full traceback */
+    module_name = PyString_FromString( "traceback" );
+    pyth_module = PyImport_Import( module_name );
+    Py_DECREF( module_name );
+
+    if ( pyth_module != nullptr )
+    {
+      pyth_func = PyObject_GetAttrString( pyth_module, "format_exception" );
+      if ( pyth_func && PyCallable_Check( pyth_func ))
+      {
+        PyObject *pyth_val;
+
+        pyth_val = PyObject_CallFunctionObjArgs( pyth_func, ptype, pvalue, ptraceback, NULL );
+
+        pystr = PyObject_Str( pyth_val );
+        str = PyString_AsString( pystr );
+        char *full_backtrace = strdup( str );
+        Py_XDECREF( pyth_val );
+        std::cout << "Full backtrace:" << std::endl << full_backtrace << std::endl;
+      }
+      Py_DECREF( pyth_func );
+    }
+  }
+}
 
 struct scoped_decref
 {
@@ -175,6 +179,8 @@ MessageDescription::ConstPtr EmbeddedPythonDescriptionProvider::getMessageDescri
 
   MessageDescription::Ptr description = std::make_shared<MessageDescription>();
   description->datatype = type;
+  if ( message_definition.empty() || message_definition[message_definition.length() - 1] != '\n' )
+    message_definition += '\n';
   description->message_definition = message_definition;
   description->md5 = md5;
   description->specification = specification;
@@ -273,6 +279,11 @@ ServiceDescription::ConstPtr EmbeddedPythonDescriptionProvider::getServiceDescri
     Py_DECREF( response );
   }
 
+  if ( request_message_definition.empty() || request_message_definition[request_message_definition.length() - 1] != '\n' )
+    request_message_definition += '\n';
+  if ( response_message_definition.empty() || response_message_definition[response_message_definition.length() - 1] != '\n' )
+    response_message_definition += '\n';
+
   return registerService( type, md5, specification,
                           request_message_definition, request_md5, request_specification,
                           response_message_definition, response_md5, response_specification );
@@ -280,23 +291,33 @@ ServiceDescription::ConstPtr EmbeddedPythonDescriptionProvider::getServiceDescri
 
 void EmbeddedPythonDescriptionProvider::initPython()
 {
+  context_.initialize();
+
   // Import modules
   PyObject *catkin_find_in_workspaces = importModule( "catkin.find_in_workspaces" ); // TODO Error checking
+  checkError();
+  if ( catkin_find_in_workspaces == nullptr ) throw BabelFishException( "Failed to initialize description provider!" );
   py_objects_.push_back( catkin_find_in_workspaces );
 
   PyObject *rospkg = importModule( "rospkg" );
+  checkError();
+  if ( rospkg == nullptr ) throw BabelFishException( "Failed to initialize description provider!" );
   py_objects_.push_back( rospkg );
 
   PyObject *genmsg = importModule( "genmsg" );
+  if ( rospkg == nullptr ) throw BabelFishException( "Failed to initialize description provider!" );
   py_objects_.push_back( genmsg );
 
   PyObject *gentools = importModule( "genmsg.gentools" );
+  if ( rospkg == nullptr ) throw BabelFishException( "Failed to initialize description provider!" );
   py_objects_.push_back( gentools );
 
   PyObject *msg_loader = importModule( "genmsg.msg_loader" );
+  if ( rospkg == nullptr ) throw BabelFishException( "Failed to initialize description provider!" );
   py_objects_.push_back( msg_loader );
 
   PyObject *os_path = importModule( "os.path" );
+  if ( rospkg == nullptr ) throw BabelFishException( "Failed to initialize description provider!" );
   py_objects_.push_back( os_path );
 
   genmsg_compute_full_text_ = PyObject_GetAttrString( genmsg, "compute_full_text" );

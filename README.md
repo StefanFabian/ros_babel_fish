@@ -81,7 +81,7 @@ For more in-depth examples check the example folder.
 
 
 ## Benchmarks
-Check the [benchmark.md](benchmarks/benchmark.md) in the benchmarks folder for a description of the benchmarks and benchmark results.
+Check the [benchmark.md](ros_babel_fish/benchmarks/benchmark.md) in the benchmarks folder for a description of the benchmarks and benchmark results.
 The performance when accessing content of received messages was benchmarked against a baseline where the message is known and 
 ros_type_introspection which also allows receiving and evaluating messages of at compile time unknown types.
 

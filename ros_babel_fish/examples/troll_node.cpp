@@ -121,17 +121,25 @@ void updateMessage( Message &message )
     message = song_text[song_text_index];
     ++song_text_index;
     if ( song_text_index >= song_text_length ) song_text_index = 0;
-    return;
   }
   else if ( message.type() == MessageTypes::Array )
   {
-    if ( message.as<ArrayMessageBase>().elementType() &
-         (MessageTypes::Array | MessageTypes::Compound | MessageTypes::String))
+    if ( message.as<ArrayMessageBase>().elementType() == MessageTypes::Compound )
     {
       auto &array = message.as<ArrayMessage<Message>>();
       for ( size_t i = 0; i < array.length(); ++i )
       {
         updateMessage( array[i] );
+      }
+    }
+    else if ( message.as<ArrayMessageBase>().elementType() == MessageTypes::String )
+    {
+      auto &array = message.as<ArrayMessage<std::string>>();
+      for ( size_t i = 0; i < array.length(); ++i )
+      {
+        array.setItem( i, song_text[song_text_index] );
+        ++song_text_index;
+        if ( song_text_index >= song_text_length ) song_text_index = 0;
       }
     }
   }

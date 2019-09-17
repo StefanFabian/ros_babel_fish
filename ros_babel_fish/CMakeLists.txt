@@ -78,6 +78,7 @@ set(SOURCES
   src/babel_fish.cpp
   src/babel_fish_message.cpp
   src/message.cpp
+  src/message_extractor.cpp
 )
 
 if (ENABLE_EMBEDDED_PYTHON)
@@ -130,11 +131,17 @@ if (COMPILE_BENCHMARKS)
   add_executable(benchmark_image_simple_rbf benchmarks/benchmark_image_simple_rbf.cpp)
   target_link_libraries(benchmark_image_simple_rbf ${PROJECT_NAME} ${catkin_LIBRARIES})
 
+  add_executable(benchmark_image_simple_rbf_extractor benchmarks/benchmark_image_simple_rbf_extractor.cpp)
+  target_link_libraries(benchmark_image_simple_rbf_extractor ${PROJECT_NAME} ${catkin_LIBRARIES})
+
   add_executable(benchmark_float_msg_base benchmarks/benchmark_float_msg_base.cpp)
   target_link_libraries(benchmark_float_msg_base ${PROJECT_NAME} ${catkin_LIBRARIES})
 
   add_executable(benchmark_float_msg_rbf benchmarks/benchmark_float_msg_rbf.cpp)
   target_link_libraries(benchmark_float_msg_rbf ${PROJECT_NAME} ${catkin_LIBRARIES})
+
+  add_executable(benchmark_float_msg_rbf_extractor benchmarks/benchmark_float_msg_rbf_extractor.cpp)
+  target_link_libraries(benchmark_float_msg_rbf_extractor ${PROJECT_NAME} ${catkin_LIBRARIES})
 
   add_executable(benchmark_joint_state_base benchmarks/benchmark_joint_state_base.cpp)
   target_link_libraries(benchmark_joint_state_base ${PROJECT_NAME} ${catkin_LIBRARIES})
@@ -204,6 +211,9 @@ if (CATKIN_ENABLE_TESTING)
 
   add_rostest_gtest(test_message_encoding test/test_message_encoding.test test/message_encoding.cpp)
   target_link_libraries(test_message_encoding ${PROJECT_NAME} ${ros_babel_fish_test_msgs_LIBRARIES})
+
+  add_rostest_gtest(test_message_extractor test/test_message_extractor.test test/message_extractor.cpp)
+  target_link_libraries(test_message_extractor ${PROJECT_NAME} ${ros_babel_fish_test_msgs_LIBRARIES})
 
   add_rostest_gtest(test_message_lookup test/test_message_lookup.test test/message_lookup.cpp)
   target_link_libraries(test_message_lookup ${PROJECT_NAME} ${ros_babel_fish_test_msgs_LIBRARIES})

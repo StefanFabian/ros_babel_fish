@@ -138,8 +138,10 @@ void dumpMessageContent( const Message &message, const std::string &prefix = "" 
         printArray<ros::Duration>( base.as<ArrayMessage<ros::Duration>>());
         break;
       case MessageTypes::String:
+        printArray<std::string>( base.as<ArrayMessage<std::string>>());
+        break;
       case MessageTypes::Compound:
-      case MessageTypes::Array:
+      case MessageTypes::Array: // Arrays of arrays are actually not supported in the ROS msg format
       {
         std::cout << std::endl;
         auto &array = base.as<ArrayMessage<Message>>();
@@ -176,16 +178,16 @@ void dumpMessageContent( const Message &message, const std::string &prefix = "" 
         std::cout << message.value<uint64_t>();
         break;
       case MessageTypes::Int8:
-        std::cout << message.value<int8_t >();
+        std::cout << message.value<int8_t>();
         break;
       case MessageTypes::Int16:
-        std::cout << message.value<int16_t >();
+        std::cout << message.value<int16_t>();
         break;
       case MessageTypes::Int32:
-        std::cout << message.value<int32_t >();
+        std::cout << message.value<int32_t>();
         break;
       case MessageTypes::Int64:
-        std::cout << message.value<int64_t >();
+        std::cout << message.value<int64_t>();
         break;
       case MessageTypes::Float32:
         std::cout << message.value<float>();

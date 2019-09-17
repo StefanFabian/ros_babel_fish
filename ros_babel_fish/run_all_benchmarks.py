@@ -28,7 +28,7 @@ if __name__ == "__main__":
         result = results[i]
         print("Benchmark: ", benchmarks[i][0])
         # print(result)
-        print("Name \t\t Count \t\t First \t\t Avg without first \t\t Result")
+        print("Name" + 18 * " " + "\t\t Count \t\t First \t\t Avg without first \t\t Result")
         for name in result:
             if len(result[name]) == 0:
                 print(name, ": No results")
@@ -37,6 +37,7 @@ if __name__ == "__main__":
             subsequent = result[name][1:-1]
             rval = result[name][-1]
             avg = np.round(np.sum(subsequent) / len(subsequent))
-            print(name, ": \t\t", len(subsequent), "\t\t", "{0:.2f}".format(first / 1000), "us \t\t",
+            name_print = name + " " * (18 - len(name))
+            print(name_print, ": \t\t", len(subsequent), "\t\t", "{0:.2f}".format(first / 1000), "us \t\t",
                   "{0:.2f}".format(avg / 1000), "us \t\t ", rval)
         print("")

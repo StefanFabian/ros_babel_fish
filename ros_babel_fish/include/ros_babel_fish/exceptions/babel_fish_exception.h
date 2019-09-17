@@ -1,8 +1,8 @@
 // Copyright (c) 2019 Stefan Fabian. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-#ifndef ROS_BABEL_FISH_EXCEPTIONS_H
-#define ROS_BABEL_FISH_EXCEPTIONS_H
+#ifndef ROS_BABEL_FISH_BABEL_FISH_EXCEPTION_H
+#define ROS_BABEL_FISH_BABEL_FISH_EXCEPTION_H
 
 #include <ros/exception.h>
 
@@ -16,4 +16,4 @@ public:
 };
 } // ros_babel_fish
 
-#endif // ROS_BABEL_FISH_EXCEPTIONS_H
+#endif //ROS_BABEL_FISH_BABEL_FISH_EXCEPTION_H

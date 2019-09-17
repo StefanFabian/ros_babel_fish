@@ -5,7 +5,7 @@
 #define ROS_BABEL_FISH_MESSAGE_H
 
 
-#include "ros_babel_fish/exceptions.h"
+#include "ros_babel_fish/exceptions/babel_fish_exception.h"
 #include <ros/time.h>
 
 #include <memory>
@@ -261,6 +261,7 @@ struct message_type
 {
   static constexpr MessageType value = MessageTypes::None;
 };
+
 #define DECLARE_MESSAGE_TYPE_FOR_TYPE( __message_type, __type )\
 template<> struct message_type<__type> { static constexpr MessageType value = __message_type; }
 DECLARE_MESSAGE_TYPE_FOR_TYPE( MessageTypes::Bool, bool );

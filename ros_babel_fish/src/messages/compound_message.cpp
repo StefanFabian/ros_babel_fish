@@ -2,7 +2,7 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 #include "ros_babel_fish/messages/compound_message.h"
-#include "ros_babel_fish/exceptions.h"
+#include "ros_babel_fish/exceptions/babel_fish_exception.h"
 
 namespace ros_babel_fish
 {

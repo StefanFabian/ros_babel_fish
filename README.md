@@ -77,6 +77,24 @@ BabelFishMessage::Ptr translated_message = fish.translateMessage( message );
 pub_pose.publish( translated_message );
 ```
 
+### Message Extraction
+If you are only interested in a specific part of the message, you may not want to deserialize the entire message.
+```C++
+BabelFish fish;
+MessageExtractor extractor(fish);
+// We want the position of a pose stamped
+SubMessageLocation location = extractor.retrieveLocationForPath( "geometry_msgs/PoseStamped", "pose.position" );
+BabelFishMessage::ConstPtr msg = ros::topic::waitForMessage<BabelFishMessage>( "/topic" );
+TranslatedMessage::Ptr translated = extractor.extractMessage( msg, location );
+auto &compound = translated->translated_message->as<CompoundMessage>();
+std::cout << "Position: " << compound["x"].value<double>() << ", " << compound["y"].value<double>() << ", "
+          << compound["z"].value<double>() << std::endl;
+
+// You can also extract primitives (but you need to make sure you extract the right type or the extractor will throw!)
+SubMessageLocation location_of_x = extractor.retrieveLocationForPath( "geometry_msgs/PoseStamped", "pose.position.x" );
+std::cout << "Position X: " << extractor.extractValue<double>( msg, location_of_x ) << std::endl;
+```
+
 For more in-depth examples check the example folder.
 
 

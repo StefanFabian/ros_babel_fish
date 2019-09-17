@@ -4,7 +4,7 @@
 #ifndef ROS_BABEL_FISH_ARRAY_MESSAGE_H
 #define ROS_BABEL_FISH_ARRAY_MESSAGE_H
 
-#include "ros_babel_fish/exceptions.h"
+#include "ros_babel_fish/exceptions/babel_fish_exception.h"
 #include "ros_babel_fish/message.h"
 
 #include <ros/time.h>
@@ -84,7 +84,7 @@ public:
    */
   void setItem( size_t index, ArgumentType value )
   {
-    if ( index >= values_.size())
+    if ( index >= length_ )
       throw BabelFishException( "Index in setItem was out of bounds! Maybe you meant addItem?" );
     if ( from_stream_ ) detachFromStream();
     values_[index] = value;

@@ -4,7 +4,7 @@
 #ifndef ROS_BABEL_FISH_VALUE_MESSAGE_H
 #define ROS_BABEL_FISH_VALUE_MESSAGE_H
 
-#include "ros_babel_fish/exceptions.h"
+#include "ros_babel_fish/exceptions/babel_fish_exception.h"
 #include "ros_babel_fish/message.h"
 
 #include <ros/time.h>

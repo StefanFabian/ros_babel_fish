@@ -14,6 +14,7 @@ Sums the value of the data field in the float messages.
 |---|---:|---:|
 | Base | 0.05us | 0.04us |
 | RBF | 2189.65us | 2.89us |
+| RBF Extractor | 2429.07 us | 0.29 us |
 | RTI | 142.43us | 1.81us |
  
 ### Image Simple Benchmark
@@ -26,6 +27,7 @@ The ros_type_introspection version knows about the Header message to use an opti
 |---|---:|---:|
 | Base | 0.07 us | 0.08 us |
 | RBF | 3964.40 us | 10.23 us |
+| RBF Extractor | 3535.41 us | 0.85 us |
 | RTI | 3871.21 us | 811.36 us |
 
 ### Joint State Message Benchmark

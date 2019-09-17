@@ -2,6 +2,7 @@
   <include file="$(find ros_babel_fish)/test/test_message.test"/>
   <include file="$(find ros_babel_fish)/test/test_message_decoding.test"/>
   <include file="$(find ros_babel_fish)/test/test_message_encoding.test"/>
+  <include file="$(find ros_babel_fish)/test/test_message_extractor.test"/>
   <include file="$(find ros_babel_fish)/test/test_message_lookup.test"/>
   <include file="$(find ros_babel_fish)/test/test_service_lookup.test"/>
   <include file="$(find ros_babel_fish)/test/test_service_client.test"/>

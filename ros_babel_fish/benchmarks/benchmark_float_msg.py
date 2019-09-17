@@ -10,7 +10,7 @@ import numpy as np
 
 
 class Benchmark:
-    benchmarks = ["base", "rbf", "rti"]
+    benchmarks = ["base", "rbf", "rbf_extractor", "rti"]
     threads = []
     results = []
 

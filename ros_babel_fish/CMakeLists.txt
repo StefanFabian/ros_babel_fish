@@ -1,10 +1,9 @@
 cmake_minimum_required(VERSION 3.10)
 project(ros_babel_fish)
 
+# If the value doesn't fit, an exception is thrown in any case because that could result in unexpected behavior and can not be ignored lightly
 option(WARN_ON_INCOMPATIBLE_TYPE "If ON a warning is printed if a value message is set or accessed with a type that does not allow casting without loss of information" ON)
 option(ENABLE_EMBEDDED_PYTHON "Enables support for embedded python description provider" OFF)
-option(COMPILE_BENCHMARKS "If ON benchmarks are compiled and available to run" OFF)
-# If the value doesn't fit, an exception is thrown in any case because that could result in unexpected behavior and can not be ignored lightly
 
 if (WARN_ON_INCOMPATIBLE_TYPE)
   add_definitions(-DRBF_WARN_ON_INCOMPATIBLE_TYPE)
@@ -123,47 +122,6 @@ target_link_libraries(service_client ${PROJECT_NAME} ${LIBRARIES})
   #target_link_libraries(action_server ${PROJECT_NAME} ${catkin_LIBRARIES} ${actionlib_LIBRARIES})
 #endif()
 
-if (COMPILE_BENCHMARKS)
-  find_package(ros_type_introspection)
-  add_executable(benchmark_image_simple_base benchmarks/benchmark_image_simple_base.cpp)
-  target_link_libraries(benchmark_image_simple_base ${PROJECT_NAME} ${catkin_LIBRARIES})
-
-  add_executable(benchmark_image_simple_rbf benchmarks/benchmark_image_simple_rbf.cpp)
-  target_link_libraries(benchmark_image_simple_rbf ${PROJECT_NAME} ${catkin_LIBRARIES})
-
-  add_executable(benchmark_image_simple_rbf_extractor benchmarks/benchmark_image_simple_rbf_extractor.cpp)
-  target_link_libraries(benchmark_image_simple_rbf_extractor ${PROJECT_NAME} ${catkin_LIBRARIES})
-
-  add_executable(benchmark_float_msg_base benchmarks/benchmark_float_msg_base.cpp)
-  target_link_libraries(benchmark_float_msg_base ${PROJECT_NAME} ${catkin_LIBRARIES})
-
-  add_executable(benchmark_float_msg_rbf benchmarks/benchmark_float_msg_rbf.cpp)
-  target_link_libraries(benchmark_float_msg_rbf ${PROJECT_NAME} ${catkin_LIBRARIES})
-
-  add_executable(benchmark_float_msg_rbf_extractor benchmarks/benchmark_float_msg_rbf_extractor.cpp)
-  target_link_libraries(benchmark_float_msg_rbf_extractor ${PROJECT_NAME} ${catkin_LIBRARIES})
-
-  add_executable(benchmark_joint_state_base benchmarks/benchmark_joint_state_base.cpp)
-  target_link_libraries(benchmark_joint_state_base ${PROJECT_NAME} ${catkin_LIBRARIES})
-
-  add_executable(benchmark_joint_state_rbf benchmarks/benchmark_joint_state_rbf.cpp)
-  target_link_libraries(benchmark_joint_state_rbf ${PROJECT_NAME} ${catkin_LIBRARIES})
-
-  if (ros_type_introspection_FOUND)
-    find_package(topic_tools REQUIRED)
-    set(RTI_LIBRARIES ${ros_type_introspection_LIBRARIES} ${topic_tools_LIBRARIES})
-
-    add_executable(benchmark_image_simple_rti benchmarks/benchmark_image_simple_rti.cpp)
-    target_link_libraries(benchmark_image_simple_rti ${PROJECT_NAME} ${catkin_LIBRARIES} ${RTI_LIBRARIES})
-
-    add_executable(benchmark_float_msg_rti benchmarks/benchmark_float_msg_rti.cpp)
-    target_link_libraries(benchmark_float_msg_rti ${PROJECT_NAME} ${catkin_LIBRARIES} ${RTI_LIBRARIES})
-
-    add_executable(benchmark_joint_state_rti benchmarks/benchmark_joint_state_rti.cpp)
-    target_link_libraries(benchmark_joint_state_rti ${PROJECT_NAME} ${catkin_LIBRARIES} ${RTI_LIBRARIES})
-  endif()
-endif()
-
 
 #############
 ## Install ##
@@ -179,11 +137,22 @@ endif()
 #   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 # )
 
-## Mark executables and/or libraries for installation
+## Mark executables for installation
+## See http://docs.ros.org/melodic/api/catkin/html/howto/format1/building_executables.html
+install(TARGETS
+  any_publisher
+  any_subscriber
+  message_info
+  troll_node
+  service_server
+  service_client
+  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+
+## Mark libraries for installation
 install(TARGETS ${PROJECT_NAME}
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
 ## Mark cpp header files for installation

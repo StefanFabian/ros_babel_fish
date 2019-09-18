@@ -99,9 +99,7 @@ For more in-depth examples check the example folder.
 
 
 ## Benchmarks
-Check the [benchmark.md](ros_babel_fish/benchmarks/benchmark.md) in the benchmarks folder for a description of the benchmarks and benchmark results.
-The performance when accessing content of received messages was benchmarked against a baseline where the message is known and 
-ros_type_introspection which also allows receiving and evaluating messages of at compile time unknown types.
+Check the separate [ros_babel_fish_benchmarks repo](https://github.com/StefanFabian/ros_babel_fish_benchmarks) for benchmarks.
 
 ## Current TODOs
 
@@ -110,6 +108,6 @@ ros_type_introspection which also allows receiving and evaluating messages of at
 - [ ] Creating a service client with at compile time unknown service definition
 - [ ] Search more paths when looking up message definitions
 - [ ] Documentation
-- [ ] Benchmark
+- [x] Benchmark
 - [ ] Calling actions
 - [ ] Providing an action server(?)

@@ -6,7 +6,7 @@ uint64[] uint64s
 int8[] int8s
 int16[] int16s
 int32[] int32s
-int64[32] int64s
+int64[32] int64s#Comment
 float32[] float32s
  float64[16] float64s
 time[] times

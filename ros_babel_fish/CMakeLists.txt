@@ -7,7 +7,7 @@ option(ENABLE_EMBEDDED_PYTHON "Enables support for embedded python description p
 
 if (WARN_ON_INCOMPATIBLE_TYPE)
   add_definitions(-DRBF_WARN_ON_INCOMPATIBLE_TYPE)
-endif()
+endif ()
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 add_compile_options(-std=c++11)
@@ -31,7 +31,7 @@ if (ENABLE_EMBEDDED_PYTHON)
   message(STATUS "Using Python ${PYTHON_VERSION_STRING}")
 
   add_definitions(-DRBF_ENABLE_EMBEDDED_PYTHON)
-endif()
+endif ()
 
 ###################################
 ## catkin specific configuration ##
@@ -84,7 +84,7 @@ if (ENABLE_EMBEDDED_PYTHON)
   include_directories(${PYTHON_INCLUDE_DIRS})
   set(LIBRARIES ${LIBRARIES} ${PYTHON_LIBRARIES})
   set(SOURCES ${SOURCES} src/generation/providers/embedded_python_description_provider.cpp)
-endif()
+endif ()
 
 
 ## Declare a C++ library
@@ -92,24 +92,30 @@ add_library(${PROJECT_NAME} ${SOURCES})
 target_link_libraries(${PROJECT_NAME} ${LIBRARIES})
 
 ## Declare examples as C++ executables
-add_executable(any_publisher examples/any_publisher.cpp)
+add_executable(${PROJECT_NAME}_any_publisher examples/any_publisher.cpp)
 ## Specify libraries to link a library or executable target against
-target_link_libraries(any_publisher ${PROJECT_NAME} ${LIBRARIES})
+target_link_libraries(${PROJECT_NAME}_any_publisher ${PROJECT_NAME} ${LIBRARIES})
+set_target_properties(${PROJECT_NAME}_any_publisher PROPERTIES OUTPUT_NAME any_publisher PREFIX "")
 
-add_executable(any_subscriber examples/any_subscriber.cpp)
-target_link_libraries(any_subscriber ${PROJECT_NAME} ${LIBRARIES})
+add_executable(${PROJECT_NAME}_any_subscriber examples/any_subscriber.cpp)
+target_link_libraries(${PROJECT_NAME}_any_subscriber ${PROJECT_NAME} ${LIBRARIES})
+set_target_properties(${PROJECT_NAME}_any_subscriber PROPERTIES OUTPUT_NAME any_subscriber PREFIX "")
 
-add_executable(message_info examples/message_info.cpp)
-target_link_libraries(message_info ${PROJECT_NAME} ${LIBRARIES})
+add_executable(${PROJECT_NAME}_message_info examples/message_info.cpp)
+target_link_libraries(${PROJECT_NAME}_message_info ${PROJECT_NAME} ${LIBRARIES})
+set_target_properties(${PROJECT_NAME}_message_info PROPERTIES OUTPUT_NAME message_info PREFIX "")
 
-add_executable(troll_node examples/troll_node.cpp)
-target_link_libraries(troll_node ${PROJECT_NAME} ${LIBRARIES})
+add_executable(${PROJECT_NAME}_troll_node examples/troll_node.cpp)
+target_link_libraries(${PROJECT_NAME}_troll_node ${PROJECT_NAME} ${LIBRARIES})
+set_target_properties(${PROJECT_NAME}_troll_node PROPERTIES OUTPUT_NAME troll_node PREFIX "")
 
-add_executable(service_server examples/service_server.cpp)
-target_link_libraries(service_server ${PROJECT_NAME} ${LIBRARIES})
+add_executable(${PROJECT_NAME}_service_server examples/service_server.cpp)
+target_link_libraries(${PROJECT_NAME}_service_server ${PROJECT_NAME} ${LIBRARIES})
+set_target_properties(${PROJECT_NAME}_service_server PROPERTIES OUTPUT_NAME service_server PREFIX "")
 
-add_executable(service_client examples/service_client.cpp)
-target_link_libraries(service_client ${PROJECT_NAME} ${LIBRARIES})
+add_executable(${PROJECT_NAME}_service_client examples/service_client.cpp)
+target_link_libraries(${PROJECT_NAME}_service_client ${PROJECT_NAME} ${LIBRARIES})
+set_target_properties(${PROJECT_NAME}_service_client PROPERTIES OUTPUT_NAME service_client PREFIX "")
 
 #find_package(actionlib)
 
@@ -140,12 +146,12 @@ target_link_libraries(service_client ${PROJECT_NAME} ${LIBRARIES})
 ## Mark executables for installation
 ## See http://docs.ros.org/melodic/api/catkin/html/howto/format1/building_executables.html
 install(TARGETS
-  any_publisher
-  any_subscriber
-  message_info
-  troll_node
-  service_server
-  service_client
+  ${PROJECT_NAME}_any_publisher
+  ${PROJECT_NAME}_any_subscriber
+  ${PROJECT_NAME}_message_info
+  ${PROJECT_NAME}_troll_node
+  ${PROJECT_NAME}_service_server
+  ${PROJECT_NAME}_service_client
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
@@ -172,30 +178,38 @@ if (CATKIN_ENABLE_TESTING)
   find_package(ros_babel_fish_test_msgs REQUIRED)
   include_directories(${ros_babel_fish_test_msgs_INCLUDE_DIRS})
 
-  add_rostest_gtest(test_message test/test_message.test test/message.cpp)
-  target_link_libraries(test_message ${PROJECT_NAME})
+  add_rostest_gtest(${PROJECT_NAME}_test_message test/test_message.test test/message.cpp)
+  target_link_libraries(${PROJECT_NAME}_test_message ${PROJECT_NAME})
+  set_target_properties(${PROJECT_NAME}_test_message PROPERTIES OUTPUT_NAME test_message PREFIX "")
 
-  add_rostest_gtest(test_message_decoding test/test_message_decoding.test test/message_decoding.cpp)
-  target_link_libraries(test_message_decoding ${PROJECT_NAME} ${ros_babel_fish_test_msgs_LIBRARIES})
+  add_rostest_gtest(${PROJECT_NAME}_test_message_decoding test/test_message_decoding.test test/message_decoding.cpp)
+  target_link_libraries(${PROJECT_NAME}_test_message_decoding ${PROJECT_NAME} ${ros_babel_fish_test_msgs_LIBRARIES})
+  set_target_properties(${PROJECT_NAME}_test_message_decoding PROPERTIES OUTPUT_NAME test_message_decoding PREFIX "")
 
-  add_rostest_gtest(test_message_encoding test/test_message_encoding.test test/message_encoding.cpp)
-  target_link_libraries(test_message_encoding ${PROJECT_NAME} ${ros_babel_fish_test_msgs_LIBRARIES})
+  add_rostest_gtest(${PROJECT_NAME}_test_message_encoding test/test_message_encoding.test test/message_encoding.cpp)
+  target_link_libraries(${PROJECT_NAME}_test_message_encoding ${PROJECT_NAME} ${ros_babel_fish_test_msgs_LIBRARIES})
+  set_target_properties(${PROJECT_NAME}_test_message_encoding PROPERTIES OUTPUT_NAME test_message_encoding PREFIX "")
 
-  add_rostest_gtest(test_message_extractor test/test_message_extractor.test test/message_extractor.cpp)
-  target_link_libraries(test_message_extractor ${PROJECT_NAME} ${ros_babel_fish_test_msgs_LIBRARIES})
+  add_rostest_gtest(${PROJECT_NAME}_test_message_extractor test/test_message_extractor.test test/message_extractor.cpp)
+  target_link_libraries(${PROJECT_NAME}_test_message_extractor ${PROJECT_NAME} ${ros_babel_fish_test_msgs_LIBRARIES})
+  set_target_properties(${PROJECT_NAME}_test_message_extractor PROPERTIES OUTPUT_NAME test_message_extractor PREFIX "")
 
-  add_rostest_gtest(test_message_lookup test/test_message_lookup.test test/message_lookup.cpp)
-  target_link_libraries(test_message_lookup ${PROJECT_NAME} ${ros_babel_fish_test_msgs_LIBRARIES})
+  add_rostest_gtest(${PROJECT_NAME}_test_message_lookup test/test_message_lookup.test test/message_lookup.cpp)
+  target_link_libraries(${PROJECT_NAME}_test_message_lookup ${PROJECT_NAME} ${ros_babel_fish_test_msgs_LIBRARIES})
+  set_target_properties(${PROJECT_NAME}_test_message_lookup PROPERTIES OUTPUT_NAME test_message_lookup PREFIX "")
 
-  add_rostest_gtest(test_service_lookup test/test_service_lookup.test test/service_lookup.cpp)
-  target_link_libraries(test_service_lookup ${PROJECT_NAME} ${ros_babel_fish_test_msgs_LIBRARIES})
+  add_rostest_gtest(${PROJECT_NAME}_test_service_lookup test/test_service_lookup.test test/service_lookup.cpp)
+  target_link_libraries(${PROJECT_NAME}_test_service_lookup ${PROJECT_NAME} ${ros_babel_fish_test_msgs_LIBRARIES})
+  set_target_properties(${PROJECT_NAME}_test_service_lookup PROPERTIES OUTPUT_NAME test_service_lookup PREFIX "")
 
-  add_rostest_gtest(test_service_client test/test_service_client.test test/service_client.cpp)
-  target_link_libraries(test_service_client ${PROJECT_NAME})
+  add_rostest_gtest(${PROJECT_NAME}_test_service_client test/test_service_client.test test/service_client.cpp)
+  target_link_libraries(${PROJECT_NAME}_test_service_client ${PROJECT_NAME})
+  set_target_properties(${PROJECT_NAME}_test_service_client PROPERTIES OUTPUT_NAME test_service_client PREFIX "")
 
-  add_executable(test_service_client_services test/service_client_test_services.cpp)
-  target_link_libraries(test_service_client_services ${PROJECT_NAME})
-endif()
+  add_executable(${PROJECT_NAME}_test_service_client_services test/service_client_test_services.cpp)
+  target_link_libraries(${PROJECT_NAME}_test_service_client_services ${PROJECT_NAME})
+  set_target_properties(${PROJECT_NAME}_test_service_client_services PROPERTIES OUTPUT_NAME test_service_client_services PREFIX "")
+endif ()
 
 # to run: catkin build -DENABLE_COVERAGE_TESTING=ON -DCMAKE_BUILD_TYPE=Debug -v --catkin-make-args ros_babel_fish_coverage
 # Path to results overview will be printed in the build process
@@ -206,4 +220,4 @@ if(CATKIN_ENABLE_TESTING AND ENABLE_COVERAGE_TESTING)
   APPEND_COVERAGE_COMPILER_FLAGS()
   set(COVERAGE_EXCLUDES "*/${PROJECT_NAME}/test*" "*/${PROJECT_NAME}/examples*" "*/${PROJECT_NAME}/benchmarks*")
   add_code_coverage(NAME ${PROJECT_NAME}_coverage)
-endif()
+endif ()

@@ -1,8 +1,8 @@
 // Copyright (c) 2019 Stefan Fabian. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-#include <ros_babel_fish/message_types.h>
 #include "ros_babel_fish/messages/array_message.h"
+#include "ros_babel_fish/messages/compound_message.h"
 
 namespace ros_babel_fish
 {
@@ -14,13 +14,7 @@ namespace ros_babel_fish
 template<>
 ArrayMessage<Message>::ArrayMessage( MessageType element_type, size_t length, bool fixed_length, const uint8_t *stream,
                                      bool )
-  : ArrayMessageBase( element_type, length, fixed_length, stream ), values_( length ), from_stream_( false )
-{
-  if ( fixed_length )
-  {
-    std::fill_n( values_.begin(), length, nullptr );
-  }
-}
+  : ArrayMessageBase( element_type, length, fixed_length, stream ), values_( 0 ), from_stream_( false ) { }
 
 template<>
 ArrayMessage<Message>::~ArrayMessage()
@@ -42,6 +36,15 @@ template<>
 const Message &ArrayMessage<Message>::operator[]( size_t index ) const
 {
   return *values_[index];
+}
+
+template<>
+void ArrayMessage<Message>::assign( size_t index, Message *value )
+{
+  if ( index >= length_ )
+    throw BabelFishException( "Index in setItem was out of bounds! Maybe you meant push_back?" );
+  delete values_[index];
+  values_[index] = value;
 }
 
 template<>
@@ -126,6 +129,25 @@ bool ArrayMessage<bool>::operator[]( size_t index ) const
     return *(stream_ + index) != 0;
   }
   return values_[index];
+}
+
+template<>
+ArrayMessage<bool> *ArrayMessage<bool>::fromStream( ssize_t length, const uint8_t *stream, size_t stream_length,
+                                                    size_t &bytes_read )
+{
+  (void) stream_length; // For unused warning
+  bool fixed_length = length >= 0;
+  stream += bytes_read;
+  if ( !fixed_length )
+  {
+    length = *reinterpret_cast<const uint32_t *>(stream);
+    stream += sizeof( uint32_t );
+    bytes_read += sizeof( uint32_t );
+  }
+  bytes_read += sizeof( uint8_t ) * length;
+  if ( bytes_read > stream_length )
+    throw BabelFishException( "Unexpected end of stream while reading message from stream!" );
+  return new ArrayMessage<bool>( length, fixed_length, stream );
 }
 
 template<>
@@ -214,6 +236,30 @@ std::string ArrayMessage<std::string>::operator[]( size_t index ) const
 }
 
 template<>
+ArrayMessage<std::string> *ArrayMessage<std::string>::fromStream( ssize_t length, const uint8_t *stream,
+                                                                  size_t stream_length, size_t &bytes_read )
+{
+  (void) stream_length; // For unused warning
+  bool fixed_length = length >= 0;
+  stream += bytes_read;
+  if ( !fixed_length )
+  {
+    length = *reinterpret_cast<const uint32_t *>(stream);
+    stream += sizeof( uint32_t );
+    bytes_read += sizeof( uint32_t );
+  }
+  size_t offset = 0;
+  for ( ssize_t i = 0; i < length; ++i )
+  {
+    offset += *reinterpret_cast<const uint32_t *>(stream + offset) + sizeof( uint32_t );
+    if ( bytes_read + offset > stream_length )
+      throw BabelFishException( "Unexpected end of stream while reading message from stream!" );
+  }
+  bytes_read += offset;
+  return new ArrayMessage<std::string>( length, fixed_length, stream );
+}
+
+template<>
 size_t ArrayMessage<std::string>::size() const
 {
   size_t size = fixed_length_ ? 0 : 4;
@@ -226,7 +272,7 @@ size_t ArrayMessage<std::string>::size() const
     }
     return size + offset;
   }
-  for (const auto &value : values_)
+  for ( const auto &value : values_ )
   {
     size += value.length() + sizeof( uint32_t );
   }
@@ -305,6 +351,25 @@ ros::Time ArrayMessage<ros::Time>::operator[]( size_t index ) const
     return { secs, nsecs };
   }
   return values_[index];
+}
+
+template<>
+ArrayMessage<ros::Time> *ArrayMessage<ros::Time>::fromStream( ssize_t length, const uint8_t *stream,
+                                                              size_t stream_length, size_t &bytes_read )
+{
+  (void) stream_length; // For unused warning
+  bool fixed_length = length >= 0;
+  stream += bytes_read;
+  if ( !fixed_length )
+  {
+    length = *reinterpret_cast<const uint32_t *>(stream);
+    stream += sizeof( uint32_t );
+    bytes_read += sizeof( uint32_t );
+  }
+  bytes_read += 2 * sizeof( uint32_t ) * length;
+  if ( bytes_read > stream_length )
+    throw BabelFishException( "Unexpected end of stream while reading message from stream!" );
+  return new ArrayMessage<ros::Time>( length, fixed_length, stream );
 }
 
 template<>
@@ -388,6 +453,25 @@ ros::Duration ArrayMessage<ros::Duration>::operator[]( size_t index ) const
 }
 
 template<>
+ArrayMessage<ros::Duration> *ArrayMessage<ros::Duration>::fromStream( ssize_t length, const uint8_t *stream,
+                                                                      size_t stream_length, size_t &bytes_read )
+{
+  (void) stream_length; // For unused warning
+  bool fixed_length = length >= 0;
+  stream += bytes_read;
+  if ( !fixed_length )
+  {
+    length = *reinterpret_cast<const uint32_t *>(stream + bytes_read);
+    stream += sizeof( uint32_t );
+    bytes_read += sizeof( uint32_t );
+  }
+  bytes_read += 2 * sizeof( int32_t ) * length;
+  if ( bytes_read > stream_length )
+    throw BabelFishException( "Unexpected end of stream while reading message from stream!" );
+  return new ArrayMessage<ros::Duration>( length, fixed_length, stream );
+}
+
+template<>
 size_t ArrayMessage<ros::Duration>::size() const
 {
   return 2 * sizeof( int32_t ) * length_ + (fixed_length_ ? 0 : 4);
@@ -418,8 +502,8 @@ size_t ArrayMessage<ros::Duration>::writeToStream( uint8_t *stream ) const
   if ( !fixed_length_ )
   {
     *reinterpret_cast<uint32_t *>(stream) = length_;
-    stream += 4;
-    count -= 4;
+    stream += sizeof( uint32_t );
+    count -= sizeof( uint32_t );
   }
   if ( from_stream_ )
   {
@@ -441,12 +525,60 @@ size_t ArrayMessage<ros::Duration>::writeToStream( uint8_t *stream ) const
 //! ================== CompoundArray ==================
 //! ===================================================
 
+CompoundArrayMessage *CompoundArrayMessage::fromStream( ssize_t length, MessageTemplate::ConstPtr msg_template,
+                                                        const uint8_t *stream, size_t stream_length,
+                                                        size_t &bytes_read )
+{
+  bool fixed_length = length >= 0;
+  if ( !fixed_length )
+  {
+    length = *reinterpret_cast<const uint32_t *>(stream + bytes_read);
+    bytes_read += sizeof( uint32_t );
+  }
+  auto *result = new CompoundArrayMessage( std::move( msg_template ), length, fixed_length, stream );
+  for ( ssize_t i = 0; i < length; ++i )
+  {
+    result->values_.push_back( CompoundMessage::fromStream( result->msg_template_, stream, stream_length, bytes_read ));
+  }
+  return result;
+}
+
+CompoundArrayMessage::CompoundArrayMessage( MessageTemplate::ConstPtr msg_template, size_t length, bool fixed_length,
+                                            const uint8_t *stream )
+  : ArrayMessage<Message>( MessageTypes::Compound, length, fixed_length, stream )
+    , msg_template_( std::move( msg_template ))
+{
+}
+
+CompoundArrayMessage::CompoundArrayMessage( MessageTemplate::ConstPtr msg_template, size_t length, bool fixed_length )
+  : ArrayMessage<Message>( MessageTypes::Compound, length, fixed_length )
+    , msg_template_( std::move( msg_template ))
+{
+  values_.reserve( length );
+  for ( size_t i = 0; i < length; ++i )
+  {
+    values_.push_back( new CompoundMessage( msg_template_ ));
+  }
+}
+
 Message *CompoundArrayMessage::clone() const
 {
-  auto result = new CompoundArrayMessage( datatype_, length(), isFixedSize(), stream_ );
+  auto result = new CompoundArrayMessage( msg_template_, length(), isFixedSize(), stream_ );
   result->values_.clear();
   std::transform( values_.begin(), values_.end(), std::back_inserter( result->values_ ),
                   []( Message *m ) { return m->clone(); } );
   return result;
+}
+
+Message &CompoundArrayMessage::appendEmpty()
+{
+  if ( fixed_length_ )
+  {
+    throw BabelFishException( "Can not add items to a fixed size array!" );
+  }
+  auto m = new CompoundMessage( msg_template_ );
+  values_.push_back( m );
+  ++length_;
+  return *m;
 }
 }

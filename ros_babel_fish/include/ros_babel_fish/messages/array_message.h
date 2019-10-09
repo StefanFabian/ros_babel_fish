@@ -4,6 +4,7 @@
 #ifndef ROS_BABEL_FISH_ARRAY_MESSAGE_H
 #define ROS_BABEL_FISH_ARRAY_MESSAGE_H
 
+#include "ros_babel_fish/generation/message_template.h"
 #include "ros_babel_fish/exceptions/babel_fish_exception.h"
 #include "ros_babel_fish/message.h"
 
@@ -60,6 +61,23 @@ public:
 
   ~ArrayMessage() override { }
 
+  static ArrayMessage<T> *fromStream( ssize_t length, const uint8_t *stream, size_t stream_length, size_t &bytes_read )
+  {
+    (void) stream_length; // For unused warning
+    bool fixed_length = length >= 0;
+    stream += bytes_read;
+    if ( !fixed_length )
+    {
+      length = *reinterpret_cast<const uint32_t *>( stream );
+      stream += sizeof( uint32_t );
+      bytes_read += sizeof( uint32_t );
+    }
+    bytes_read += sizeof( T ) * length;
+    if ( bytes_read > stream_length )
+      throw BabelFishException( "Unexpected end of stream while reading message from stream!" );
+    return new ArrayMessage<T>( length, fixed_length, stream );
+  }
+
   ReturnType operator[]( size_t index )
   {
     if ( index >= length_ ) throw std::runtime_error( "Index out of message array bounds!" );
@@ -82,15 +100,26 @@ public:
    * @param index The index at which the array element is set/overwritten
    * @param value The value with which the array element is overwritten, has to be the same as the element type.
    */
-  void setItem( size_t index, ArgumentType value )
+  void assign( size_t index, ArgumentType value )
   {
     if ( index >= length_ )
-      throw BabelFishException( "Index in setItem was out of bounds! Maybe you meant addItem?" );
+      throw BabelFishException( "Index in setItem was out of bounds! Maybe you meant push_back?" );
     if ( from_stream_ ) detachFromStream();
     values_[index] = value;
   }
 
-  void addItem( ArgumentType value )
+  /*!
+   * Alias for assign
+   */
+  void replace( size_t index, ArgumentType value ) { assign( index, value ); }
+
+  /*!
+   * Alias for assign
+   * Deprecated, will be removed in a future release
+   */
+  __attribute_deprecated__ void setItem( size_t index, ArgumentType value ) { assign( index, value ); }
+
+  void push_back( ArgumentType value )
   {
     if ( fixed_length_ )
     {
@@ -100,6 +129,17 @@ public:
     values_.push_back( value );
     ++length_;
   }
+
+  /*!
+   * Alias for push_back
+   */
+  void append( ArgumentType value ) { push_back( value ); }
+
+  /*!
+   * Alias for push_back
+   * Deprecated, will be removed in a future release
+   */
+  __attribute_deprecated__ void addItem( ArgumentType value ) { push_back( value ); }
 
   size_t size() const override
   {
@@ -194,6 +234,9 @@ template<>
 const Message &ArrayMessage<Message>::operator[]( size_t index ) const;
 
 template<>
+void ArrayMessage<Message>::assign( size_t index, Message *value );
+
+template<>
 size_t ArrayMessage<Message>::size() const;
 
 template<>
@@ -214,19 +257,34 @@ Message *ArrayMessage<Message>::clone() const;
 //! Specialization for CompoundMessage
 class CompoundArrayMessage : public ArrayMessage<Message>
 {
-public:
-  explicit CompoundArrayMessage( std::string datatype, size_t length = 0, bool fixed_length = false,
-                                 const uint8_t *stream = nullptr )
-    : ArrayMessage<Message>( MessageTypes::Compound, length, fixed_length, stream ), datatype_( std::move( datatype ))
-  {
-  }
+  explicit CompoundArrayMessage( MessageTemplate::ConstPtr msg_template, size_t length, bool fixed_length,
+                                 const uint8_t *stream );
 
-  const std::string &elementDataType() const { return datatype_; }
+public:
+  /*!
+   * Creates a compound array, i.e., an array of compound messages in contrast to arrays of primitives such as int, bool etc.
+   * If length != 0, the array is initialized with the given number of empty messages created according to the given
+   * MessageTemplate.
+   *
+   * @param msg_template The template for the CompoundMessage
+   * @param length The length of the array.
+   * @param fixed_length Whether the array has fixed length or elements can be added / removed dynamically.
+   */
+  explicit CompoundArrayMessage( MessageTemplate::ConstPtr msg_template, size_t length = 0, bool fixed_length = false );
+
+  static CompoundArrayMessage *fromStream( ssize_t length, MessageTemplate::ConstPtr msg_template,
+                                           const uint8_t *stream, size_t stream_length, size_t &bytes_read );
+
+  const std::string &elementDataType() const { return msg_template_->compound.datatype; }
+
+  const MessageTemplate::ConstPtr &elementTemplate() { return msg_template_; }
+
+  Message &appendEmpty();
 
   Message *clone() const override;
 
 private:
-  std::string datatype_;
+  MessageTemplate::ConstPtr msg_template_;
 };
 
 //! Specialization for Bool
@@ -235,6 +293,10 @@ bool ArrayMessage<bool>::operator[]( size_t index );
 
 template<>
 bool ArrayMessage<bool>::operator[]( size_t index ) const;
+
+template<>
+ArrayMessage<bool> *ArrayMessage<bool>::fromStream( ssize_t length, const uint8_t *stream, size_t stream_length,
+                                                    size_t &bytes_read );
 
 template<>
 size_t ArrayMessage<bool>::size() const;
@@ -253,6 +315,10 @@ template<>
 std::string ArrayMessage<std::string>::operator[]( size_t index ) const;
 
 template<>
+ArrayMessage<std::string> *ArrayMessage<std::string>::fromStream( ssize_t length, const uint8_t *stream,
+                                                                  size_t stream_length, size_t &bytes_read );
+
+template<>
 size_t ArrayMessage<std::string>::size() const;
 
 template<>
@@ -267,6 +333,10 @@ ros::Time ArrayMessage<ros::Time>::operator[]( size_t index );
 
 template<>
 ros::Time ArrayMessage<ros::Time>::operator[]( size_t index ) const;
+
+template<>
+ArrayMessage<ros::Time> *ArrayMessage<ros::Time>::fromStream( ssize_t length, const uint8_t *stream,
+                                                              size_t stream_length, size_t &bytes_read );
 
 template<>
 size_t ArrayMessage<ros::Time>::size() const;
@@ -284,6 +354,10 @@ ros::Duration ArrayMessage<ros::Duration>::operator[]( size_t index );
 
 template<>
 ros::Duration ArrayMessage<ros::Duration>::operator[]( size_t index ) const;
+
+template<>
+ArrayMessage<ros::Duration> *ArrayMessage<ros::Duration>::fromStream( ssize_t length, const uint8_t *stream,
+                                                                      size_t stream_length, size_t &bytes_read );
 
 template<>
 size_t ArrayMessage<ros::Duration>::size() const;

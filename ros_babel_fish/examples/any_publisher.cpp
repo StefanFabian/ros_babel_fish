@@ -77,7 +77,7 @@ int main( int argc, char **argv )
     auto &covariance = compound["covariance"].as<ArrayMessage<double>>();
     for ( size_t i = 0; i < covariance.length(); ++i )
     {
-      covariance.setItem( i, static_cast<double>(i));
+      covariance.assign( i, static_cast<double>(i));
     }
 
     BabelFishMessage::Ptr translated_message = fish2.translateMessage( message );

@@ -137,7 +137,7 @@ void updateMessage( Message &message )
       auto &array = message.as<ArrayMessage<std::string>>();
       for ( size_t i = 0; i < array.length(); ++i )
       {
-        array.setItem( i, song_text[song_text_index] );
+        array.assign( i, song_text[song_text_index] );
         ++song_text_index;
         if ( song_text_index >= song_text_length ) song_text_index = 0;
       }

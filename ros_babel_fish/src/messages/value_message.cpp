@@ -22,10 +22,14 @@ template<>
 size_t ValueMessage<bool>::size() const { return 1; }
 
 template<>
-ValueMessage<bool> *ValueMessage<bool>::fromData( const uint8_t *data, size_t &bytes_read )
+ValueMessage<bool> *ValueMessage<bool>::fromStream( const uint8_t *stream, size_t stream_length, size_t &bytes_read )
 {
-  bytes_read = 1;
-  return new ValueMessage<bool>( *reinterpret_cast<const uint8_t *>(data) != 0 );
+  (void) stream_length; // For unused warning
+  uint8_t val = *reinterpret_cast<const uint8_t *>(stream + bytes_read);
+  ++bytes_read;
+  if ( bytes_read > stream_length )
+    throw BabelFishException( "Unexpected end of stream while reading message from stream!" );
+  return new ValueMessage<bool>( val != 0 );
 }
 
 template<>
@@ -59,11 +63,15 @@ size_t ValueMessage<ros::Time>::size() const { return 8; }
 
 
 template<>
-ValueMessage<ros::Time> *ValueMessage<ros::Time>::fromData( const uint8_t *data, size_t &bytes_read )
+ValueMessage<ros::Time> *ValueMessage<ros::Time>::fromStream( const uint8_t *stream, size_t stream_length,
+                                                              size_t &bytes_read )
 {
-  uint32_t secs = *reinterpret_cast<const uint32_t *>(data);
-  uint32_t nsecs = *reinterpret_cast<const uint32_t *>(data + 4);
-  bytes_read = 8;
+  (void) stream_length; // For unused warning
+  uint32_t secs = *reinterpret_cast<const uint32_t *>(stream + bytes_read);
+  uint32_t nsecs = *reinterpret_cast<const uint32_t *>(stream + bytes_read + 4);
+  bytes_read += 8;
+  if ( bytes_read > stream_length )
+    throw BabelFishException( "Unexpected end of stream while reading message from stream!" );
   return new ValueMessage<ros::Time>( ros::Time( secs, nsecs ));
 }
 
@@ -88,7 +96,7 @@ ros::Duration ValueMessage<ros::Duration>::getValue() const
   if ( from_stream_ )
   {
     int32_t secs = *reinterpret_cast<const int32_t *>(stream_);
-    int32_t nsecs = *reinterpret_cast<const int32_t *>(stream_ + 4);
+    int32_t nsecs = *reinterpret_cast<const int32_t *>(stream_ + sizeof( int32_t ));
     return { secs, nsecs };
   }
   return value_;
@@ -99,11 +107,15 @@ size_t ValueMessage<ros::Duration>::size() const { return 8; }
 
 
 template<>
-ValueMessage<ros::Duration> *ValueMessage<ros::Duration>::fromData( const uint8_t *data, size_t &bytes_read )
+ValueMessage<ros::Duration> *ValueMessage<ros::Duration>::fromStream( const uint8_t *stream, size_t stream_length,
+                                                                      size_t &bytes_read )
 {
-  int32_t secs = *reinterpret_cast<const int32_t *>(data);
-  int32_t nsecs = *reinterpret_cast<const int32_t *>(data + 4);
-  bytes_read = 8;
+  (void) stream_length; // For unused warning
+  int32_t secs = *reinterpret_cast<const int32_t *>(stream + bytes_read);
+  int32_t nsecs = *reinterpret_cast<const int32_t *>(stream + bytes_read + sizeof( int32_t ));
+  bytes_read += 8;
+  if ( bytes_read > stream_length )
+    throw BabelFishException( "Unexpected end of stream while reading message from stream!" );
   return new ValueMessage<ros::Duration>( ros::Duration( secs, nsecs ));
 }
 
@@ -116,7 +128,7 @@ size_t ValueMessage<ros::Duration>::writeToStream( uint8_t *stream ) const
     return 8;
   }
   *reinterpret_cast<int32_t *>(stream) = value_.sec;
-  *reinterpret_cast<int32_t *>(stream + 4) = value_.nsec;
+  *reinterpret_cast<int32_t *>(stream + sizeof( int32_t )) = value_.nsec;
   return 8;
 }
 
@@ -142,11 +154,16 @@ size_t ValueMessage<std::string>::size() const
 }
 
 template<>
-ValueMessage<std::string> *ValueMessage<std::string>::fromData( const uint8_t *data, size_t &bytes_read )
+ValueMessage<std::string> *ValueMessage<std::string>::fromStream( const uint8_t *stream, size_t stream_length,
+                                                                  size_t &bytes_read )
 {
-  uint32_t len = *reinterpret_cast<const uint32_t *>(data);
-  bytes_read = len + 4;
-  return new ValueMessage<std::string>( data );
+  (void) stream_length; // For unused warning
+  const uint8_t *begin = stream + bytes_read;
+  uint32_t len = *reinterpret_cast<const uint32_t *>( begin );
+  bytes_read += len + sizeof( uint32_t );
+  if ( bytes_read > stream_length )
+    throw BabelFishException( "Unexpected end of stream while reading message from stream!" );
+  return new ValueMessage<std::string>( begin );
 }
 
 template<>
@@ -159,8 +176,8 @@ size_t ValueMessage<std::string>::writeToStream( uint8_t *stream ) const
     return len;
   }
   *reinterpret_cast<uint32_t *>(stream) = value_.length();
-  stream += 4;
+  stream += sizeof( uint32_t );
   memcpy( stream, value_.data(), value_.length());
-  return value_.length() + 4;
+  return value_.length() + sizeof( uint32_t );
 }
 }

@@ -31,7 +31,7 @@ void fillArray( ArrayMessage<T> &msg, unsigned seed )
   {
     for ( size_t i = 0; i < msg.length(); ++i )
     {
-      msg.setItem( i, distribution( generator ));
+      msg.assign( i, distribution( generator ));
     }
     return;
   }
@@ -40,7 +40,7 @@ void fillArray( ArrayMessage<T> &msg, unsigned seed )
   msg.reserve( length );
   for ( size_t i = 0; i < length; ++i )
   {
-    msg.addItem( distribution( generator ));
+    msg.push_back( distribution( generator ));
   }
 }
 
@@ -53,7 +53,7 @@ void fillArray<bool>( ArrayMessage<bool> &msg, unsigned seed )
   {
     for ( size_t i = 0; i < msg.length(); ++i )
     {
-      msg.setItem( i, distribution( generator ) == 1 );
+      msg.assign( i, distribution( generator ) == 1 );
     }
     return;
   }
@@ -62,7 +62,7 @@ void fillArray<bool>( ArrayMessage<bool> &msg, unsigned seed )
   msg.reserve( length );
   for ( size_t i = 0; i < length; ++i )
   {
-    msg.addItem( distribution( generator ) == 1 );
+    msg.push_back( distribution( generator ) == 1 );
   }
 }
 
@@ -75,7 +75,7 @@ void fillArray<ros::Time>( ArrayMessage<ros::Time> &msg, unsigned seed )
   {
     for ( size_t i = 0; i < msg.length(); ++i )
     {
-      msg.setItem( i, ros::Time( distribution( generator )));
+      msg.assign( i, ros::Time( distribution( generator )));
     }
     return;
   }
@@ -84,7 +84,7 @@ void fillArray<ros::Time>( ArrayMessage<ros::Time> &msg, unsigned seed )
   msg.reserve( length );
   for ( size_t i = 0; i < length; ++i )
   {
-    msg.addItem( ros::Time( distribution( generator )));
+    msg.push_back( ros::Time( distribution( generator )));
   }
 }
 
@@ -97,7 +97,7 @@ void fillArray<ros::Duration>( ArrayMessage<ros::Duration> &msg, unsigned seed )
   {
     for ( size_t i = 0; i < msg.length(); ++i )
     {
-      msg.setItem( i, ros::Duration( distribution( generator )));
+      msg.assign( i, ros::Duration( distribution( generator )));
     }
     return;
   }
@@ -106,7 +106,7 @@ void fillArray<ros::Duration>( ArrayMessage<ros::Duration> &msg, unsigned seed )
   msg.reserve( length );
   for ( size_t i = 0; i < length; ++i )
   {
-    msg.addItem( ros::Duration( distribution( generator )));
+    msg.push_back( ros::Duration( distribution( generator )));
   }
 }
 
@@ -141,7 +141,7 @@ void fillArray<std::string>( ArrayMessage<std::string> &msg, unsigned seed )
   {
     for ( size_t i = 0; i < msg.length(); ++i )
     {
-      msg.setItem( i, randomString( distribution( generator ), i == 0 ? 1 : -1 ));
+      msg.assign( i, randomString( distribution( generator ), i == 0 ? 1 : -1 ));
     }
     return;
   }
@@ -150,7 +150,7 @@ void fillArray<std::string>( ArrayMessage<std::string> &msg, unsigned seed )
   msg.reserve( length );
   for ( size_t i = 0; i < length; ++i )
   {
-    msg.addItem( randomString( distribution( generator ), i == 0 ? 1 : -1 ));
+    msg.push_back( randomString( distribution( generator ), i == 0 ? 1 : -1 ));
   }
 }
 
@@ -174,11 +174,7 @@ void fillArray<Message>( ArrayMessage<Message> &msg, unsigned seed )
   msg.reserve( length );
   for ( size_t i = 0; i < length; ++i )
   {
-    auto *message = new CompoundMessage( "ros_babel_fish_test_msgs/TestSubArray" );
-    message->insert( "ints", new ArrayMessage<int32_t>());
-    message->insert( "strings", new ArrayMessage<std::string>());
-    message->insert( "times", new ArrayMessage<ros::Time>( 42, true ));
-    msg.addItem( message );
+    msg.as<CompoundArrayMessage>().appendEmpty();
     fillArray( msg[i]["ints"].as<ArrayMessage<int32_t >>(), seed++ );
     fillArray( msg[i]["strings"].as<ArrayMessage<std::string >>(), seed++ );
     fillArray( msg[i]["times"].as<ArrayMessage<ros::Time>>(), seed++ );
@@ -250,11 +246,10 @@ protected:
     auto &cam = (*test_msg)["point_arr"].as<CompoundArrayMessage>();
     for ( int i = 0; i < 5; ++i )
     {
-      auto *pose = new CompoundMessage( "geometry_msgs/Point" );
-      pose->insert( "x", new ValueMessage<double>( i * 0.1 ));
-      pose->insert( "y", new ValueMessage<double>( 3 + i * 0.4 ));
-      pose->insert( "z", new ValueMessage<double>( 15 + i * 3.14 ));
-      cam.addItem( pose );
+      auto &pose = cam.appendEmpty();
+      pose["x"] = i * 0.1;
+      pose["y"] = 3 + i * 0.4;
+      pose["z"] = 15 + i * 3.14;
     }
 
     test_array_msg = fish.createMessage( "ros_babel_fish_test_msgs/TestArray" );

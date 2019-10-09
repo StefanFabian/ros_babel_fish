@@ -26,10 +26,17 @@ struct MessageTemplate
   } compound{};
   struct
   {
+    /*!
+     * Length of the array.
+     * -1 if dynamic size.
+     */
     ssize_t length;
+    /*!
+     * Type of the array elements.
+     */
     MessageType element_type;
     /*!
-     * Element template for complex elements like Array, Compound or String.
+     * Element template for compound arrays
      */
     MessageTemplate::ConstPtr element_template;
   } array{};

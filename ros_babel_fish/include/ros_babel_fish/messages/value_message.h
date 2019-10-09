@@ -56,10 +56,14 @@ public:
     return sizeof( T );
   }
 
-  static ValueMessage<T> *fromData( const uint8_t *data, size_t &bytes_read )
+  static ValueMessage<T> *fromStream( const uint8_t *stream, size_t stream_length, size_t &bytes_read )
   {
-    bytes_read = sizeof( T );
-    return new ValueMessage<T>( *reinterpret_cast<const T *>(data));
+    (void) stream_length; // For unused warning
+    T val = *reinterpret_cast<const T *>(stream + bytes_read);
+    bytes_read += sizeof( T );
+    if ( bytes_read > stream_length )
+      throw BabelFishException( "Unexpected end of stream while reading message from stream!" );
+    return new ValueMessage<T>( val );
   }
 
   ValueMessage<T> &operator=( const T &value )
@@ -99,7 +103,7 @@ template<>
 size_t ValueMessage<bool>::size() const;
 
 template<>
-ValueMessage<bool> *ValueMessage<bool>::fromData( const uint8_t *data, size_t &bytes_read );
+ValueMessage<bool> *ValueMessage<bool>::fromStream( const uint8_t *stream, size_t stream_length, size_t &bytes_read );
 
 template<>
 size_t ValueMessage<bool>::writeToStream( uint8_t *stream ) const;
@@ -112,7 +116,8 @@ template<>
 size_t ValueMessage<ros::Time>::size() const;
 
 template<>
-ValueMessage<ros::Time> *ValueMessage<ros::Time>::fromData( const uint8_t *data, size_t &bytes_read );
+ValueMessage<ros::Time> *
+ValueMessage<ros::Time>::fromStream( const uint8_t *stream, size_t stream_length, size_t &bytes_read );
 
 template<>
 size_t ValueMessage<ros::Time>::writeToStream( uint8_t *stream ) const;
@@ -125,7 +130,8 @@ template<>
 size_t ValueMessage<ros::Duration>::size() const;
 
 template<>
-ValueMessage<ros::Duration> *ValueMessage<ros::Duration>::fromData( const uint8_t *data, size_t &bytes_read );
+ValueMessage<ros::Duration> *
+ValueMessage<ros::Duration>::fromStream( const uint8_t *stream, size_t stream_length, size_t &bytes_read );
 
 template<>
 size_t ValueMessage<ros::Duration>::writeToStream( uint8_t *stream ) const;
@@ -138,7 +144,8 @@ template<>
 size_t ValueMessage<std::string>::size() const;
 
 template<>
-ValueMessage<std::string> *ValueMessage<std::string>::fromData( const uint8_t *data, size_t &bytes_read );
+ValueMessage<std::string> *
+ValueMessage<std::string>::fromStream( const uint8_t *stream, size_t stream_length, size_t &bytes_read );
 
 template<>
 size_t ValueMessage<std::string>::writeToStream( uint8_t *stream ) const;

@@ -10,6 +10,7 @@
 #include <rosgraph_msgs/Log.h>
 #include <gtest/gtest.h>
 #include <ros/ros.h>
+#include <ros_babel_fish/generation/message_template.h>
 
 using namespace ros_babel_fish;
 
@@ -342,7 +343,8 @@ TEST( MessageTest, message )
 
   // COMPOUND
   {
-    CompoundMessage m( "std_msgs/Header" );
+    ros_babel_fish::BabelFish fish;
+    CompoundMessage m( fish.descriptionProvider()->getMessageDescription( "std_msgs/Header" )->message_template );
     Message &vm = m;
     EXPECT_THROW( vm = 42, BabelFishException );
   }
@@ -358,10 +360,10 @@ TEST( MessageTest, valueMessage )
 {
   // BOOL
   {
-    bool stream[1] = { true };
-    bool copy_stream[1] = { false };
+    uint8_t stream[1] = { 1 };
+    uint8_t copy_stream[1] = { 0 };
     size_t bytes_read = 0;
-    ValueMessage<bool> *vm = ValueMessage<bool>::fromData( reinterpret_cast<const uint8_t *>(stream), bytes_read );
+    ValueMessage<bool> *vm = ValueMessage<bool>::fromStream( reinterpret_cast<const uint8_t *>(stream), 1, bytes_read );
     EXPECT_EQ( vm->getValue(), true );
     EXPECT_EQ( bytes_read, 1U );
     EXPECT_EQ( vm->size(), 1U );
@@ -388,8 +390,8 @@ TEST( MessageTest, valueMessage )
     stream[1] = 1337; // nsecs
     uint32_t copy_stream[2] = { 0, 0 };
     size_t bytes_read = 0;
-    ValueMessage<ros::Time> *vm = ValueMessage<ros::Time>::fromData( reinterpret_cast<const uint8_t *>(stream),
-                                                                     bytes_read );
+    ValueMessage<ros::Time> *vm = ValueMessage<ros::Time>::fromStream( reinterpret_cast<const uint8_t *>(stream), 8,
+                                                                       bytes_read );
     EXPECT_EQ( vm->getValue(), ros::Time( 42, 1337 ));
     EXPECT_EQ( bytes_read, 8U );
     EXPECT_EQ( vm->size(), 8U );
@@ -419,8 +421,9 @@ TEST( MessageTest, valueMessage )
     stream[1] = 1337; // nsecs
     int32_t copy_stream[2] = { 0, 0 };
     size_t bytes_read = 0;
-    ValueMessage<ros::Duration> *vm = ValueMessage<ros::Duration>::fromData( reinterpret_cast<const uint8_t *>(stream),
-                                                                             bytes_read );
+    ValueMessage<ros::Duration> *vm = ValueMessage<ros::Duration>::fromStream(
+      reinterpret_cast<const uint8_t *>(stream), 8,
+      bytes_read );
     EXPECT_EQ( vm->getValue(), ros::Duration( -42, 1337 ));
     EXPECT_EQ( bytes_read, 8U );
     EXPECT_EQ( vm->size(), 8U );
@@ -477,31 +480,34 @@ TEST( MessageTest, valueMessage )
 
 TEST( MessageTest, compoundMessage )
 {
-  CompoundMessage cm( "random_type/Msg" );
+  MessageTemplate::Ptr tmpl = std::make_shared<MessageTemplate>();
+  tmpl->type = MessageTypes::Compound;
+  tmpl->compound.datatype = "random_type/Msg";
+  tmpl->compound.names.emplace_back("Test" );
+  tmpl->compound.names.emplace_back("OtherKey" );
+  MessageTemplate::Ptr test_tmpl = std::make_shared<MessageTemplate>();
+  test_tmpl->type = MessageTypes::Bool;
+  MessageTemplate::Ptr other_key_tmpl = std::make_shared<MessageTemplate>();
+  other_key_tmpl->type = MessageTypes::Int32;
+  tmpl->compound.types.push_back( test_tmpl );
+  tmpl->compound.types.push_back( other_key_tmpl );
+  // TODO New tests for CompoundMessage
+  CompoundMessage cm( tmpl );
   const CompoundMessage &ccm = cm;
-  Message *test = new ValueMessage<bool>( false );
-  Message *otherKey = new ValueMessage<int32_t>( 42 );
-  cm.insert( "Test", test );
-  cm.insert( "OtherKey", otherKey );
+  cm["Test"] = false;
+  cm["OtherKey"].as<ValueMessage<int32_t>>().setValue( 42 );
   ASSERT_TRUE( cm.containsKey( "Test" ));
   ASSERT_EQ( cm["Test"].type(), MessageTypes::Bool );
   EXPECT_EQ( cm["Test"].as<ValueMessage<bool>>().getValue(), false );
   ASSERT_EQ( cm["OtherKey"].type(), MessageTypes::Int32 );
   EXPECT_EQ( cm["OtherKey"].as<ValueMessage<int32_t>>().getValue(), 42 );
   ASSERT_EQ( cm.values().size(), 2U );
-  EXPECT_EQ( cm.values()[0], test );
-  EXPECT_EQ( &cm["Test"], test );
-  EXPECT_EQ( cm.values()[1], otherKey );
-  EXPECT_EQ( &cm["OtherKey"], otherKey );
+  EXPECT_EQ( cm.values()[0], &cm[cm.keys()[0]] );
+  EXPECT_EQ( cm.values()[1], &cm[cm.keys()[1]] );
 
   ASSERT_FALSE( cm.containsKey( "Invalid" ));
   EXPECT_THROW( cm["Invalid"], std::runtime_error );
   EXPECT_THROW( ccm["Invalid"], std::runtime_error );
-
-  cm.insert( "Test", new ValueMessage<std::string>( "They took our keeeeys" ));
-  ASSERT_TRUE( ccm.containsKey( "Test" ));
-  ASSERT_EQ( ccm["Test"].type(), MessageTypes::String );
-  EXPECT_EQ( ccm["Test"].as<ValueMessage<std::string>>().getValue(), "They took our keeeeys" );
 
   auto *clone = dynamic_cast<CompoundMessage *>(cm.clone());
   EXPECT_NE( clone, nullptr );
@@ -517,26 +523,25 @@ TEST( MessageTest, arrayMessage )
   // Compound
   {
     BabelFish fish;
-    CompoundArrayMessage am( "std_msgs/Header" );
+    CompoundArrayMessage am( fish.descriptionProvider()->getMessageDescription( "std_msgs/Header" )->message_template );
     for ( int i = 0; i < 20; ++i )
     {
-      auto *cm = fish.createMessage( "std_msgs/Header" )->clone();
-      (*cm)["seq"] = i; // Not normally set but we won't send this message anyway
-      (*cm)["stamp"] = ros::Time( 20 * i );
-      (*cm)["frame_id"] = std::string( "frame " ) + std::to_string( i );
-      am.addItem( cm );
+      auto &cm = am.appendEmpty();
+      cm["seq"] = i; // Not normally set but we won't send this message anyway
+      cm["stamp"] = ros::Time( 20 * i );
+      cm["frame_id"] = std::string( "frame " ) + std::to_string( i );
     }
     EXPECT_EQ( am.length(), 20U );
-    EXPECT_THROW( am.setItem( 20, nullptr ), BabelFishException );
+    EXPECT_THROW( am.assign( 20, nullptr ), BabelFishException );
 
-    CompoundArrayMessage am_copy( "std_msgs/Header" );
+    CompoundArrayMessage am_copy( am.elementTemplate());
     for ( int i = 0; i < 10; ++i )
     {
       auto *cm = fish.createMessage( "std_msgs/Header" )->clone();
       (*cm)["seq"] = 100 + i; // Not normally set but we won't send this message anyway
       (*cm)["stamp"] = ros::Time( 200 * i );
       (*cm)["frame_id"] = std::string( "copy frame " ) + std::to_string( i );
-      am_copy.addItem( cm );
+      am_copy.push_back( cm );
     }
     EXPECT_EQ( am_copy.length(), 10U );
     am_copy = am;
@@ -550,13 +555,14 @@ TEST( MessageTest, arrayMessage )
     EXPECT_EQ( am[0]["frame_id"].value<std::string>(), "frame 0" );
     delete am_clone;
 
-    CompoundArrayMessage different_am( "geometry_msgs/Pose" );
+    CompoundArrayMessage different_am(
+      fish.descriptionProvider()->getMessageDescription( "geometry_msgs/Pose" )->message_template );
     EXPECT_THROW( am_copy = different_am, BabelFishException );
 
 
     ArrayMessage<Message> aa( MessageTypes::Array );
-    aa.addItem( am.clone());
-    aa.addItem( am_copy.clone());
+    aa.push_back( am.clone());
+    aa.push_back( am_copy.clone());
     EXPECT_EQ( aa.length(), 2U );
     EXPECT_EQ( aa[0].as<CompoundArrayMessage>()[0]["frame_id"].value<std::string>(), "frame 0" );
     auto *aa_clone = dynamic_cast<ArrayMessage<Message> *>(aa.clone());
@@ -571,7 +577,7 @@ TEST( MessageTest, arrayMessage )
     ArrayMessage<bool> am;
     for ( int i = 0; i < 20; ++i )
     {
-      am.addItem((i & 1) == 1 );
+      am.push_back((i & 1) == 1 );
     }
     EXPECT_EQ( am.length(), 20U );
     EXPECT_EQ( am[0], false );
@@ -617,7 +623,7 @@ TEST( MessageTest, arrayMessage )
     ArrayMessage<std::string> am;
     for ( int i = 0; i < 5; ++i )
     {
-      am.addItem( std::string( "String " ) + std::to_string( i ));
+      am.push_back( std::string( "String " ) + std::to_string( i ));
     }
     EXPECT_EQ( am.length(), 5U );
     ASSERT_EQ( am.size(), 64U );
@@ -639,7 +645,7 @@ TEST( MessageTest, arrayMessage )
     ArrayMessage<ros::Time> am;
     for ( int i = 0; i < 5; ++i )
     {
-      am.addItem( ros::Time((i + 1) * 42, 0 ));
+      am.push_back( ros::Time((i + 1) * 42, 0 ));
     }
     EXPECT_EQ( am.length(), 5U );
     EXPECT_EQ( am.size(), 44U );
@@ -661,7 +667,7 @@ TEST( MessageTest, arrayMessage )
     ArrayMessage<ros::Duration> am;
     for ( int i = 0; i < 5; ++i )
     {
-      am.addItem( ros::Duration(((i & 1) == 0 ? -1 : 1) * (i + 1) * 42, 0 ));
+      am.push_back( ros::Duration(((i & 1) == 0 ? -1 : 1) * (i + 1) * 42, 0 ));
     }
     EXPECT_EQ( am.length(), 5U );
     ASSERT_EQ( am.size(), 44U );
@@ -681,7 +687,7 @@ TEST( MessageTest, arrayMessage )
   // FIXED SIZE
   {
     ArrayMessage<bool> am( 20, true );
-    EXPECT_THROW( am.addItem( true ), BabelFishException );
+    EXPECT_THROW( am.push_back( true ), BabelFishException );
   }
 }
 

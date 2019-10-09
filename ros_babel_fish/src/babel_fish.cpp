@@ -35,11 +35,11 @@ TranslatedMessage::Ptr BabelFish::translateMessage( const BabelFishMessage::Cons
   size_t bytes_read = 0;
   if ( stream == nullptr )
   {
-    Message::Ptr translated = createEmptyMessageFromTemplate( *msg_template );
+    Message::Ptr translated = createEmptyMessageFromTemplate( msg_template );
     return std::make_shared<TranslatedMessage>( msg, translated );
   }
 
-  Message::Ptr translated = createMessageFromTemplate( *msg_template, stream, msg->size(), bytes_read );
+  Message::Ptr translated = createMessageFromTemplate( msg_template, stream, msg->size(), bytes_read );
   if ( bytes_read != msg->size())
     throw BabelFishException( "Translated message did not consume all message bytes!" );
   return std::make_shared<TranslatedMessage>( msg, translated );
@@ -52,7 +52,7 @@ Message::Ptr BabelFish::translateMessage( const BabelFishMessage &msg )
   const uint8_t *stream = msg.buffer();
   size_t bytes_read = 0;
 
-  Message::Ptr translated = createMessageFromTemplate( *msg_template, stream, msg.size(), bytes_read );
+  Message::Ptr translated = createMessageFromTemplate( msg_template, stream, msg.size(), bytes_read );
   if ( bytes_read != msg.size())
     throw BabelFishException( "Translated message did not consume all message bytes!" );
   return translated;
@@ -166,7 +166,7 @@ Message::Ptr BabelFish::createMessage( const std::string &type )
   {
     throw BabelFishException( "BabelFish doesn't know a message of type: " + type );
   }
-  return createEmptyMessageFromTemplate( *description->message_template );
+  return createEmptyMessageFromTemplate( description->message_template );
 }
 
 Message::Ptr BabelFish::createServiceRequest( const std::string &type )
@@ -176,7 +176,7 @@ Message::Ptr BabelFish::createServiceRequest( const std::string &type )
   {
     throw BabelFishException( "BabelFish doesn't know a service of type: " + type );
   }
-  return createEmptyMessageFromTemplate( *description->request->message_template );
+  return createEmptyMessageFromTemplate( description->request->message_template );
 }
 
 bool BabelFish::callService( const std::string &service, const Message::ConstPtr &req, TranslatedMessage::Ptr &res )

@@ -12,10 +12,10 @@ namespace ros_babel_fish
 
 Message::Ptr createValueMessageFromData( MessageType type, const uint8_t *stream, size_t &bytes_read );
 
-Message::Ptr createMessageFromTemplate( const MessageTemplate &msg_template, const uint8_t *stream, size_t length,
+Message::Ptr createMessageFromTemplate( const MessageTemplate::ConstPtr &msg_template, const uint8_t *stream, size_t length,
                                         size_t &bytes_read );
 
-Message::Ptr createEmptyMessageFromTemplate( const MessageTemplate &msg_template );
+Message::Ptr createEmptyMessageFromTemplate( const MessageTemplate::ConstPtr &msg_template );
 } // ros_babel_fish
 
 #endif //ROS_BABEL_FISH_MESSAGE_CREATION_H

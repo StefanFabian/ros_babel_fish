@@ -94,8 +94,8 @@ MessageTemplate::Ptr DescriptionProvider::createTemplate( const std::string &typ
   MessageTemplate::Ptr msg_template = std::make_shared<MessageTemplate>();
   msg_template->type = MessageTypes::Compound;
   msg_template->compound.datatype = type;
-  std::regex constant_regex( R"(^\s*(\w+)\s+(\w+)\s*=\s*(".*"|[\w\d\s]*[\w\d])\s*#?.*$)" );
-  std::regex field_regex( R"(^\s*(\w+\/?\w+)\s*(\[\d*\])?\s*(\w+)\s*)" );
+  static std::regex constant_regex( R"(^\s*(\w+)\s+(\w+)\s*=\s*(".*"|[\w\d\s]*[\w\d])\s*#?.*$)" );
+  static std::regex field_regex( R"(^\s*(\w+\/?\w+)\s*(\[\d*\])?\s*(\w+)\s*)" );
   std::smatch match;
   while ( true )
   {

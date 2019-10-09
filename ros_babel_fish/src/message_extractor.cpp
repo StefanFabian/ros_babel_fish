@@ -1,11 +1,11 @@
 // Copyright (c) 2019 Stefan Fabian. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+#include "ros_babel_fish/message_extractor.h"
 #include "ros_babel_fish/exceptions/invalid_message_path_exception.h"
 #include "ros_babel_fish/exceptions/invalid_template_exception.h"
 #include "ros_babel_fish/generation/message_creation.h"
 #include "ros_babel_fish/generation/message_template.h"
-#include "ros_babel_fish/message_extractor.h"
 
 namespace ros_babel_fish
 {
@@ -303,7 +303,7 @@ TranslatedMessage::Ptr MessageExtractor::extractMessage( const BabelFishMessage:
     throw InvalidLocationException( "Location is not valid for this message type!" );
   size_t offset = location.calculateOffset( *msg );
   size_t bytes_read = 0;
-  Message::Ptr translated = createMessageFromTemplate( *location.messageTemplate(), msg->buffer() + offset,
+  Message::Ptr translated = createMessageFromTemplate( location.messageTemplate(), msg->buffer() + offset,
                                                        msg->size() - offset, bytes_read );
   return std::make_shared<TranslatedMessage>( msg, translated );
 }
@@ -314,7 +314,7 @@ Message::Ptr MessageExtractor::extractMessage( const BabelFishMessage &msg, cons
     throw InvalidLocationException( "Location is not valid for this message type!" );
   size_t offset = location.calculateOffset( msg );
   size_t bytes_read = 0;
-  return createMessageFromTemplate( *location.messageTemplate(), msg.buffer() + offset, msg.size() - offset,
+  return createMessageFromTemplate( location.messageTemplate(), msg.buffer() + offset, msg.size() - offset,
                                     bytes_read );
 }
 

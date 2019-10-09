@@ -5,6 +5,7 @@
 #include "common.h"
 #include "message_comparison.h"
 
+#include <ros_babel_fish/generation/providers/integrated_description_provider.h>
 #include <ros_babel_fish/generation/message_creation.h>
 #include <ros_babel_fish/babel_fish.h>
 #include <ros_babel_fish_test_msgs/TestArray.h>
@@ -21,6 +22,21 @@
 
 
 using namespace ros_babel_fish;
+
+// The messages contain the descriptions, hence no look ups should be performed
+class NoLookUpDescriptionProvider : public IntegratedDescriptionProvider
+{
+protected:
+  MessageDescription::ConstPtr getMessageDescriptionImpl( const std::string & ) override
+  {
+    return nullptr;
+  }
+
+  ServiceDescription::ConstPtr getServiceDescriptionImpl( const std::string & ) override
+  {
+    return nullptr;
+  }
+};
 
 class MessageDecodingTest : public ::testing::Test
 {
@@ -121,7 +137,7 @@ protected:
   ros::Publisher test_sub_array_pub_;
   ros::Publisher test_array_pub_;
 
-  BabelFish fish;
+  BabelFish fish = BabelFish( std::make_shared<NoLookUpDescriptionProvider>());
 
   std_msgs::Header std_msgs_header;
   geometry_msgs::Point geometry_msgs_point;
@@ -190,7 +206,7 @@ TEST_F( MessageDecodingTest, tests )
   // Test creation from buffer with invalid length
   MessageDescription::ConstPtr desc = fish.descriptionProvider()->getMessageDescription( *msg );
   size_t bytes_read = 0;
-  EXPECT_THROW( createMessageFromTemplate( *desc->message_template, msg->buffer(), msg->size() - 1, bytes_read ),
+  EXPECT_THROW( createMessageFromTemplate( desc->message_template, msg->buffer(), msg->size() - 1, bytes_read ),
                 BabelFishException );
 }
 
@@ -210,7 +226,7 @@ TEST_F( MessageDecodingTest, arrayTests )
   // Test creation from buffer with invalid length
   MessageDescription::ConstPtr desc = fish.descriptionProvider()->getMessageDescription( *msg );
   size_t bytes_read = 0;
-  EXPECT_THROW( createMessageFromTemplate( *desc->message_template, msg->buffer(), 3, bytes_read ),
+  EXPECT_THROW( createMessageFromTemplate( desc->message_template, msg->buffer(), 3, bytes_read ),
                 BabelFishException );
 
   msg = ros::topic::waitForMessage<BabelFishMessage>( "/test_message_decoding/test_array" );

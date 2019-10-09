@@ -28,8 +28,8 @@ int main( int argc, char **argv )
     nh, "rosapi/Subscribers", "/test_service_server/subscribers",
     []( Message &req, Message &resp ) -> bool
     {
-      resp["subscribers"].as<ArrayMessage<std::string>>().addItem(req["topic"].value<std::string>());
-      resp["subscribers"].as<ArrayMessage<std::string>>().addItem("The answer to everything is:");
+      resp["subscribers"].as<ArrayMessage<std::string>>().push_back( req["topic"].value<std::string>());
+      resp["subscribers"].as<ArrayMessage<std::string>>().push_back( "The answer to everything is:" );
 
       return true;
     } );

@@ -5,7 +5,6 @@
 #include "common.h"
 #include "message_comparison.h"
 
-#include <ros_babel_fish/generation/providers/integrated_description_provider.h>
 #include <ros_babel_fish/generation/message_creation.h>
 #include <ros_babel_fish/babel_fish.h>
 #include <ros_babel_fish_test_msgs/TestArray.h>
@@ -24,7 +23,7 @@
 using namespace ros_babel_fish;
 
 // The messages contain the descriptions, hence no look ups should be performed
-class NoLookUpDescriptionProvider : public IntegratedDescriptionProvider
+class NoLookUpDescriptionProvider : public DescriptionProvider
 {
 protected:
   MessageDescription::ConstPtr getMessageDescriptionImpl( const std::string & ) override

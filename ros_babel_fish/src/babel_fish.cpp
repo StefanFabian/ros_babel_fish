@@ -29,17 +29,22 @@ BabelFish::~BabelFish() = default;
 
 TranslatedMessage::Ptr BabelFish::translateMessage( const BabelFishMessage::ConstPtr &msg )
 {
-  MessageDescription::ConstPtr message_description = description_provider_->getMessageDescription( *msg );
-  MessageTemplate::ConstPtr msg_template = message_description->message_template;
+  const MessageDescription::ConstPtr &message_description = description_provider_->getMessageDescription( *msg );
+  if ( message_description == nullptr )
+  {
+    throw BabelFishException(
+      "BabelFish failed to get message description for received message of type: " + msg->dataType());
+  }
+  const MessageTemplate::ConstPtr &msg_template = message_description->message_template;
   const uint8_t *stream = msg->buffer();
   size_t bytes_read = 0;
   if ( stream == nullptr )
   {
-    Message::Ptr translated = createEmptyMessageFromTemplate( msg_template );
+    Message::Ptr translated = std::make_shared<CompoundMessage>( msg_template );
     return std::make_shared<TranslatedMessage>( msg, translated );
   }
 
-  Message::Ptr translated = createMessageFromTemplate( msg_template, stream, msg->size(), bytes_read );
+  Message::Ptr translated( CompoundMessage::fromStream( msg_template, stream, msg->size(), bytes_read ));
   if ( bytes_read != msg->size())
     throw BabelFishException( "Translated message did not consume all message bytes!" );
   return std::make_shared<TranslatedMessage>( msg, translated );
@@ -47,12 +52,21 @@ TranslatedMessage::Ptr BabelFish::translateMessage( const BabelFishMessage::Cons
 
 Message::Ptr BabelFish::translateMessage( const BabelFishMessage &msg )
 {
-  MessageDescription::ConstPtr message_description = description_provider_->getMessageDescription( msg );
-  MessageTemplate::ConstPtr msg_template = message_description->message_template;
+  const MessageDescription::ConstPtr &message_description = description_provider_->getMessageDescription( msg );
+  if ( message_description == nullptr )
+  {
+    throw BabelFishException(
+      "BabelFish failed to get message description for received message of type: " + msg.dataType());
+  }
+  const MessageTemplate::ConstPtr &msg_template = message_description->message_template;
   const uint8_t *stream = msg.buffer();
   size_t bytes_read = 0;
+  if (stream == nullptr)
+  {
+    return std::make_shared<CompoundMessage>( msg_template );
+  }
 
-  Message::Ptr translated = createMessageFromTemplate( msg_template, stream, msg.size(), bytes_read );
+  Message::Ptr translated( CompoundMessage::fromStream( msg_template, stream, msg.size(), bytes_read ));
   if ( bytes_read != msg.size())
     throw BabelFishException( "Translated message did not consume all message bytes!" );
   return translated;
@@ -70,7 +84,8 @@ BabelFishMessage::Ptr BabelFish::translateMessage( const Message &msg )
     throw BabelFishException( "Tried to translate message that is not a compound message!" );
 
   BabelFishMessage::Ptr result( new BabelFishMessage());
-  MessageDescription::ConstPtr description = description_provider_->getMessageDescription( compound_msg->datatype());
+  const MessageDescription::ConstPtr &description = description_provider_->getMessageDescription(
+    compound_msg->datatype());
   if ( description == nullptr )
   {
     throw BabelFishException( "BabelFish doesn't know a message of type: " + compound_msg->datatype());
@@ -86,7 +101,8 @@ bool BabelFish::translateMessage( const Message &msg, BabelFishMessage &result )
   auto compound_msg = dynamic_cast<const CompoundMessage *>(&msg);
   if ( compound_msg == nullptr )
     throw BabelFishException( "Tried to translate message that is not a compound message!" );
-  MessageDescription::ConstPtr description = description_provider_->getMessageDescription( compound_msg->datatype());
+  const MessageDescription::ConstPtr &description = description_provider_->getMessageDescription(
+    compound_msg->datatype());
   if ( description == nullptr )
   {
     throw BabelFishException( "BabelFish doesn't know a message of type: " + compound_msg->datatype());
@@ -102,7 +118,7 @@ ros::Publisher BabelFish::advertise( ros::NodeHandle &nh, const std::string &typ
                                      const ros::SubscriberStatusCallback &connect_cb,
                                      const ros::SubscriberStatusCallback &disconnect_cb )
 {
-  MessageDescription::ConstPtr description = description_provider_->getMessageDescription( type );
+  const MessageDescription::ConstPtr &description = description_provider_->getMessageDescription( type );
   if ( description == nullptr )
   {
     throw BabelFishException( "BabelFish doesn't know a message of type: " + type );
@@ -118,7 +134,7 @@ ros::ServiceServer BabelFish::advertiseService( ros::NodeHandle &nh, const std::
                                                 const std::string &service,
                                                 const std::function<bool( Message &, Message & )> &callback )
 {
-  ServiceDescription::ConstPtr description = description_provider_->getServiceDescription( type );
+  const ServiceDescription::ConstPtr &description = description_provider_->getServiceDescription( type );
   if ( description == nullptr )
   {
     throw BabelFishException( "BabelFish doesn't know a service of type: " + type );
@@ -161,22 +177,22 @@ ros::ServiceServer BabelFish::advertiseService( ros::NodeHandle &nh, const std::
 
 Message::Ptr BabelFish::createMessage( const std::string &type )
 {
-  MessageDescription::ConstPtr description = description_provider_->getMessageDescription( type );
+  const MessageDescription::ConstPtr &description = description_provider_->getMessageDescription( type );
   if ( description == nullptr )
   {
     throw BabelFishException( "BabelFish doesn't know a message of type: " + type );
   }
-  return createEmptyMessageFromTemplate( description->message_template );
+  return std::make_shared<CompoundMessage>( description->message_template );
 }
 
 Message::Ptr BabelFish::createServiceRequest( const std::string &type )
 {
-  ServiceDescription::ConstPtr description = description_provider_->getServiceDescription( type );
+  const ServiceDescription::ConstPtr &description = description_provider_->getServiceDescription( type );
   if ( description == nullptr )
   {
     throw BabelFishException( "BabelFish doesn't know a service of type: " + type );
   }
-  return createEmptyMessageFromTemplate( description->request->message_template );
+  return std::make_shared<CompoundMessage>( description->request->message_template );
 }
 
 bool BabelFish::callService( const std::string &service, const Message::ConstPtr &req, TranslatedMessage::Ptr &res )
@@ -187,7 +203,7 @@ bool BabelFish::callService( const std::string &service, const Message::ConstPtr
     throw BabelFishException( "BabelFish can't call a service with a message that is not a request!" );
   }
   const std::string &service_type = datatype.substr( 0, datatype.length() - 7 );
-  ServiceDescription::ConstPtr description = description_provider_->getServiceDescription( service_type );
+  const ServiceDescription::ConstPtr &description = description_provider_->getServiceDescription( service_type );
   if ( description == nullptr )
   {
     throw BabelFishException( "BabelFish doesn't know a service of type: " + service_type );

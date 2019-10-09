@@ -2,7 +2,6 @@
 // Created by Stefan Fabian on 15.09.19.
 //
 
-#include <ros_babel_fish/generation/providers/embedded_python_description_provider.h>
 #include <ros_babel_fish/generation/providers/integrated_description_provider.h>
 
 #include <roscpp_tutorials/TwoInts.h>
@@ -139,44 +138,6 @@ TEST( ServiceLookupTest, integratedDescriptionProvider )
   EXPECT_TRUE((compareDescription<rosapi::Topics, IntegratedDescriptionProvider>()));
   EXPECT_TRUE((compareDescription<rosapi::TopicsForType, IntegratedDescriptionProvider>()));
 }
-
-#if RBF_ENABLE_EMBEDDED_PYTHON
-
-TEST( ServiceLookupTest, embeddedDescriptionProvider )
-{
-  EXPECT_TRUE((compareDescription<roscpp_tutorials::TwoInts, EmbeddedPythonDescriptionProvider>()));
-
-  EXPECT_TRUE((compareDescription<std_srvs::Empty, EmbeddedPythonDescriptionProvider>()));
-  EXPECT_TRUE((compareDescription<std_srvs::SetBool, EmbeddedPythonDescriptionProvider>()));
-  EXPECT_TRUE((compareDescription<std_srvs::Trigger, EmbeddedPythonDescriptionProvider>()));
-
-  EXPECT_TRUE((compareDescription<rosapi::DeleteParam, EmbeddedPythonDescriptionProvider>()));
-  EXPECT_TRUE((compareDescription<rosapi::GetActionServers, EmbeddedPythonDescriptionProvider>()));
-  EXPECT_TRUE((compareDescription<rosapi::GetParam, EmbeddedPythonDescriptionProvider>()));
-  EXPECT_TRUE((compareDescription<rosapi::GetParamNames, EmbeddedPythonDescriptionProvider>()));
-  EXPECT_TRUE((compareDescription<rosapi::GetTime, EmbeddedPythonDescriptionProvider>()));
-  EXPECT_TRUE((compareDescription<rosapi::HasParam, EmbeddedPythonDescriptionProvider>()));
-  EXPECT_TRUE((compareDescription<rosapi::MessageDetails, EmbeddedPythonDescriptionProvider>()));
-  EXPECT_TRUE((compareDescription<rosapi::NodeDetails, EmbeddedPythonDescriptionProvider>()));
-  EXPECT_TRUE((compareDescription<rosapi::Nodes, EmbeddedPythonDescriptionProvider>()));
-  EXPECT_TRUE((compareDescription<rosapi::Publishers, EmbeddedPythonDescriptionProvider>()));
-  EXPECT_TRUE((compareDescription<rosapi::SearchParam, EmbeddedPythonDescriptionProvider>()));
-  EXPECT_TRUE((compareDescription<rosapi::ServiceHost, EmbeddedPythonDescriptionProvider>()));
-  EXPECT_TRUE((compareDescription<rosapi::ServiceNode, EmbeddedPythonDescriptionProvider>()));
-  EXPECT_TRUE((compareDescription<rosapi::ServiceProviders, EmbeddedPythonDescriptionProvider>()));
-  EXPECT_TRUE((compareDescription<rosapi::ServiceRequestDetails, EmbeddedPythonDescriptionProvider>()));
-  EXPECT_TRUE((compareDescription<rosapi::ServiceResponseDetails, EmbeddedPythonDescriptionProvider>()));
-  EXPECT_TRUE((compareDescription<rosapi::ServiceType, EmbeddedPythonDescriptionProvider>()));
-  EXPECT_TRUE((compareDescription<rosapi::Services, EmbeddedPythonDescriptionProvider>()));
-  EXPECT_TRUE((compareDescription<rosapi::ServicesForType, EmbeddedPythonDescriptionProvider>()));
-  EXPECT_TRUE((compareDescription<rosapi::SetParam, EmbeddedPythonDescriptionProvider>()));
-  EXPECT_TRUE((compareDescription<rosapi::Subscribers, EmbeddedPythonDescriptionProvider>()));
-  EXPECT_TRUE((compareDescription<rosapi::TopicType, EmbeddedPythonDescriptionProvider>()));
-  EXPECT_TRUE((compareDescription<rosapi::Topics, EmbeddedPythonDescriptionProvider>()));
-  EXPECT_TRUE((compareDescription<rosapi::TopicsForType, EmbeddedPythonDescriptionProvider>()));
-}
-
-#endif
 
 int main( int argc, char **argv )
 {

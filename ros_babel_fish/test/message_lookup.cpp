@@ -2,7 +2,6 @@
 // Created by Stefan Fabian on 15.09.19.
 //
 
-#include <ros_babel_fish/generation/providers/embedded_python_description_provider.h>
 #include <ros_babel_fish/generation/providers/integrated_description_provider.h>
 
 #include <geometry_msgs/AccelStamped.h>
@@ -144,56 +143,6 @@ TEST( MessageLookupTest, integratedDescriptionProvider )
   EXPECT_TRUE((compareDescription<std_msgs::String, IntegratedDescriptionProvider>()));
   EXPECT_TRUE((compareDescription<std_msgs::Time, IntegratedDescriptionProvider>()));
 }
-
-#if RBF_ENABLE_EMBEDDED_PYTHON
-
-TEST( MessageLookupTest, embeddedDescriptionProvider )
-{
-  EXPECT_TRUE((compareDescription<visualization_msgs::MarkerArray, EmbeddedPythonDescriptionProvider>()));
-  EXPECT_TRUE((compareDescription<visualization_msgs::Marker, EmbeddedPythonDescriptionProvider>()));
-  EXPECT_TRUE((compareDescription<visualization_msgs::ImageMarker, EmbeddedPythonDescriptionProvider>()));
-  EXPECT_TRUE((compareDescription<visualization_msgs::InteractiveMarker, EmbeddedPythonDescriptionProvider>()));
-  EXPECT_TRUE((compareDescription<visualization_msgs::InteractiveMarkerControl, EmbeddedPythonDescriptionProvider>()));
-  EXPECT_TRUE((compareDescription<visualization_msgs::MenuEntry, EmbeddedPythonDescriptionProvider>()));
-
-  EXPECT_TRUE((compareDescription<geometry_msgs::AccelWithCovarianceStamped, EmbeddedPythonDescriptionProvider>()));
-  EXPECT_TRUE((compareDescription<geometry_msgs::AccelWithCovariance, EmbeddedPythonDescriptionProvider>()));
-  EXPECT_TRUE((compareDescription<geometry_msgs::AccelStamped, EmbeddedPythonDescriptionProvider>()));
-  EXPECT_TRUE((compareDescription<geometry_msgs::Accel, EmbeddedPythonDescriptionProvider>()));
-  EXPECT_TRUE((compareDescription<geometry_msgs::InertiaStamped, EmbeddedPythonDescriptionProvider>()));
-  EXPECT_TRUE((compareDescription<geometry_msgs::Inertia, EmbeddedPythonDescriptionProvider>()));
-  EXPECT_TRUE((compareDescription<geometry_msgs::Point, EmbeddedPythonDescriptionProvider>()));
-  EXPECT_TRUE((compareDescription<geometry_msgs::PolygonStamped, EmbeddedPythonDescriptionProvider>()));
-  EXPECT_TRUE((compareDescription<geometry_msgs::Polygon, EmbeddedPythonDescriptionProvider>()));
-  EXPECT_TRUE((compareDescription<geometry_msgs::Pose2D, EmbeddedPythonDescriptionProvider>()));
-  EXPECT_TRUE((compareDescription<geometry_msgs::PoseArray, EmbeddedPythonDescriptionProvider>()));
-  EXPECT_TRUE((compareDescription<geometry_msgs::PoseWithCovarianceStamped, EmbeddedPythonDescriptionProvider>()));
-  EXPECT_TRUE((compareDescription<geometry_msgs::PoseWithCovariance, EmbeddedPythonDescriptionProvider>()));
-  EXPECT_TRUE((compareDescription<geometry_msgs::PoseStamped, EmbeddedPythonDescriptionProvider>()));
-  EXPECT_TRUE((compareDescription<geometry_msgs::Pose, EmbeddedPythonDescriptionProvider>()));
-  EXPECT_TRUE((compareDescription<geometry_msgs::Quaternion, EmbeddedPythonDescriptionProvider>()));
-  EXPECT_TRUE((compareDescription<geometry_msgs::TransformStamped, EmbeddedPythonDescriptionProvider>()));
-  EXPECT_TRUE((compareDescription<geometry_msgs::Transform, EmbeddedPythonDescriptionProvider>()));
-  EXPECT_TRUE((compareDescription<geometry_msgs::TwistWithCovarianceStamped, EmbeddedPythonDescriptionProvider>()));
-  EXPECT_TRUE((compareDescription<geometry_msgs::TwistWithCovariance, EmbeddedPythonDescriptionProvider>()));
-  EXPECT_TRUE((compareDescription<geometry_msgs::TwistStamped, EmbeddedPythonDescriptionProvider>()));
-  EXPECT_TRUE((compareDescription<geometry_msgs::Twist, EmbeddedPythonDescriptionProvider>()));
-  EXPECT_TRUE((compareDescription<geometry_msgs::Vector3Stamped, EmbeddedPythonDescriptionProvider>()));
-  EXPECT_TRUE((compareDescription<geometry_msgs::Vector3, EmbeddedPythonDescriptionProvider>()));
-  EXPECT_TRUE((compareDescription<geometry_msgs::WrenchStamped, EmbeddedPythonDescriptionProvider>()));
-  EXPECT_TRUE((compareDescription<geometry_msgs::Wrench, EmbeddedPythonDescriptionProvider>()));
-
-  EXPECT_TRUE((compareDescription<std_msgs::Bool, EmbeddedPythonDescriptionProvider>()));
-  EXPECT_TRUE((compareDescription<std_msgs::Byte, EmbeddedPythonDescriptionProvider>()));
-  EXPECT_TRUE((compareDescription<std_msgs::ByteMultiArray, EmbeddedPythonDescriptionProvider>()));
-  EXPECT_TRUE((compareDescription<std_msgs::Duration, EmbeddedPythonDescriptionProvider>()));
-  EXPECT_TRUE((compareDescription<std_msgs::Empty, EmbeddedPythonDescriptionProvider>()));
-  EXPECT_TRUE((compareDescription<std_msgs::Float32, EmbeddedPythonDescriptionProvider>()));
-  EXPECT_TRUE((compareDescription<std_msgs::String, EmbeddedPythonDescriptionProvider>()));
-  EXPECT_TRUE((compareDescription<std_msgs::Time, EmbeddedPythonDescriptionProvider>()));
-}
-
-#endif
 
 int main( int argc, char **argv )
 {

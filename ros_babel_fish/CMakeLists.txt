@@ -3,7 +3,6 @@ project(ros_babel_fish)
 
 # If the value doesn't fit, an exception is thrown in any case because that could result in unexpected behavior and can not be ignored lightly
 option(WARN_ON_INCOMPATIBLE_TYPE "If ON a warning is printed if a value message is set or accessed with a type that does not allow casting without loss of information" ON)
-option(ENABLE_EMBEDDED_PYTHON "Enables support for embedded python description provider" OFF)
 
 if (WARN_ON_INCOMPATIBLE_TYPE)
   add_definitions(-DRBF_WARN_ON_INCOMPATIBLE_TYPE)
@@ -22,17 +21,6 @@ add_definitions(-Wall -Wextra)
 find_package(catkin REQUIRED COMPONENTS roscpp roslib)
 find_package(OpenSSL REQUIRED)
 
-set(DEPENDS )
-
-if (ENABLE_EMBEDDED_PYTHON)
-  find_package(PythonInterp)
-  find_package(PythonLibs 2.7 EXACT REQUIRED)
-
-  message(STATUS "Using Python ${PYTHON_VERSION_STRING}")
-
-  add_definitions(-DRBF_ENABLE_EMBEDDED_PYTHON)
-endif ()
-
 ###################################
 ## catkin specific configuration ##
 ###################################
@@ -46,7 +34,7 @@ catkin_package(
   INCLUDE_DIRS include
   LIBRARIES ros_babel_fish
   CATKIN_DEPENDS roscpp roslib
-  DEPENDS ${DEPENDS}
+  DEPENDS
 )
 
 ###########
@@ -79,12 +67,6 @@ set(SOURCES
   src/message.cpp
   src/message_extractor.cpp
 )
-
-if (ENABLE_EMBEDDED_PYTHON)
-  include_directories(${PYTHON_INCLUDE_DIRS})
-  set(LIBRARIES ${LIBRARIES} ${PYTHON_LIBRARIES})
-  set(SOURCES ${SOURCES} src/generation/providers/embedded_python_description_provider.cpp)
-endif ()
 
 
 ## Declare a C++ library
@@ -211,7 +193,7 @@ if (CATKIN_ENABLE_TESTING)
   set_target_properties(${PROJECT_NAME}_test_service_client_services PROPERTIES OUTPUT_NAME test_service_client_services PREFIX "")
 endif ()
 
-# to run: catkin build -DENABLE_COVERAGE_TESTING=ON -DCMAKE_BUILD_TYPE=Debug -v --catkin-make-args ros_babel_fish_coverage
+# to run: catkin build ros_babel_fish -DENABLE_COVERAGE_TESTING=ON -DCMAKE_BUILD_TYPE=Debug -v --catkin-make-args ros_babel_fish_coverage
 # Path to results overview will be printed in the build process
 # Big thanks to the moveit people from whose docs I've obtained the information and code to get the coverage
 if(CATKIN_ENABLE_TESTING AND ENABLE_COVERAGE_TESTING)

@@ -52,6 +52,9 @@
 
   <depend>roscpp</depend>
   <depend>roslib</depend>
+  <test_depend>ros_babel_fish_test_msgs</test_depend>
+  <test_depend>rosapi</test_depend>
+  <test_depend>roscpp_tutorials</test_depend>
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>

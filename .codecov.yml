@@ -1,0 +1,10 @@
+codecov:
+  require_ci_to_pass: yes
+
+coverage:
+  precision: 2
+  round: down
+
+ignore:
+  - "devel"
+  - "ros_babel_fish/test"

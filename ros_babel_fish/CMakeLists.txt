@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.0)
 project(ros_babel_fish)
 
 # If the value doesn't fit, an exception is thrown in any case because that could result in unexpected behavior and can not be ignored lightly
@@ -193,7 +193,7 @@ if (CATKIN_ENABLE_TESTING)
   set_target_properties(${PROJECT_NAME}_test_service_client_services PROPERTIES OUTPUT_NAME test_service_client_services PREFIX "")
 endif ()
 
-# to run: catkin build ros_babel_fish -DENABLE_COVERAGE_TESTING=ON -DCMAKE_BUILD_TYPE=Debug -v --catkin-make-args ros_babel_fish_coverage
+# to run: catkin build ros_babel_fish --no-deps -DENABLE_COVERAGE_TESTING=ON -DCMAKE_BUILD_TYPE=Debug -v --catkin-make-args ros_babel_fish_coverage
 # Path to results overview will be printed in the build process
 # Big thanks to the moveit people from whose docs I've obtained the information and code to get the coverage
 if(CATKIN_ENABLE_TESTING AND ENABLE_COVERAGE_TESTING)

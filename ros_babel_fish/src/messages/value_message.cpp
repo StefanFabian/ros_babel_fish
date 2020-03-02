@@ -19,7 +19,7 @@ bool ValueMessage<bool>::getValue() const
 }
 
 template<>
-size_t ValueMessage<bool>::size() const { return 1; }
+size_t ValueMessage<bool>::_sizeInBytes() const { return 1; }
 
 template<>
 ValueMessage<bool> *ValueMessage<bool>::fromStream( const uint8_t *stream, size_t stream_length, size_t &bytes_read )
@@ -59,7 +59,7 @@ ros::Time ValueMessage<ros::Time>::getValue() const
 }
 
 template<>
-size_t ValueMessage<ros::Time>::size() const { return 8; }
+size_t ValueMessage<ros::Time>::_sizeInBytes() const { return 8; }
 
 
 template<>
@@ -103,7 +103,7 @@ ros::Duration ValueMessage<ros::Duration>::getValue() const
 }
 
 template<>
-size_t ValueMessage<ros::Duration>::size() const { return 8; }
+size_t ValueMessage<ros::Duration>::_sizeInBytes() const { return 8; }
 
 
 template<>
@@ -147,7 +147,7 @@ std::string ValueMessage<std::string>::getValue() const
 }
 
 template<>
-size_t ValueMessage<std::string>::size() const
+size_t ValueMessage<std::string>::_sizeInBytes() const
 {
   if ( from_stream_ ) return *reinterpret_cast<const uint32_t *>(stream_) + 4;
   return value_.length() + 4;

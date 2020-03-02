@@ -334,12 +334,12 @@ bool CompoundMessage::containsKey( const std::string &key ) const
          msg_template_->compound.names.end();
 }
 
-size_t CompoundMessage::size() const
+size_t CompoundMessage::_sizeInBytes() const
 {
   size_t result = 0;
   for ( auto &value : values_ )
   {
-    result += value->size();
+    result += value->_sizeInBytes();
   }
   return result;
 }

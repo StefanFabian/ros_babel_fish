@@ -48,12 +48,12 @@ void ArrayMessage<Message>::assign( size_t index, Message *value )
 }
 
 template<>
-size_t ArrayMessage<Message>::size() const
+size_t ArrayMessage<Message>::_sizeInBytes() const
 {
   size_t result = (fixed_length_ ? 0 : 4);
   for ( auto &value : values_ )
   {
-    result += value->size();
+    result += value->_sizeInBytes();
   }
   return result;
 }
@@ -86,7 +86,7 @@ ArrayMessage<Message> &ArrayMessage<Message>::operator=( const ArrayMessage<Mess
     delete entry;
   }
   values_.clear();
-  values_.reserve( other.size());
+  values_.reserve( other._sizeInBytes());
   std::transform( other.values_.begin(), other.values_.end(), std::back_inserter( values_ ),
                   []( Message *m ) { return m->clone(); } );
   length_ = other.length_;
@@ -151,7 +151,7 @@ ArrayMessage<bool> *ArrayMessage<bool>::fromStream( ssize_t length, const uint8_
 }
 
 template<>
-size_t ArrayMessage<bool>::size() const
+size_t ArrayMessage<bool>::_sizeInBytes() const
 {
   return sizeof( uint8_t ) * length_ + (fixed_length_ ? 0 : 4);
 }
@@ -174,7 +174,7 @@ void ArrayMessage<bool>::detachFromStream()
 template<>
 size_t ArrayMessage<bool>::writeToStream( uint8_t *stream ) const
 {
-  size_t length = size();
+  size_t length = _sizeInBytes();
   size_t count = length;
   if ( !fixed_length_ )
   {
@@ -260,7 +260,7 @@ ArrayMessage<std::string> *ArrayMessage<std::string>::fromStream( ssize_t length
 }
 
 template<>
-size_t ArrayMessage<std::string>::size() const
+size_t ArrayMessage<std::string>::_sizeInBytes() const
 {
   size_t size = fixed_length_ ? 0 : 4;
   if ( from_stream_ )
@@ -298,7 +298,7 @@ void ArrayMessage<std::string>::detachFromStream()
 template<>
 size_t ArrayMessage<std::string>::writeToStream( uint8_t *stream ) const
 {
-  size_t length = size();
+  size_t length = _sizeInBytes();
   size_t count = length;
   if ( !fixed_length_ )
   {
@@ -373,7 +373,7 @@ ArrayMessage<ros::Time> *ArrayMessage<ros::Time>::fromStream( ssize_t length, co
 }
 
 template<>
-size_t ArrayMessage<ros::Time>::size() const
+size_t ArrayMessage<ros::Time>::_sizeInBytes() const
 {
   return 2 * sizeof( uint32_t ) * length_ + (fixed_length_ ? 0 : 4);
 }
@@ -398,7 +398,7 @@ void ArrayMessage<ros::Time>::detachFromStream()
 template<>
 size_t ArrayMessage<ros::Time>::writeToStream( uint8_t *stream ) const
 {
-  size_t length = size();
+  size_t length = _sizeInBytes();
   size_t count = length;
   if ( !fixed_length_ )
   {
@@ -472,7 +472,7 @@ ArrayMessage<ros::Duration> *ArrayMessage<ros::Duration>::fromStream( ssize_t le
 }
 
 template<>
-size_t ArrayMessage<ros::Duration>::size() const
+size_t ArrayMessage<ros::Duration>::_sizeInBytes() const
 {
   return 2 * sizeof( int32_t ) * length_ + (fixed_length_ ? 0 : 4);
 }
@@ -497,7 +497,7 @@ void ArrayMessage<ros::Duration>::detachFromStream()
 template<>
 size_t ArrayMessage<ros::Duration>::writeToStream( uint8_t *stream ) const
 {
-  size_t length = size();
+  size_t length = _sizeInBytes();
   size_t count = length;
   if ( !fixed_length_ )
   {

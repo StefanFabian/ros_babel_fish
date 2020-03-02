@@ -59,12 +59,22 @@ public:
 
   MessageType type() const { return type_; }
 
-  const uint8_t *data() const { return stream_; }
+  const uint8_t *_stream() const { return stream_; }
 
   /*!
-   * @return Size of the message in bytes if serizalized in ROS message binary format
+   * Alias for _stream(). Removed in future release.
    */
-  virtual size_t size() const = 0;
+  __attribute_deprecated__ const uint8_t *data() const { return _stream(); }
+
+  /*!
+   * @return Size of the message in bytes if serialized in ROS message binary format
+   */
+  virtual size_t _sizeInBytes() const = 0;
+
+  /*!
+   * Alias for _sizeInBytes(). Removed in future release.
+   */
+  __attribute_deprecated__ size_t size() const { return _sizeInBytes(); }
 
   /*!
    * @return Whether or not the message is detached from the stream. If false, the message is not fully copied and still relies on the translated message.
@@ -79,7 +89,7 @@ public:
 
   /**
    * Writes the message's content to the given stream using the ROS message binary format.
-   * The stream has to be able to fit at least the number of bytes returned by size().
+   * The stream has to be able to fit at least the number of bytes returned by _sizeInBytes.
    * @param stream The stream the message is written to
    * @return The number of bytes written
    */

@@ -141,7 +141,7 @@ public:
    */
   __attribute_deprecated__ void addItem( ArgumentType value ) { push_back( value ); }
 
-  size_t size() const override
+  size_t _sizeInBytes() const override
   {
     return sizeof( T ) * length_ + (fixed_length_ ? 0 : 4);
   }
@@ -169,7 +169,7 @@ public:
 
   size_t writeToStream( uint8_t *stream ) const override
   {
-    size_t length = size();
+    size_t length = _sizeInBytes();
     size_t count = length;
     if ( !fixed_length_ )
     {
@@ -237,7 +237,7 @@ template<>
 void ArrayMessage<Message>::assign( size_t index, Message *value );
 
 template<>
-size_t ArrayMessage<Message>::size() const;
+size_t ArrayMessage<Message>::_sizeInBytes() const;
 
 template<>
 size_t ArrayMessage<Message>::writeToStream( uint8_t *stream ) const;
@@ -299,7 +299,7 @@ ArrayMessage<bool> *ArrayMessage<bool>::fromStream( ssize_t length, const uint8_
                                                     size_t &bytes_read );
 
 template<>
-size_t ArrayMessage<bool>::size() const;
+size_t ArrayMessage<bool>::_sizeInBytes() const;
 
 template<>
 void ArrayMessage<bool>::detachFromStream();
@@ -319,7 +319,7 @@ ArrayMessage<std::string> *ArrayMessage<std::string>::fromStream( ssize_t length
                                                                   size_t stream_length, size_t &bytes_read );
 
 template<>
-size_t ArrayMessage<std::string>::size() const;
+size_t ArrayMessage<std::string>::_sizeInBytes() const;
 
 template<>
 void ArrayMessage<std::string>::detachFromStream();
@@ -339,7 +339,7 @@ ArrayMessage<ros::Time> *ArrayMessage<ros::Time>::fromStream( ssize_t length, co
                                                               size_t stream_length, size_t &bytes_read );
 
 template<>
-size_t ArrayMessage<ros::Time>::size() const;
+size_t ArrayMessage<ros::Time>::_sizeInBytes() const;
 
 template<>
 void ArrayMessage<ros::Time>::detachFromStream();
@@ -360,7 +360,7 @@ ArrayMessage<ros::Duration> *ArrayMessage<ros::Duration>::fromStream( ssize_t le
                                                                       size_t stream_length, size_t &bytes_read );
 
 template<>
-size_t ArrayMessage<ros::Duration>::size() const;
+size_t ArrayMessage<ros::Duration>::_sizeInBytes() const;
 
 template<>
 void ArrayMessage<ros::Duration>::detachFromStream();

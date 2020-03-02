@@ -67,7 +67,7 @@ TEST( MessageTest, message )
     EXPECT_THROW( vm.value<ros::Duration>(), BabelFishException );
     EXPECT_THROW( vm.value<bool>(), BabelFishException );
 
-    ASSERT_EQ( vm.size(), 1U );
+    ASSERT_EQ( vm._sizeInBytes(), 1U );
     uint8_t stream[1];
     EXPECT_EQ( vm.writeToStream( stream ), 1U );
     size_t bytes_read = 0;
@@ -84,7 +84,7 @@ TEST( MessageTest, message )
     EXPECT_NO_THROW( vm = static_cast<uint16_t >(355));
     EXPECT_EQ( vm.value<int>(), 355 );
 
-    ASSERT_EQ( vm.size(), 2U );
+    ASSERT_EQ( vm._sizeInBytes(), 2U );
     uint8_t stream[2];
     EXPECT_EQ( vm.writeToStream( stream ), 2U );
     size_t bytes_read = 0;
@@ -101,7 +101,7 @@ TEST( MessageTest, message )
     EXPECT_NO_THROW( vm = static_cast<uint32_t >(133755));
     EXPECT_EQ( vm.value<long>(), 133755 );
 
-    ASSERT_EQ( vm.size(), 4U );
+    ASSERT_EQ( vm._sizeInBytes(), 4U );
     uint8_t stream[4];
     EXPECT_EQ( vm.writeToStream( stream ), 4U );
     size_t bytes_read = 0;
@@ -118,7 +118,7 @@ TEST( MessageTest, message )
     EXPECT_NO_THROW( vm = static_cast<uint64_t >(2UL << 34U));
     EXPECT_EQ( vm.value<long>(), 2L << 34L );
 
-    ASSERT_EQ( vm.size(), 8U );
+    ASSERT_EQ( vm._sizeInBytes(), 8U );
     uint8_t stream[8];
     EXPECT_EQ( vm.writeToStream( stream ), 8U );
     size_t bytes_read = 0;
@@ -150,7 +150,7 @@ TEST( MessageTest, message )
     EXPECT_THROW( vm = ros::Time( 42 ), BabelFishException );
     EXPECT_THROW( vm = ros::Duration( 42 ), BabelFishException );
 
-    ASSERT_EQ( vm.size(), 1U );
+    ASSERT_EQ( vm._sizeInBytes(), 1U );
     uint8_t stream[1];
     EXPECT_EQ( vm.writeToStream( stream ), 1U );
     size_t bytes_read = 0;
@@ -167,7 +167,7 @@ TEST( MessageTest, message )
     EXPECT_NO_THROW( vm = static_cast<int16_t >(129));
     EXPECT_EQ( vm.value<int>(), 129 );
 
-    ASSERT_EQ( vm.size(), 2U );
+    ASSERT_EQ( vm._sizeInBytes(), 2U );
     uint8_t stream[2];
     EXPECT_EQ( vm.writeToStream( stream ), 2U );
     size_t bytes_read = 0;
@@ -184,7 +184,7 @@ TEST( MessageTest, message )
     EXPECT_NO_THROW( vm = static_cast<int32_t >(70501));
     EXPECT_EQ( vm.value<int>(), 70501 );
 
-    ASSERT_EQ( vm.size(), 4U );
+    ASSERT_EQ( vm._sizeInBytes(), 4U );
     uint8_t stream[4];
     EXPECT_EQ( vm.writeToStream( stream ), 4U );
     size_t bytes_read = 0;
@@ -202,7 +202,7 @@ TEST( MessageTest, message )
     EXPECT_EQ( vm.value<int64_t>(), 2L << 34L );
     EXPECT_THROW( vm.value<int>(), BabelFishException );
 
-    ASSERT_EQ( vm.size(), 8U );
+    ASSERT_EQ( vm._sizeInBytes(), 8U );
     uint8_t stream[8];
     EXPECT_EQ( vm.writeToStream( stream ), 8U );
     size_t bytes_read = 0;
@@ -221,7 +221,7 @@ TEST( MessageTest, message )
     EXPECT_TRUE( vm.value<bool>());
     EXPECT_THROW( vm = 42, BabelFishException );
 
-    ASSERT_EQ( vm.size(), 1U );
+    ASSERT_EQ( vm._sizeInBytes(), 1U );
     uint8_t stream[1];
     EXPECT_EQ( vm.writeToStream( stream ), 1U );
     size_t bytes_read = 0;
@@ -245,7 +245,7 @@ TEST( MessageTest, message )
     EXPECT_FLOAT_EQ( vm.value<float>(), 42.0f );
     EXPECT_THROW( vm.value<int>(), BabelFishException );
 
-    ASSERT_EQ( vm.size(), 4U );
+    ASSERT_EQ( vm._sizeInBytes(), 4U );
     uint8_t stream[4];
     EXPECT_EQ( vm.writeToStream( stream ), 4U );
     size_t bytes_read = 0;
@@ -268,7 +268,7 @@ TEST( MessageTest, message )
     EXPECT_DOUBLE_EQ( vm.value<double>(), 50.0 );
     EXPECT_THROW( vm.value<int>(), BabelFishException );
 
-    ASSERT_EQ( vm.size(), 8U );
+    ASSERT_EQ( vm._sizeInBytes(), 8U );
     uint8_t stream[8];
     EXPECT_EQ( vm.writeToStream( stream ), 8U );
     size_t bytes_read = 0;
@@ -289,7 +289,7 @@ TEST( MessageTest, message )
     EXPECT_THROW( vm.value<double>(), BabelFishException );
     EXPECT_THROW( vm = 42.0, BabelFishException );
 
-    ASSERT_EQ( vm.size(), 8U );
+    ASSERT_EQ( vm._sizeInBytes(), 8U );
     uint8_t stream[8];
     EXPECT_EQ( vm.writeToStream( stream ), 8U );
     size_t bytes_read = 0;
@@ -309,7 +309,7 @@ TEST( MessageTest, message )
     EXPECT_THROW( vm.value<double>(), BabelFishException );
     EXPECT_THROW( vm = 12.0, BabelFishException );
 
-    ASSERT_EQ( vm.size(), 8U );
+    ASSERT_EQ( vm._sizeInBytes(), 8U );
     uint8_t stream[8];
     EXPECT_EQ( vm.writeToStream( stream ), 8U );
     size_t bytes_read = 0;
@@ -332,7 +332,7 @@ TEST( MessageTest, message )
     EXPECT_THROW( vm.value<ros::Time>(), BabelFishException );
     EXPECT_THROW( vm = 12.0, BabelFishException );
 
-    ASSERT_EQ( vm.size(), 6U );
+    ASSERT_EQ( vm._sizeInBytes(), 6U );
     uint8_t stream[6];
     EXPECT_EQ( vm.writeToStream( stream ), 6U );
     size_t bytes_read = 0;
@@ -366,7 +366,7 @@ TEST( MessageTest, valueMessage )
     ValueMessage<bool> *vm = ValueMessage<bool>::fromStream( reinterpret_cast<const uint8_t *>(stream), 1, bytes_read );
     EXPECT_EQ( vm->getValue(), true );
     EXPECT_EQ( bytes_read, 1U );
-    EXPECT_EQ( vm->size(), 1U );
+    EXPECT_EQ( vm->_sizeInBytes(), 1U );
 
     vm->setValue( false );
     EXPECT_EQ( vm->getValue(), false );
@@ -394,7 +394,7 @@ TEST( MessageTest, valueMessage )
                                                                        bytes_read );
     EXPECT_EQ( vm->getValue(), ros::Time( 42, 1337 ));
     EXPECT_EQ( bytes_read, 8U );
-    EXPECT_EQ( vm->size(), 8U );
+    EXPECT_EQ( vm->_sizeInBytes(), 8U );
 
     vm->setValue( ros::Time( 55, 0 ));
     EXPECT_EQ( vm->getValue(), ros::Time( 55, 0 ));
@@ -426,7 +426,7 @@ TEST( MessageTest, valueMessage )
       bytes_read );
     EXPECT_EQ( vm->getValue(), ros::Duration( -42, 1337 ));
     EXPECT_EQ( bytes_read, 8U );
-    EXPECT_EQ( vm->size(), 8U );
+    EXPECT_EQ( vm->_sizeInBytes(), 8U );
 
     vm->setValue( ros::Duration( -55, 0 ));
     EXPECT_EQ( vm->getValue(), ros::Duration( -55, 0 ));
@@ -471,7 +471,7 @@ TEST( MessageTest, valueMessage )
     std::fill_n( copy_stream, 50, '\0' );
     auto *vm = new ValueMessage<std::string>( reinterpret_cast<const uint8_t *>(stream));
     EXPECT_EQ( vm->getValue(), "this is a test string" );
-    EXPECT_EQ( vm->size(), 25U );
+    EXPECT_EQ( vm->_sizeInBytes(), 25U );
     EXPECT_EQ( vm->writeToStream( reinterpret_cast<uint8_t *>(copy_stream)), 25U );
     EXPECT_TRUE( compareArrays( stream, copy_stream, 25 ));
     delete vm;
@@ -582,7 +582,7 @@ TEST( MessageTest, arrayMessage )
     EXPECT_EQ( am.length(), 20U );
     EXPECT_EQ( am[0], false );
     EXPECT_EQ( am[1], true );
-    ASSERT_EQ( am.size(), 24U );
+    ASSERT_EQ( am._sizeInBytes(), 24U );
     uint8_t stream[24];
     EXPECT_EQ( am.writeToStream( stream ), 24U );
     EXPECT_EQ( stream[4], 0 );
@@ -626,7 +626,7 @@ TEST( MessageTest, arrayMessage )
       am.push_back( std::string( "String " ) + std::to_string( i ));
     }
     EXPECT_EQ( am.length(), 5U );
-    ASSERT_EQ( am.size(), 64U );
+    ASSERT_EQ( am._sizeInBytes(), 64U );
     EXPECT_EQ( am[3], "String 3" );
     EXPECT_THROW( am[5], std::runtime_error );
     uint8_t stream[64];
@@ -648,7 +648,7 @@ TEST( MessageTest, arrayMessage )
       am.push_back( ros::Time((i + 1) * 42, 0 ));
     }
     EXPECT_EQ( am.length(), 5U );
-    EXPECT_EQ( am.size(), 44U );
+    EXPECT_EQ( am._sizeInBytes(), 44U );
     EXPECT_EQ( am[0], ros::Time( 42, 0 ));
     EXPECT_THROW( am[5], std::runtime_error );
     uint8_t stream[44];
@@ -670,7 +670,7 @@ TEST( MessageTest, arrayMessage )
       am.push_back( ros::Duration(((i & 1) == 0 ? -1 : 1) * (i + 1) * 42, 0 ));
     }
     EXPECT_EQ( am.length(), 5U );
-    ASSERT_EQ( am.size(), 44U );
+    ASSERT_EQ( am._sizeInBytes(), 44U );
     EXPECT_EQ( am[0], ros::Duration( -42, 0 ));
     EXPECT_THROW( am[5], std::runtime_error );
     uint8_t stream[44];

@@ -36,7 +36,7 @@ public:
     from_stream_ = false;
   }
 
-  size_t size() const override { return sizeof( T ); }
+  size_t _sizeInBytes() const override { return sizeof( T ); }
 
   bool isDetachedFromStream() const override
   {
@@ -100,7 +100,7 @@ template<>
 bool ValueMessage<bool>::getValue() const;
 
 template<>
-size_t ValueMessage<bool>::size() const;
+size_t ValueMessage<bool>::_sizeInBytes() const;
 
 template<>
 ValueMessage<bool> *ValueMessage<bool>::fromStream( const uint8_t *stream, size_t stream_length, size_t &bytes_read );
@@ -113,7 +113,7 @@ template<>
 ros::Time ValueMessage<ros::Time>::getValue() const;
 
 template<>
-size_t ValueMessage<ros::Time>::size() const;
+size_t ValueMessage<ros::Time>::_sizeInBytes() const;
 
 template<>
 ValueMessage<ros::Time> *
@@ -127,7 +127,7 @@ template<>
 ros::Duration ValueMessage<ros::Duration>::getValue() const;
 
 template<>
-size_t ValueMessage<ros::Duration>::size() const;
+size_t ValueMessage<ros::Duration>::_sizeInBytes() const;
 
 template<>
 ValueMessage<ros::Duration> *
@@ -141,7 +141,7 @@ template<>
 std::string ValueMessage<std::string>::getValue() const;
 
 template<>
-size_t ValueMessage<std::string>::size() const;
+size_t ValueMessage<std::string>::_sizeInBytes() const;
 
 template<>
 ValueMessage<std::string> *

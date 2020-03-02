@@ -91,7 +91,7 @@ BabelFishMessage::Ptr BabelFish::translateMessage( const Message &msg )
     throw BabelFishException( "BabelFish doesn't know a message of type: " + compound_msg->datatype());
   }
   result->morph( description->md5, description->datatype, description->message_definition, "0" );
-  result->allocate( msg.size());
+  result->allocate( msg._sizeInBytes());
   msg.writeToStream( result->buffer());
   return result;
 }
@@ -108,7 +108,7 @@ bool BabelFish::translateMessage( const Message &msg, BabelFishMessage &result )
     throw BabelFishException( "BabelFish doesn't know a message of type: " + compound_msg->datatype());
   }
   result.morph( description->md5, description->datatype, description->message_definition, "0" );
-  result.allocate( msg.size());
+  result.allocate( msg._sizeInBytes());
   msg.writeToStream( result.buffer());
   return true;
 }

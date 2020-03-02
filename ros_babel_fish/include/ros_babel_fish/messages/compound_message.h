@@ -40,7 +40,7 @@ public:
 
   const std::vector<Message *> &values() const { return values_; }
 
-  size_t size() const override;
+  size_t _sizeInBytes() const override;
 
   bool isDetachedFromStream() const override;
 

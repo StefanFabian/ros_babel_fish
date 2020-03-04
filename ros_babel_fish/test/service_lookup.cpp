@@ -3,6 +3,7 @@
 //
 
 #include <ros_babel_fish/generation/providers/integrated_description_provider.h>
+#include <ros_babel_fish/generation/providers/message_only_description_provider.h>
 
 #include <roscpp_tutorials/TwoInts.h>
 
@@ -137,6 +138,13 @@ TEST( ServiceLookupTest, integratedDescriptionProvider )
   EXPECT_TRUE((compareDescription<rosapi::TopicType, IntegratedDescriptionProvider>()));
   EXPECT_TRUE((compareDescription<rosapi::Topics, IntegratedDescriptionProvider>()));
   EXPECT_TRUE((compareDescription<rosapi::TopicsForType, IntegratedDescriptionProvider>()));
+}
+
+TEST( ServiceLookupTest, messageOnlyDescriptionProvider )
+{
+  namespace st = ros::service_traits;
+  MessageOnlyDescriptionProvider provider;
+  EXPECT_THROW( provider.getServiceDescription( st::datatype<rosapi::DeleteParam>()), BabelFishException );
 }
 
 int main( int argc, char **argv )

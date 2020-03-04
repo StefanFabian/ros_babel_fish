@@ -6,4 +6,5 @@
   <include file="$(find ros_babel_fish)/test/test_message_lookup.test"/>
   <include file="$(find ros_babel_fish)/test/test_service_lookup.test"/>
   <include file="$(find ros_babel_fish)/test/test_service_client.test"/>
+  <include file="$(find ros_babel_fish)/test/test_action_client.test"/>
 </launch>

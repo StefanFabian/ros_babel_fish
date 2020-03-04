@@ -114,7 +114,7 @@ bool BabelFish::translateMessage( const Message &msg, BabelFishMessage &result )
 }
 
 ros::Publisher BabelFish::advertise( ros::NodeHandle &nh, const std::string &type, const std::string &topic,
-                                     uint32_t queue_size_, bool latch,
+                                     uint32_t queue_size, bool latch,
                                      const ros::SubscriberStatusCallback &connect_cb,
                                      const ros::SubscriberStatusCallback &disconnect_cb )
 {
@@ -123,7 +123,7 @@ ros::Publisher BabelFish::advertise( ros::NodeHandle &nh, const std::string &typ
   {
     throw BabelFishException( "BabelFish doesn't know a message of type: " + type );
   }
-  ros::AdvertiseOptions opts( topic, queue_size_, description->md5, description->datatype,
+  ros::AdvertiseOptions opts( topic, queue_size, description->md5, description->datatype,
                               description->message_definition, connect_cb, disconnect_cb );
   opts.latch = latch;
 

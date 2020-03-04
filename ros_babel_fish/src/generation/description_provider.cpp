@@ -70,14 +70,12 @@ ServiceDescription::ConstPtr DescriptionProvider::getServiceDescription( const s
   return getServiceDescriptionImpl( type );
 }
 
-MessageDescription::ConstPtr DescriptionProvider::getMessageDescriptionImpl( const BabelFishMessage &msg )
+MessageDescription::ConstPtr DescriptionProvider::getMessageDescriptionImpl( const std::string &type,
+                                                                             const std::string &definition )
 {
   // This will split the message definition and register all of the embedded message types, so look ups can be avoided
-  const std::string &type = msg.dataType();
   std::string::size_type pos_separator = type.find( '/' );
   std::string package = type.substr( 0, pos_separator );
-
-  const std::string &definition = msg.definition();
 
   std::string::size_type start = definition.find( "\n===" );
   std::string::size_type end;
@@ -184,7 +182,7 @@ MessageDescription::ConstPtr DescriptionProvider::getMessageDescriptionImpl( con
           ROS_DEBUG_NAMED( "RosBabelFish", "Failed to compute MD5 for message '%s'!", type.c_str());
           return nullptr;
         }
-        registerMessage( spec, computeFullText( spec ) );
+        registerMessage( spec, computeFullText( spec ));
       }
     }
   }
@@ -198,6 +196,11 @@ MessageDescription::ConstPtr DescriptionProvider::getMessageDescriptionImpl( con
     return nullptr;
   }
   return registerMessage( spec, computeFullText( spec ));
+}
+
+MessageDescription::ConstPtr DescriptionProvider::getMessageDescriptionImpl( const BabelFishMessage &msg )
+{
+  return getMessageDescriptionImpl( msg.dataType(), msg.definition());
 }
 
 MessageTemplate::Ptr DescriptionProvider::createTemplate( const MessageSpec &spec )

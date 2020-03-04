@@ -3,6 +3,7 @@
 //
 
 #include <ros_babel_fish/generation/providers/integrated_description_provider.h>
+#include <ros_babel_fish/generation/providers/message_only_description_provider.h>
 
 #include <geometry_msgs/AccelStamped.h>
 #include <geometry_msgs/AccelWithCovarianceStamped.h>
@@ -142,6 +143,17 @@ TEST( MessageLookupTest, integratedDescriptionProvider )
   EXPECT_TRUE((compareDescription<std_msgs::Float32, IntegratedDescriptionProvider>()));
   EXPECT_TRUE((compareDescription<std_msgs::String, IntegratedDescriptionProvider>()));
   EXPECT_TRUE((compareDescription<std_msgs::Time, IntegratedDescriptionProvider>()));
+}
+
+TEST( MessageLookupTest, messageOnlyDescriptionProvider )
+{
+  namespace mt = ros::message_traits;
+  MessageOnlyDescriptionProvider provider;
+  provider.registerMessageByDefinition( mt::datatype<visualization_msgs::MarkerArray>(),
+                                        mt::definition<visualization_msgs::MarkerArray>());
+  EXPECT_NO_THROW( provider.getMessageDescription( mt::datatype<visualization_msgs::Marker>()));
+  EXPECT_THROW( provider.getMessageDescription( mt::datatype<visualization_msgs::InteractiveMarker>()),
+                BabelFishException );
 }
 
 int main( int argc, char **argv )

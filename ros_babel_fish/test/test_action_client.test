@@ -1,0 +1,4 @@
+<launch>
+  <node name="action_client_test_server" pkg="ros_babel_fish" type="test_action_client_test_server"/>
+  <test test-name="action_client" pkg="ros_babel_fish" type="test_action_client"/>
+</launch>

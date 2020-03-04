@@ -18,7 +18,7 @@ add_definitions(-Wall -Wextra)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED COMPONENTS roscpp roslib)
+find_package(catkin REQUIRED COMPONENTS actionlib roscpp roslib std_msgs)
 find_package(OpenSSL REQUIRED)
 
 ###################################
@@ -33,7 +33,7 @@ find_package(OpenSSL REQUIRED)
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES ros_babel_fish
-  CATKIN_DEPENDS roscpp roslib
+  CATKIN_DEPENDS roscpp roslib actionlib
   DEPENDS
 )
 
@@ -98,6 +98,10 @@ set_target_properties(${PROJECT_NAME}_service_server PROPERTIES OUTPUT_NAME serv
 add_executable(${PROJECT_NAME}_service_client examples/service_client.cpp)
 target_link_libraries(${PROJECT_NAME}_service_client ${PROJECT_NAME} ${LIBRARIES})
 set_target_properties(${PROJECT_NAME}_service_client PROPERTIES OUTPUT_NAME service_client PREFIX "")
+
+add_executable(${PROJECT_NAME}_action_client examples/action_client.cpp)
+target_link_libraries(${PROJECT_NAME}_action_client ${PROJECT_NAME} ${LIBRARIES})
+set_target_properties(${PROJECT_NAME}_action_client PROPERTIES OUTPUT_NAME action_client PREFIX "")
 
 #find_package(actionlib)
 
@@ -191,11 +195,20 @@ if (CATKIN_ENABLE_TESTING)
   add_executable(${PROJECT_NAME}_test_service_client_services test/service_client_test_services.cpp)
   target_link_libraries(${PROJECT_NAME}_test_service_client_services ${PROJECT_NAME})
   set_target_properties(${PROJECT_NAME}_test_service_client_services PROPERTIES OUTPUT_NAME test_service_client_services PREFIX "")
+
+  add_rostest_gtest(${PROJECT_NAME}_test_action_client test/test_action_client.test test/action_client.cpp)
+  target_link_libraries(${PROJECT_NAME}_test_action_client ${PROJECT_NAME})
+  set_target_properties(${PROJECT_NAME}_test_action_client PROPERTIES OUTPUT_NAME test_action_client PREFIX "")
+
+  add_executable(${PROJECT_NAME}_test_action_client_test_server test/action_client_test_server.cpp)
+  target_link_libraries(${PROJECT_NAME}_test_action_client_test_server ${PROJECT_NAME})
+  set_target_properties(${PROJECT_NAME}_test_action_client_test_server PROPERTIES OUTPUT_NAME test_action_client_test_server PREFIX "")
 endif ()
 
 # to run: catkin build ros_babel_fish --no-deps -DENABLE_COVERAGE_TESTING=ON -DCMAKE_BUILD_TYPE=Debug -v --catkin-make-args ros_babel_fish_coverage
 # Path to results overview will be printed in the build process
 # Big thanks to the moveit people from whose docs I've obtained the information and code to get the coverage
+# Note: Sometimes this command has to be run twice. Don't know why. If you do, please tell me!
 if(CATKIN_ENABLE_TESTING AND ENABLE_COVERAGE_TESTING)
   find_package(code_coverage REQUIRED)   # catkin package ros-*-code-coverage
   include(CodeCoverage)

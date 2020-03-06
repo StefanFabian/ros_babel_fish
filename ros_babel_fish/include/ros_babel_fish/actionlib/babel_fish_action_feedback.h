@@ -77,6 +77,10 @@ private:
   std::string definition_;
   bool latched_ = false;
 };
+
+typedef BabelFishActionFeedback_<std::allocator<void> > BabelFishActionFeedback;
+typedef typename BabelFishActionFeedback::Ptr BabelFishActionFeedbackPtr;
+typedef typename BabelFishActionFeedback::ConstPtr BabelFishActionFeedbackConstPtr;
 }
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS

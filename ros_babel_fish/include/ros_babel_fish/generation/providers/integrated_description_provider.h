@@ -25,8 +25,8 @@ protected:
 
   ServiceDescription::ConstPtr getServiceDescriptionImpl( const std::string &type ) override;
 
-  std::map<std::string, std::string> msg_paths_;
-  std::map<std::string, std::string> srv_paths_;
+  std::map<std::string, std::vector<std::string>> msg_paths_;
+  std::map<std::string, std::vector<std::string>> srv_paths_;
 };
 } // ros_babel_fish
 

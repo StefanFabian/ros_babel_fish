@@ -34,7 +34,7 @@ catkin_package(
   INCLUDE_DIRS include
   LIBRARIES ros_babel_fish
   CATKIN_DEPENDS roscpp roslib actionlib
-  DEPENDS
+  DEPENDS OPENSSL
 )
 
 ###########
@@ -46,7 +46,7 @@ catkin_package(
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}
-  ${OpenSSL_INCLUDE_DIRS}
+  ${OPENSSL_INCLUDE_DIR}
 )
 
 set(LIBRARIES
@@ -103,17 +103,6 @@ add_executable(${PROJECT_NAME}_action_client examples/action_client.cpp)
 target_link_libraries(${PROJECT_NAME}_action_client ${PROJECT_NAME} ${LIBRARIES})
 set_target_properties(${PROJECT_NAME}_action_client PROPERTIES OUTPUT_NAME action_client PREFIX "")
 
-#find_package(actionlib)
-
-#if(${actionlib_FOUND})
-#  add_executable(action_client examples/action_client.cpp)
-#  target_link_libraries(action_client ${PROJECT_NAME} ${catkin_LIBRARIES} ${actionlib_LIBRARIES})
-#  add_executable(simple_action_client examples/simple_action_client.cpp)
-#  target_link_libraries(simple_action_client ${PROJECT_NAME} ${catkin_LIBRARIES} ${actionlib_LIBRARIES})
-  #add_executable(action_server examples/action_server.cpp)
-  #target_link_libraries(action_server ${PROJECT_NAME} ${catkin_LIBRARIES} ${actionlib_LIBRARIES})
-#endif()
-
 
 #############
 ## Install ##
@@ -122,16 +111,10 @@ set_target_properties(${PROJECT_NAME}_action_client PROPERTIES OUTPUT_NAME actio
 # all install targets should use catkin DESTINATION variables
 # See http://ros.org/doc/api/catkin/html/adv_user_guide/variables.html
 
-## Mark executable scripts (Python etc.) for installation
-## in contrast to setup.py, you can choose the destination
-# install(PROGRAMS
-#   scripts/my_python_script
-#   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-# )
-
 ## Mark executables for installation
 ## See http://docs.ros.org/melodic/api/catkin/html/howto/format1/building_executables.html
 install(TARGETS
+  ${PROJECT_NAME}_action_client
   ${PROJECT_NAME}_any_publisher
   ${PROJECT_NAME}_any_subscriber
   ${PROJECT_NAME}_message_info
@@ -142,10 +125,7 @@ install(TARGETS
 )
 
 ## Mark libraries for installation
-install(TARGETS ${PROJECT_NAME}
-  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-)
+install(TARGETS ${PROJECT_NAME} LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION})
 
 ## Mark cpp header files for installation
 install(DIRECTORY include/${PROJECT_NAME}/

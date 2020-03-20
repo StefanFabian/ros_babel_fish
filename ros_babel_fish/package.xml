@@ -51,6 +51,7 @@
   <buildtool_depend>catkin</buildtool_depend>
 
   <depend>actionlib</depend>
+  <depend>openssl</depend>
   <depend>roscpp</depend>
   <depend>roslib</depend>
   <depend>std_msgs</depend>

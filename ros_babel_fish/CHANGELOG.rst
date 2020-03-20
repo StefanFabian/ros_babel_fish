@@ -2,8 +2,8 @@
 Changelog for package ros_babel_fish
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.8.0 (2020-03-20)
+------------------
 * Updated install targets and added OpenSSL to dependencies.
 * Added support for lookups from devel spaces.
 * Changed action client specialization default values for queue sizes to prevent information loss.

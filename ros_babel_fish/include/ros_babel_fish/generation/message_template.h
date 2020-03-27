@@ -7,6 +7,7 @@
 #include "ros_babel_fish/message.h"
 
 #include <map>
+#include <vector>
 
 namespace ros_babel_fish
 {

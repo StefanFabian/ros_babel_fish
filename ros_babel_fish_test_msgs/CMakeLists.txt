@@ -33,7 +33,7 @@ add_action_files(
 generate_messages(
    DEPENDENCIES
    actionlib_msgs
-   std_msgs  # Or other packages containing msgs
+   std_msgs
    geometry_msgs
 )
 
@@ -41,5 +41,5 @@ generate_messages(
 ## catkin specific configuration ##
 ###################################
 catkin_package(
-  CATKIN_DEPENDS actionlib_msgs std_msgs geometry_msgs
+  CATKIN_DEPENDS message_runtime actionlib_msgs std_msgs geometry_msgs
 )

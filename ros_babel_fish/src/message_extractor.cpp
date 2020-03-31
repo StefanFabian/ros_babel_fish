@@ -75,7 +75,7 @@ std::ptrdiff_t SubMessageLocation::calculateOffset( const BabelFishMessage &msg 
     std::ptrdiff_t sub_offset = offsets_[i].offset( buffer, offset );
     if ( sub_offset < 0 ) return -1;
     offset += sub_offset;
-    if ( offset > length ) return -1;
+    if ( static_cast<uint32_t>(offset) > length ) return -1;
   }
   return offset;
 }
@@ -232,7 +232,7 @@ SubMessageLocation MessageExtractor::retrieveLocationForPath( const MessageTempl
       }
       case MessageTypes::Array:
       {
-        uint32_t index;
+        ssize_t index;
         try
         {
           index = std::stoul( name );

@@ -12,7 +12,7 @@ Please strongly consider whether you actually need this library because there ma
 Possible use cases where you do need it are:
 * UIs displaying the content of various at compile time unknown messages
 * Plugins for (script) languages that can not access the C++ message definitions without modification
-  * Spot for shameless self-advertising: Check out my ROS QML plugin which uses this library to allow subscribing, publishing and more directly in QML 
+  * Spot for shameless self-advertising: Check out my [ROS QML plugin](https://github.com/StefanFabian/qml_ros_plugin) which uses this library to allow subscribing, publishing and more directly in QML 
 
 The main focus of this library was usability but it is also very performant since it uses a lazy copy mechanism for bigger fields such as big arrays.  
 Instead of copying the message it will retain a pointer at the start of the field. A copy is only made if explicitly requested or a value in the
@@ -96,7 +96,7 @@ SubMessageLocation location_of_x = extractor.retrieveLocationForPath( "geometry_
 std::cout << "Position X: " << extractor.extractValue<double>( msg, location_of_x ) << std::endl;
 ```
 
-For more in-depth examples check the example folder.
+For more in-depth examples and examples regarding service or action calls check the example folder.
 
 
 ## Benchmarks
@@ -104,11 +104,6 @@ Check the separate [ros_babel_fish_benchmarks repo](https://github.com/StefanFab
 
 ## Current TODOs
 
-- [x] Calling a service with at compile time unknown service definition
-- [x] Advertising a service with at compile time unknown service definition
-- [ ] Creating a service client with at compile time unknown service definition
-- [ ] Search more paths when looking up message definitions
+- [ ] Creating a reusable service client with at compile time unknown service definition
 - [ ] Documentation
-- [x] Benchmark
-- [ ] Calling actions
 - [ ] Providing an action server(?)

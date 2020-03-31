@@ -20,8 +20,8 @@ int main( int argc, char **argv )
     {
       auto &msg = req.as<CompoundMessage>();
       std::cout << "Received request: " << std::endl;
-      std::cout << "a: " << msg["a"].value<long>() << std::endl;
-      std::cout << "b: " << msg["b"].value<long>() << std::endl;
+      std::cout << "a: " << msg["a"].value<int64_t>() << std::endl;
+      std::cout << "b: " << msg["b"].value<int64_t>() << std::endl;
       res["sum"] = 42;
       return true;
     } );

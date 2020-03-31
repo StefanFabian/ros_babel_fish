@@ -175,7 +175,10 @@ public:
    * @throws BabelFishException If the type of the ValueMessage can not be casted to a different type which is the case for bool, std::string, ros::Time and ros::Duration
    */
   template<typename T>
-  T value() const;
+  T value() const
+  {
+    static_assert( sizeof( T ) == 0, "Please only call declared specializations!" );
+  }
 
 
   /**

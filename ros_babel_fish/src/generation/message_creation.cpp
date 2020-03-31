@@ -18,33 +18,33 @@ Message *createValueMessageFromDataRaw( MessageType type, const uint8_t *stream,
   switch ( type )
   {
     case MessageTypes::Bool:
-      return ValueMessage<value_type<MessageTypes::Bool>::value>::fromStream( stream, 1, bytes_read );
+      return ValueMessage<typename value_type<MessageTypes::Bool>::value>::fromStream( stream, 1, bytes_read );
     case MessageTypes::UInt8:
-      return ValueMessage<value_type<MessageTypes::UInt8>::value>::fromStream( stream, 1, bytes_read );
+      return ValueMessage<typename value_type<MessageTypes::UInt8>::value>::fromStream( stream, 1, bytes_read );
     case MessageTypes::UInt16:
-      return ValueMessage<value_type<MessageTypes::UInt16>::value>::fromStream( stream, 2, bytes_read );
+      return ValueMessage<typename value_type<MessageTypes::UInt16>::value>::fromStream( stream, 2, bytes_read );
     case MessageTypes::UInt32:
-      return ValueMessage<value_type<MessageTypes::UInt32>::value>::fromStream( stream, 4, bytes_read );
+      return ValueMessage<typename value_type<MessageTypes::UInt32>::value>::fromStream( stream, 4, bytes_read );
     case MessageTypes::UInt64:
-      return ValueMessage<value_type<MessageTypes::UInt64>::value>::fromStream( stream, 8, bytes_read );
+      return ValueMessage<typename value_type<MessageTypes::UInt64>::value>::fromStream( stream, 8, bytes_read );
     case MessageTypes::Int8:
-      return ValueMessage<value_type<MessageTypes::Int8>::value>::fromStream( stream, 1, bytes_read );
+      return ValueMessage<typename value_type<MessageTypes::Int8>::value>::fromStream( stream, 1, bytes_read );
     case MessageTypes::Int16:
-      return ValueMessage<value_type<MessageTypes::Int16>::value>::fromStream( stream, 2, bytes_read );
+      return ValueMessage<typename value_type<MessageTypes::Int16>::value>::fromStream( stream, 2, bytes_read );
     case MessageTypes::Int32:
-      return ValueMessage<value_type<MessageTypes::Int32>::value>::fromStream( stream, 4, bytes_read );
+      return ValueMessage<typename value_type<MessageTypes::Int32>::value>::fromStream( stream, 4, bytes_read );
     case MessageTypes::Int64:
-      return ValueMessage<value_type<MessageTypes::Int64>::value>::fromStream( stream, 8, bytes_read );
+      return ValueMessage<typename value_type<MessageTypes::Int64>::value>::fromStream( stream, 8, bytes_read );
     case MessageTypes::Float32:
-      return ValueMessage<value_type<MessageTypes::Float32>::value>::fromStream( stream, 4, bytes_read );
+      return ValueMessage<typename value_type<MessageTypes::Float32>::value>::fromStream( stream, 4, bytes_read );
     case MessageTypes::Float64:
-      return ValueMessage<value_type<MessageTypes::Float64>::value>::fromStream( stream, 8, bytes_read );
+      return ValueMessage<typename value_type<MessageTypes::Float64>::value>::fromStream( stream, 8, bytes_read );
     case MessageTypes::String:
-      return ValueMessage<value_type<MessageTypes::String>::value>::fromStream( stream, limit, bytes_read );
+      return ValueMessage<typename value_type<MessageTypes::String>::value>::fromStream( stream, limit, bytes_read );
     case MessageTypes::Time:
-      return ValueMessage<value_type<MessageTypes::Time>::value>::fromStream( stream, 8, bytes_read );
+      return ValueMessage<typename value_type<MessageTypes::Time>::value>::fromStream( stream, 8, bytes_read );
     case MessageTypes::Duration:
-      return ValueMessage<value_type<MessageTypes::Duration>::value>::fromStream( stream, 8, bytes_read );
+      return ValueMessage<typename value_type<MessageTypes::Duration>::value>::fromStream( stream, 8, bytes_read );
     case MessageTypes::Compound:
     case MessageTypes::Array:
       throw BabelFishException( "Array and compound are not value message types!" );

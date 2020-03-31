@@ -19,5 +19,5 @@ int main( int argc, char **argv )
   TranslatedMessage::Ptr res;
   std::cout << "Call result: " << fish.callService( "/ros_babel_fish/service", req, res ) << std::endl;
   std::cout << "Response:" << std::endl;
-  std::cout << "  sum: " << res->translated_message->as<CompoundMessage>()["sum"].value<long>() << std::endl;
+  std::cout << "  sum: " << res->translated_message->as<CompoundMessage>()["sum"].value<int64_t>() << std::endl;
 }

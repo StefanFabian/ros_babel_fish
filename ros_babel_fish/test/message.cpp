@@ -50,7 +50,7 @@ TEST( MessageTest, message )
     const Message &vmc = vm;
     EXPECT_THROW( vmc["answer"], BabelFishException );
     EXPECT_EQ( vm.value<uint8_t>(), 42U );
-    EXPECT_NO_THROW( vm = static_cast<uint8_t >(55));
+    EXPECT_NO_THROW( vm = uint8_t( 55 ));
     EXPECT_EQ( vmc.value<int32_t>(), 55 );
     EXPECT_THROW( vm = true, BabelFishException );
 
@@ -81,7 +81,7 @@ TEST( MessageTest, message )
     ValueMessage<uint16_t> vm_in( 42 );
     Message &vm = vm_in;
     EXPECT_EQ( vm.value<uint16_t>(), 42U );
-    EXPECT_NO_THROW( vm = static_cast<uint16_t >(355));
+    EXPECT_NO_THROW( vm = uint16_t( 355 ));
     EXPECT_EQ( vm.value<int32_t>(), 355 );
 
     ASSERT_EQ( vm._sizeInBytes(), 2U );
@@ -98,7 +98,7 @@ TEST( MessageTest, message )
     ValueMessage<uint32_t> vm_in( 42 );
     Message &vm = vm_in;
     EXPECT_EQ( vm.value<uint32_t>(), 42U );
-    EXPECT_NO_THROW( vm = static_cast<uint32_t >(133755));
+    EXPECT_NO_THROW( vm = uint32_t( 133755 ));
     EXPECT_EQ( vm.value<int64_t>(), 133755 );
 
     ASSERT_EQ( vm._sizeInBytes(), 4U );
@@ -115,8 +115,8 @@ TEST( MessageTest, message )
     ValueMessage<uint64_t> vm_in( 42 );
     Message &vm = vm_in;
     EXPECT_EQ( vm.value<uint64_t>(), 42U );
-    EXPECT_NO_THROW( vm = static_cast<uint64_t >(2UL << 34U));
-    EXPECT_EQ( vm.value<int64_t>(), 2L << 34L );
+    EXPECT_NO_THROW( vm = uint64_t( 2 ) << uint64_t( 34U ));
+    EXPECT_EQ( vm.value<int64_t>(), int64_t( 2 ) << int64_t( 34 ));
 
     ASSERT_EQ( vm._sizeInBytes(), 8U );
     uint8_t stream[8];
@@ -124,7 +124,7 @@ TEST( MessageTest, message )
     size_t bytes_read = 0;
     Message::Ptr msg = createValueMessageFromData( MessageTypes::UInt64, stream, bytes_read );
     EXPECT_EQ( bytes_read, 8U );
-    EXPECT_EQ( msg->value<uint64_t>(), 2UL << 34U );
+    EXPECT_EQ( msg->value<uint64_t>(), uint64_t( 2 ) << uint64_t( 34 ));
   }
 
   // INT8
@@ -135,7 +135,7 @@ TEST( MessageTest, message )
     const Message &vmc = vm;
     EXPECT_THROW( vmc["answer"], BabelFishException );
     EXPECT_EQ( vm.value<int8_t>(), 42 );
-    EXPECT_NO_THROW( vm = static_cast<int8_t >(55));
+    EXPECT_NO_THROW( vm = int8_t( 55 ));
     EXPECT_EQ( vmc.value<int32_t>(), 55 );
     EXPECT_THROW( vm = true, BabelFishException );
 
@@ -164,7 +164,7 @@ TEST( MessageTest, message )
     ValueMessage<int16_t> vm_in( 42 );
     Message &vm = vm_in;
     EXPECT_EQ( vm.value<int16_t>(), 42 );
-    EXPECT_NO_THROW( vm = static_cast<int16_t >(129));
+    EXPECT_NO_THROW( vm = int16_t( 129 ));
     EXPECT_EQ( vm.value<int32_t>(), 129 );
 
     ASSERT_EQ( vm._sizeInBytes(), 2U );
@@ -181,7 +181,7 @@ TEST( MessageTest, message )
     ValueMessage<int32_t> vm_in( 42 );
     Message &vm = vm_in;
     EXPECT_EQ( vm.value<int32_t>(), 42 );
-    EXPECT_NO_THROW( vm = static_cast<int32_t >(70501));
+    EXPECT_NO_THROW( vm = int32_t( 70501 ));
     EXPECT_EQ( vm.value<int32_t>(), 70501 );
 
     ASSERT_EQ( vm._sizeInBytes(), 4U );
@@ -198,8 +198,8 @@ TEST( MessageTest, message )
     ValueMessage<int64_t> vm_in( 42 );
     Message &vm = vm_in;
     EXPECT_EQ( vm.value<int64_t>(), 42 );
-    EXPECT_NO_THROW( vm = static_cast<int64_t >(2L << 34L));
-    EXPECT_EQ( vm.value<int64_t>(), 2L << 34L );
+    EXPECT_NO_THROW( vm = static_cast<int64_t >(int64_t( 2 ) << int64_t( 34 )));
+    EXPECT_EQ( vm.value<int64_t>(), int64_t( 2 ) << int64_t( 34 ));
     EXPECT_THROW( vm.value<int32_t>(), BabelFishException );
 
     ASSERT_EQ( vm._sizeInBytes(), 8U );
@@ -208,7 +208,7 @@ TEST( MessageTest, message )
     size_t bytes_read = 0;
     Message::Ptr msg = createValueMessageFromData( MessageTypes::Int64, stream, bytes_read );
     EXPECT_EQ( bytes_read, 8U );
-    EXPECT_EQ( msg->value<int64_t>(), 2L << 34L );
+    EXPECT_EQ( msg->value<int64_t>(), int64_t( 2 ) << int64_t( 34 ));
   }
 
   // BOOL
@@ -483,8 +483,8 @@ TEST( MessageTest, compoundMessage )
   MessageTemplate::Ptr tmpl = std::make_shared<MessageTemplate>();
   tmpl->type = MessageTypes::Compound;
   tmpl->compound.datatype = "random_type/Msg";
-  tmpl->compound.names.emplace_back("Test" );
-  tmpl->compound.names.emplace_back("OtherKey" );
+  tmpl->compound.names.emplace_back( "Test" );
+  tmpl->compound.names.emplace_back( "OtherKey" );
   MessageTemplate::Ptr test_tmpl = std::make_shared<MessageTemplate>();
   test_tmpl->type = MessageTypes::Bool;
   MessageTemplate::Ptr other_key_tmpl = std::make_shared<MessageTemplate>();

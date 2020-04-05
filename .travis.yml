@@ -8,7 +8,12 @@ language: cpp
 os: linux
 matrix:
   include:
-  - name: "Bionic melodic"
+  - name: "Bionic melodic AMD64"
+    arch: amd64
+    dist: bionic
+    env: ROS_DISTRO=melodic
+  - name: "Bionic melodic ARM64"
+    arch: arm64
     dist: bionic
     env: ROS_DISTRO=melodic
 

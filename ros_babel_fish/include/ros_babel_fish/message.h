@@ -316,6 +316,7 @@ DECLARE_MEMBER_TYPE_FOR_MESSAGE_TYPE( MessageTypes::Duration, ros::Duration );
 DECLARE_MEMBER_TYPE_FOR_MESSAGE_TYPE( MessageTypes::String, std::string );
 DECLARE_MEMBER_TYPE_FOR_MESSAGE_TYPE( MessageTypes::Compound, Message );
 DECLARE_MEMBER_TYPE_FOR_MESSAGE_TYPE( MessageTypes::Array, Message );
+DECLARE_MEMBER_TYPE_FOR_MESSAGE_TYPE( MessageTypes::None, void );
 #undef DECLARE_MEMBER_TYPE_FOR_MESSAGE_TYPE
 
 template<MessageType>

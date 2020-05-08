@@ -1,6 +1,5 @@
-//
-// Created by Stefan Fabian on 06.05.20.
-//
+// Copyright (c) 2020 Stefan Fabian. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 #ifndef ROS_BABEL_FISH_MACROS_H
 #define ROS_BABEL_FISH_MACROS_H

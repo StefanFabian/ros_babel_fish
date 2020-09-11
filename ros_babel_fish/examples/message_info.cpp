@@ -28,6 +28,8 @@ int main( int argc, char **argv )
   std::cout << "MD5:" << std::endl;
   std::cout << message_description->md5 << std::endl << std::endl;
   std::cout << "Message Definition:" << std::endl;
-  std::cout << message_description->message_definition << std::endl;
+  std::cout << "======================" << std::endl;
+  std::cout << message_description->message_definition;
+  std::cout << "======================" << std::endl;
   std::cout << std::endl;
 }

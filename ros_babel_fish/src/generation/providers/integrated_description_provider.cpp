@@ -169,50 +169,29 @@ ServiceDescription::ConstPtr IntegratedDescriptionProvider::getServiceDescriptio
   // Load service specification from file
   std::ifstream file_input( service_path );
   file_input.seekg( 0, std::ios::end );
-  std::string specification;
-  specification.resize( file_input.tellg());
+  std::string spec;
+  spec.resize( file_input.tellg());
   file_input.seekg( 0, std::ios::beg );
-  file_input.read( &specification[0], specification.size());
+  file_input.read( &spec[0], spec.size());
   file_input.close();
-
-  // Why write many lines if a single not understandable regex can do the job
-  // This regex is responsible for stripping comments and whitespaces from the line.
-  // There are two cases:
-  // First, the field is a string constant, in that case the comment character has no effect and the line is simply trimmed
-  // Second, the field is not a string constant and the comment should be stripped and the rest of the line trimmed
-  static std::regex line_regex(
-    R"(^\s*(string\s[a-zA-Z]\w*(?:\s*=.*\S)?|\w+(?:\/\w+)?(?:\s*\[\d*\])?\s*[a-zA-Z]\w*(?:\s*=\s*[^#]*[^#\s])?))" );
-  std::smatch match;
-  std::string request;
-  request.reserve( specification.size());
-  std::string response;
-  response.reserve( specification.size());
-  std::string *current = &request;
-  std::string::size_type start = 0;
-  std::string::size_type end;
-  while ( true )
+  if ( spec.length() < 3 )
   {
-    end = specification.find( '\n', start );
-    if ( current == &request && start < specification.length() + 2 &&
-         specification[start] == '-' && specification[start + 1] == '-' && specification[start + 2] == '-' )
-    {
-      current = &response;
-      if ( end == std::string::npos ) break;
-      start = end + 1;
-      continue;
-    }
-    std::string::const_iterator first = specification.begin() + start;
-    std::string::const_iterator last = end == std::string::npos ? specification.end() : specification.begin() + end;
-    if ( std::regex_search( first, last, match, line_regex ))
-    {
-      *current += match.str( 1 );
-    }
-    *current += '\n';
-
-    if ( end == std::string::npos ) break;
-    start = end + 1;
+    ROS_ERROR_NAMED( "RosBabelFish", "Service specification for type '%s' in package '%s' was invalid!",
+                     msg_type.c_str(), package.c_str());
+    return nullptr;
   }
 
-  return registerService( type, specification, request, response );
+  // Extract service request and response specifications which are divided by '---' on a blank line
+  std::string::size_type end = 0;
+  if ( spec[0] != '-' || spec[1] != '-' || spec[2] != '-' )
+    end = spec.find( "\n---" );
+  std::string request( spec, 0, end );
+
+  std::string response;
+  end = spec.find( '\n', end + 1 );
+  if ( end != std::string::npos && end + 1 < spec.length())
+    response = std::string( spec, end + 1 ) + "\n";
+
+  return registerService( type, spec, request, response );
 }
 } // ros_babel_fish

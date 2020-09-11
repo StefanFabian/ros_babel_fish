@@ -91,6 +91,10 @@ add_executable(${PROJECT_NAME}_troll_node examples/troll_node.cpp)
 target_link_libraries(${PROJECT_NAME}_troll_node ${PROJECT_NAME} ${LIBRARIES})
 set_target_properties(${PROJECT_NAME}_troll_node PROPERTIES OUTPUT_NAME troll_node PREFIX "")
 
+add_executable(${PROJECT_NAME}_service_info examples/service_info.cpp)
+target_link_libraries(${PROJECT_NAME}_service_info ${PROJECT_NAME} ${LIBRARIES})
+set_target_properties(${PROJECT_NAME}_service_info PROPERTIES OUTPUT_NAME service_info PREFIX "")
+
 add_executable(${PROJECT_NAME}_service_server examples/service_server.cpp)
 target_link_libraries(${PROJECT_NAME}_service_server ${PROJECT_NAME} ${LIBRARIES})
 set_target_properties(${PROJECT_NAME}_service_server PROPERTIES OUTPUT_NAME service_server PREFIX "")

@@ -11,19 +11,27 @@ matrix:
   - name: "Bionic melodic AMD64"
     arch: amd64
     dist: bionic
-    env: ROS_DISTRO=melodic
+    env:
+      - ROS_DISTRO=melodic
+      - ROS_PYTHON_PKGS=python-catkin-pkg python-catkin-tools python-rosdep python-wstool
   - name: "Bionic melodic ARM64"
     arch: arm64
     dist: bionic
-    env: ROS_DISTRO=melodic
+    env:
+      - ROS_DISTRO=melodic
+      - ROS_PYTHON_PKGS=python-catkin-pkg python-catkin-tools python-rosdep python-wstool
   - name: "Focal noetic AMD64"
     arch: amd64
     dist: focal
-    env: ROS_DISTRO=noetic
+    env:
+      - ROS_DISTRO=noetic
+      - ROS_PYTHON_PKGS=python3-catkin-pkg python3-catkin-tools python3-rosdep python3-wstool
   - name: "Focal noetic ARM64"
     arch: arm64
     dist: focal
-    env: ROS_DISTRO=noetic
+    env:
+      - ROS_DISTRO=noetic
+      - ROS_PYTHON_PKGS=python3-catkin-pkg python3-catkin-tools python3-rosdep python3-wstool
 
 # Configuration variables. All variables are global now, but this can be used to
 # trigger a build matrix for different ROS distributions if desired.
@@ -44,7 +52,7 @@ before_install:
   - sudo apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
   - sudo apt-get update -qq
   - sudo apt-get install dpkg
-  - sudo apt-get install -y python-catkin-pkg python-catkin-tools python-rosdep python-wstool ros-$ROS_DISTRO-ros-base ros-$ROS_DISTRO-code-coverage
+  - sudo apt-get install -y $ROS_PYTHON_PKGS ros-$ROS_DISTRO-ros-base ros-$ROS_DISTRO-code-coverage
   - source /opt/ros/$ROS_DISTRO/setup.bash
   # Prepare rosdep to install dependencies.
   - sudo rosdep init

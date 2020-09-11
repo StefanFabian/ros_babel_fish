@@ -16,6 +16,14 @@ matrix:
     arch: arm64
     dist: bionic
     env: ROS_DISTRO=melodic
+  - name: "Focal noetic AMD64"
+    arch: amd64
+    dist: focal
+    env: ROS_DISTRO=noetic
+  - name: "Focal noetic ARM64"
+    arch: arm64
+    dist: focal
+    env: ROS_DISTRO=noetic
 
 # Configuration variables. All variables are global now, but this can be used to
 # trigger a build matrix for different ROS distributions if desired.

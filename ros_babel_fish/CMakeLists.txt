@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0)
-project(ros_babel_fish)
+project(ros_babel_fish VERSION 0.8.0)
 
 # If the value doesn't fit, an exception is thrown in any case because that could result in unexpected behavior and can not be ignored lightly
 option(WARN_ON_INCOMPATIBLE_TYPE "If ON a warning is printed if a value message is set or accessed with a type that does not allow casting without loss of information" ON)

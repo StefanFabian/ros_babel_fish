@@ -13,25 +13,25 @@ matrix:
     dist: bionic
     env:
       - ROS_DISTRO=melodic
-      - ROS_PYTHON_PKGS=python-catkin-pkg python-catkin-tools python-rosdep python-wstool
+      - ROS_PYTHON_PKGS="python-catkin-pkg python-catkin-tools python-rosdep python-wstool"
   - name: "Bionic melodic ARM64"
     arch: arm64
     dist: bionic
     env:
       - ROS_DISTRO=melodic
-      - ROS_PYTHON_PKGS=python-catkin-pkg python-catkin-tools python-rosdep python-wstool
+      - ROS_PYTHON_PKGS="python-catkin-pkg python-catkin-tools python-rosdep python-wstool"
   - name: "Focal noetic AMD64"
     arch: amd64
     dist: focal
     env:
       - ROS_DISTRO=noetic
-      - ROS_PYTHON_PKGS=python3-catkin-pkg python3-catkin-tools python3-rosdep python3-wstool
+      - ROS_PYTHON_PKGS="python3-catkin-pkg python3-catkin-tools python3-rosdep python3-wstool"
   - name: "Focal noetic ARM64"
     arch: arm64
     dist: focal
     env:
       - ROS_DISTRO=noetic
-      - ROS_PYTHON_PKGS=python3-catkin-pkg python3-catkin-tools python3-rosdep python3-wstool
+      - ROS_PYTHON_PKGS="python3-catkin-pkg python3-catkin-tools python3-rosdep python3-wstool"
 
 # Configuration variables. All variables are global now, but this can be used to
 # trigger a build matrix for different ROS distributions if desired.

@@ -1,5 +1,5 @@
-cmake_minimum_required(VERSION 2.8.3)
-project(ros_babel_fish_test_msgs)
+cmake_minimum_required(VERSION 3.0)
+project(ros_babel_fish_test_msgs VERSION 0.8.0)
 
 find_package(catkin REQUIRED COMPONENTS actionlib_msgs message_generation std_msgs geometry_msgs)
 
@@ -31,10 +31,10 @@ add_action_files(
 
 ## Generate added messages and services with any dependencies listed here
 generate_messages(
-   DEPENDENCIES
-   actionlib_msgs
-   std_msgs
-   geometry_msgs
+  DEPENDENCIES
+  actionlib_msgs
+  std_msgs
+  geometry_msgs
 )
 
 ###################################

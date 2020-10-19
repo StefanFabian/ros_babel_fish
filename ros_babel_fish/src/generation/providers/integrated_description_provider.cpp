@@ -188,9 +188,12 @@ ServiceDescription::ConstPtr IntegratedDescriptionProvider::getServiceDescriptio
   std::string request( spec, 0, end );
 
   std::string response;
-  end = spec.find( '\n', end + 1 );
-  if ( end != std::string::npos && end + 1 < spec.length())
-    response = std::string( spec, end + 1 ) + "\n";
+  if ( end != std::string::npos )
+  {
+    end = spec.find( '\n', end + 1 );
+    if ( end != std::string::npos && end + 1 < spec.length())
+      response = std::string( spec, end + 1 ) + "\n";
+  }
 
   return registerService( type, spec, request, response );
 }

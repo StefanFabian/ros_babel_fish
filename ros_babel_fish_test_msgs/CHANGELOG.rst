@@ -2,8 +2,8 @@
 Changelog for package ros_babel_fish_test_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.9.0 (2020-10-28)
+------------------
 * Added install target for service_info. Cleaned up package.xml
 * Contributors: Stefan Fabian
 

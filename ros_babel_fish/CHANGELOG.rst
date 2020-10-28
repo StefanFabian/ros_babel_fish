@@ -2,8 +2,8 @@
 Changelog for package ros_babel_fish
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.9.0 (2020-10-28)
+------------------
 * Added install target for service_info. Cleaned up package.xml
 * Fixed service spec loading wrong response if service spec doesn't contain '---'.
 * Updated integrated description provider for service descriptions to reflect changes in genmsg that caused some tests to fail.

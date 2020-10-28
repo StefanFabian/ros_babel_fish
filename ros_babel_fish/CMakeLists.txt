@@ -123,6 +123,7 @@ install(TARGETS
   ${PROJECT_NAME}_any_subscriber
   ${PROJECT_NAME}_message_info
   ${PROJECT_NAME}_troll_node
+  ${PROJECT_NAME}_service_info
   ${PROJECT_NAME}_service_server
   ${PROJECT_NAME}_service_client
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}

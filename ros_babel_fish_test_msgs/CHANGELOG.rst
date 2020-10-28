@@ -2,6 +2,11 @@
 Changelog for package ros_babel_fish_test_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Added install target for service_info. Cleaned up package.xml
+* Contributors: Stefan Fabian
+
 0.8.0 (2020-03-20)
 ------------------
 * Added specialization for action client to allow creating an ActionClient with a BabelFishAction.

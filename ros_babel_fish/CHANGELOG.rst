@@ -2,6 +2,17 @@
 Changelog for package ros_babel_fish
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Added install target for service_info. Cleaned up package.xml
+* Fixed service spec loading wrong response if service spec doesn't contain '---'.
+* Updated integrated description provider for service descriptions to reflect changes in genmsg that caused some tests to fail.
+  Both implementations are interoperable and the change should have no impact on service calls using ros_babel_fish but new implementation is now again consistent with message_traits::definition<...>().
+  The new implementation is also less complex and faster.
+* Added macros for template calls.
+  This replaces the boiler plate code for situations where you would do switch(msg.type()) { ... } and call a template function with the C++ type of the message as a template parameter.
+* Contributors: Stefan Fabian
+
 0.8.0 (2020-03-20)
 ------------------
 * Updated install targets and added OpenSSL to dependencies.

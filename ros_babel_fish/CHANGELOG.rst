@@ -2,8 +2,8 @@
 Changelog for package ros_babel_fish
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.9.1 (2020-10-29)
+------------------
 * Added missing build depend for openssl headers to fix build for noetic.
 * Contributors: Stefan Fabian
 

@@ -2,6 +2,11 @@
 Changelog for package ros_babel_fish_test_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Added missing build depend for openssl headers to fix build for noetic.
+* Contributors: Stefan Fabian
+
 0.9.0 (2020-10-28)
 ------------------
 * Added install target for service_info. Cleaned up package.xml

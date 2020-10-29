@@ -2,7 +2,10 @@
 <package format="2">
   <name>ros_babel_fish</name>
   <version>0.9.0</version>
-  <description>The ros_babel_fish package</description>
+  <description>
+    A runtime message handler for ROS.
+    Allows subscription, publishing, calling of services and actions with messages known only at runtime.
+  </description>
 
   <maintainer email="ros_babel_fish@stefanfabian.me">Stefan Fabian</maintainer>
 
@@ -12,6 +15,7 @@
 
   <buildtool_depend>catkin</buildtool_depend>
 
+  <build_depend>libssl-dev</build_depend>
   <depend>actionlib</depend>
   <depend>openssl</depend>
   <depend>roscpp</depend>

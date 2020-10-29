@@ -32,8 +32,8 @@ find_package(OpenSSL REQUIRED)
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
   INCLUDE_DIRS include
-  LIBRARIES ros_babel_fish
-  CATKIN_DEPENDS roscpp roslib actionlib
+  LIBRARIES ${PROJECT_NAME}
+  CATKIN_DEPENDS actionlib roscpp roslib
   DEPENDS OPENSSL
 )
 
@@ -197,7 +197,7 @@ endif ()
 if(CATKIN_ENABLE_TESTING AND ENABLE_COVERAGE_TESTING)
   find_package(code_coverage REQUIRED)   # catkin package ros-*-code-coverage
   include(CodeCoverage)
-  APPEND_COVERAGE_COMPILER_FLAGS()
+  append_coverage_compiler_flags()
   set(COVERAGE_EXCLUDES "*/${PROJECT_NAME}/test*" "*/${PROJECT_NAME}/examples*" "*/${PROJECT_NAME}/benchmarks*")
   add_code_coverage(NAME ${PROJECT_NAME}_coverage)
 endif ()

@@ -99,10 +99,10 @@ private:
   uint32_t buffer_used_;
 };
 
-class BabelFishMessageException : public ros::Exception
+class BabelFishMessageException : public BabelFishException
 {
 public:
-  explicit BabelFishMessageException( const std::string &msg ) : ros::Exception( msg ) { }
+  explicit BabelFishMessageException( const std::string &msg ) : BabelFishException( msg ) { }
 };
 } // ros_babel_fish
 

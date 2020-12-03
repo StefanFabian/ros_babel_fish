@@ -1,0 +1,11 @@
+PROJECT_NAME="ROS BabelFish"
+# List the source input folders from which the documentation is generated here
+INPUT=../include
+RECURSIVE=YES
+GENERATE_HTML=YES
+GENERATE_XML=YES
+XML_OUTPUT=xml
+# Removes warning if a method is not documented
+WARN_IF_UNDOCUMENTED=NO
+# Don't document the ros serialization stuff
+PREDEFINED=DOXYGEN_SHOULD_SKIP_THIS

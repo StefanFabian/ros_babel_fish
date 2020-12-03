@@ -12,6 +12,11 @@
 namespace ros_babel_fish
 {
 
+/*!
+ * Interface for message lookup mechanisms.
+ * Responsible for translating the text message definition, md5 sum etc. into a usable format.
+ * Caches looked up messages to prevent multiple costly look ups.
+ */
 class DescriptionProvider
 {
 protected:
@@ -37,21 +42,47 @@ public:
 
   DescriptionProvider();
 
+  /*!
+   * Look up MessageDescription by type.
+   * @param type The message type, e.g., std_msgs/Header
+   * @return MessageDescription or nullptr if not found.
+   */
   MessageDescription::ConstPtr getMessageDescription( const std::string &type );
 
+  /*!
+   * Register and create MessageDescription from BabelFishMessage.
+   * @param msg The received BabelFishMessage.
+   * @return MessageDescription or nullptr if failed.
+   *
+   * @throws BabelFishException If MessageDescription for message type was already registered but MD5 sums didn't match.
+   */
   MessageDescription::ConstPtr getMessageDescription( const BabelFishMessage &msg );
 
+  /*!
+   * Look up ServiceDescription by type.
+   * @param type The service type, e.g., roscpp_tutorials/TwoInts
+   * @return ServiceDescription or nullptr if not found
+   */
   ServiceDescription::ConstPtr getServiceDescription( const std::string &type );
 
   bool isBuiltIn( const std::string &type ) const;
 
 protected:
 
+  /*!
+   * Implementation of message look up by type.
+   * MessageDescription can be obtained using registerMessage
+   * @param type Message type.
+   * @return MessageDescription for given type or nullptr if not found
+   */
   virtual MessageDescription::ConstPtr getMessageDescriptionImpl( const std::string &type ) = 0;
 
   virtual MessageDescription::ConstPtr getMessageDescriptionImpl( const std::string &type,
                                                                   const std::string &definition );
 
+  /*!
+   * Implementation of registration and creation of MessageDescription from BabelFishMessage.
+   */
   virtual MessageDescription::ConstPtr getMessageDescriptionImpl( const BabelFishMessage &msg );
 
   virtual ServiceDescription::ConstPtr getServiceDescriptionImpl( const std::string &type ) = 0;

@@ -14,7 +14,7 @@ namespace ros_babel_fish
 {
 
 /*!
- * A message that can store any type of message.
+ * A ROS message container that can store any type of message.
  * The message contents can be retrieved by translating it with a BabelFish.
  */
 class BabelFishMessage
@@ -106,6 +106,7 @@ public:
 };
 } // ros_babel_fish
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 // Message and service traits for serialization API
 namespace ros
 {
@@ -207,5 +208,6 @@ struct PreDeserialize<::ros_babel_fish::BabelFishMessage>
 } // serialization
 
 } // ros
+#endif // DOXYGEN_SHOULD_SKIP_THIS
 
 #endif //ROS_BABEL_FISH_BABEL_FISH_MESSAGE_H

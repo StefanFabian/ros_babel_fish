@@ -39,16 +39,16 @@ class BabelFish
 {
 public:
   /*!
-   * Constructs an instance of BabelFish with a new instance of the default description provider.
-   * If you have to use multiple BabelFish instances, it is recommended to shae the description provider to
+   * Constructs an instance of BabelFish with a new instance of the default DescriptionProvider.
+   * If you have to use multiple BabelFish instances, it is recommended to share the DescriptionProvider to
    * prevent multiple look ups of the same message.
    */
   BabelFish();
 
   /*!
-   * Constructs an instance of BabelFish with the given description provider.
-   * @param description_provider The description provider to be used.
-   * @throws BabelFishException If the passed description_provider is a nullptr.
+   * Constructs an instance of BabelFish with the given DescriptionProvider.
+   * @param description_provider The DescriptionProvider to be used. Can NOT be null.
+   * @throws BabelFishException If the passed DescriptionProvider is a nullptr.
    */
   explicit BabelFish( DescriptionProvider::Ptr description_provider );
 
@@ -59,7 +59,7 @@ public:
    * translated message. The reference to the input message is needed to ensure the data is not destroyed because
    * the translated message may depend on it.
    * @param msg The received BabelFishMessage
-   * @return A struct containing the input and the translated message.
+   * @return TranslatedMessage containing the input BabelFishMessage and the translated Message.
    */
   TranslatedMessage::Ptr translateMessage( const BabelFishMessage::ConstPtr &msg );
 
@@ -69,7 +69,7 @@ public:
    * not destroyed during the lifetime of Message (or until Message is detached using Message::detachFromStream).
    * Hence, the user has to ensure the BabelFishMessage is not destroyed or detach the Message before it is destroyed.
    * @param msg The received BabelFishMessage
-   * @return The translated message.
+   * @return The translated Message.
    */
   Message::Ptr translateMessage( const BabelFishMessage &msg );
 
@@ -77,7 +77,7 @@ public:
    * Translates a message created by BabelFish into a BabelFishMessage that can be sent using the implementations
    * provided by ROS.
    * @param msg The input message
-   * @return The serialized ROS compatible message
+   * @return The serialized ROS compatible BabelFishMessage
    */
   BabelFishMessage::Ptr translateMessage( const Message::ConstPtr &msg );
 
@@ -124,7 +124,7 @@ public:
   /*!
    * Creates an empty message of the given type.
    * @param type The message type, e.g.: "std_msgs/Header"
-   * @return An empty message of the given type
+   * @return An empty Message of the given type
    *
    * @throws BabelFishException If the message description was not found
    */
@@ -133,7 +133,7 @@ public:
   /*!
    * Creates a service request message for the given service type.
    * @param type The type of the service, e.g., rosapi/GetParam
-   * @return An empty service request message that can be used to call a service of the given type
+   * @return An empty service request Message that can be used to call a service of the given type
    *
    * @throws BabelFishException If the service description was not found
    */
@@ -141,16 +141,20 @@ public:
 
   /*!
    * Calls a service on the given topic with the given request
-   * @param service
-   * @param req
-   * @param res
-   * @return
+   * @param service The type of the service, e.g., "roscpp_tutorials/TwoInts"
+   * @param req The service request
+   * @param res The service response if the call was successful
+   * @return Return value of the service call
    *
    * @throws BabelFishException If the passed req message is not a request
    * @throws BabelFishException If the service description was not found
    */
   bool callService( const std::string &service, const Message::ConstPtr &req, TranslatedMessage::Ptr &res );
 
+  /*!
+   * @see DescriptionProvider
+   * @return The description provider used by this instance.
+   */
   DescriptionProvider::Ptr &descriptionProvider();
 
 private:

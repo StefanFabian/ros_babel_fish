@@ -224,7 +224,6 @@ protected:
   const uint8_t *stream_; // TODO regard endianness
 };
 
-
 template<>
 bool Message::value() const;
 

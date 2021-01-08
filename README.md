@@ -1,8 +1,6 @@
 [![Build Status](https://travis-ci.org/StefanFabian/ros_babel_fish.svg?branch=master)](https://travis-ci.org/StefanFabian/ros_babel_fish)
 [![codecov](https://codecov.io/gh/StefanFabian/ros_babel_fish/branch/master/graph/badge.svg)](https://codecov.io/gh/StefanFabian/ros_babel_fish)
 
-### ALPHA: This library is currently in alpha stadium. Tests for >90% line coverage are written but it requires more testing.
-
 This library enables ROS nodes written in C++ to communicate using message types that are unknown at compile time.
 
 You can subscribe and even publish any available message type.  

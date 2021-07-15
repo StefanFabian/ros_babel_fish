@@ -103,6 +103,11 @@ MessageDescription::ConstPtr IntegratedDescriptionProvider::getMessageDescriptio
 {
   if ( type == "Header" ) return getMessageDescription( "std_msgs/Header" );
   std::string::size_type pos_separator = type.find( '/' );
+  if ( pos_separator == std::string::npos )
+  {
+    ROS_WARN_NAMED( "RosBabelFish", "Type '%s' is not a valid message type!", type.c_str());
+    return nullptr;
+  }
   std::string package = type.substr( 0, pos_separator );
   std::string msg_type = type.substr( package.length() + 1 );
   auto it = msg_paths_.find( package );
@@ -142,6 +147,11 @@ MessageDescription::ConstPtr IntegratedDescriptionProvider::getMessageDescriptio
 ServiceDescription::ConstPtr IntegratedDescriptionProvider::getServiceDescriptionImpl( const std::string &type )
 {
   std::string::size_type pos_separator = type.find( '/' );
+  if ( pos_separator == std::string::npos )
+  {
+    ROS_WARN_NAMED( "RosBabelFish", "Type '%s' is not a valid service type!", type.c_str());
+    return nullptr;
+  }
   std::string package = type.substr( 0, pos_separator );
   std::string msg_type = type.substr( package.length() + 1 );
   auto it = srv_paths_.find( package );

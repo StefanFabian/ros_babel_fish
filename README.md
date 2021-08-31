@@ -1,6 +1,18 @@
-[![Build Status](https://travis-ci.org/StefanFabian/ros_babel_fish.svg?branch=master)](https://travis-ci.org/StefanFabian/ros_babel_fish)
+[![Build Status](https://app.travis-ci.com/StefanFabian/ros_babel_fish.svg?branch=kinetic)](https://app.travis-ci.com/StefanFabian/ros_babel_fish)
 [![codecov](https://codecov.io/gh/StefanFabian/ros_babel_fish/branch/master/graph/badge.svg)](https://codecov.io/gh/StefanFabian/ros_babel_fish)
 
+## Scientific Works
+If you are using this module in a scientific context, feel free to cite this paper:
+```
+@INPROCEEDINGS{fabian2021hri,
+  author = {Stefan Fabian and Oskar von Stryk},
+  title = {Open-Source Tools for Efficient ROS and ROS2-based 2D Human-Robot Interface Development},
+  year = {2021},
+  booktitle = {2021 European Conference on Mobile Robots (ECMR)},
+}
+```
+
+## ROS BabelFish
 This library enables ROS nodes written in C++ to communicate using message types that are unknown at compile time.
 
 You can subscribe and even publish any available message type.  

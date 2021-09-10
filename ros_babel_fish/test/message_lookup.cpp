@@ -19,6 +19,8 @@
 #include <geometry_msgs/Vector3Stamped.h>
 #include <geometry_msgs/WrenchStamped.h>
 
+#include <ros_babel_fish_test_msgs/TestMessage.h>
+
 #include <std_msgs/Bool.h>
 #include <std_msgs/Byte.h>
 #include <std_msgs/ByteMultiArray.h>
@@ -143,6 +145,8 @@ TEST( MessageLookupTest, integratedDescriptionProvider )
   EXPECT_TRUE((compareDescription<std_msgs::Float32, IntegratedDescriptionProvider>()));
   EXPECT_TRUE((compareDescription<std_msgs::String, IntegratedDescriptionProvider>()));
   EXPECT_TRUE((compareDescription<std_msgs::Time, IntegratedDescriptionProvider>()));
+
+  EXPECT_TRUE((compareDescription<ros_babel_fish_test_msgs::TestMessage, IntegratedDescriptionProvider>()));
 }
 
 TEST( MessageLookupTest, messageOnlyDescriptionProvider )

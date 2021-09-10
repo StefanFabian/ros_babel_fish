@@ -59,8 +59,8 @@ install:
   # Create the devel/setup.bash (run catkin_make with an empty workspace) and
   # source it to set the path variables.
   - cd ~/catkin_ws
-  - catkin config -j 2
-  - catkin build
+  - catkin config -j 2 # To avoid out-of-memory errors on build
+  - CXXFLAGS=-Werror catkin build
   - source devel/setup.bash
   # Add the package under integration to the workspace using a symlink.
   - cd ~/catkin_ws/src
@@ -81,7 +81,7 @@ before_script:
 script:
   - source /opt/ros/$ROS_DISTRO/setup.bash
   - cd ~/catkin_ws
-  - catkin build
+  - CXXFLAGS=-Werror catkin build
   # Run the tests, ensuring the path is set correctly.
   - source devel/setup.bash
   - catkin run_tests && catkin_test_results

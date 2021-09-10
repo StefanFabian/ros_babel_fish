@@ -145,9 +145,8 @@ install(DIRECTORY include/${PROJECT_NAME}/
 #############
 
 if (CATKIN_ENABLE_TESTING)
-  find_package(rostest REQUIRED)
-  find_package(ros_babel_fish_test_msgs REQUIRED)
-  include_directories(${ros_babel_fish_test_msgs_INCLUDE_DIRS})
+  find_package(catkin REQUIRED COMPONENTS rostest rosapi ros_babel_fish_test_msgs)
+  include_directories(${ros_babel_fish_test_msgs_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS})
 
   add_rostest_gtest(${PROJECT_NAME}_test_message test/test_message.test test/message.cpp)
   target_link_libraries(${PROJECT_NAME}_test_message ${PROJECT_NAME})

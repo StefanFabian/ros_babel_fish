@@ -37,6 +37,8 @@ public:
 
   DescriptionProvider();
 
+  virtual ~DescriptionProvider() = default;
+
   MessageDescription::ConstPtr getMessageDescription( const std::string &type );
 
   MessageDescription::ConstPtr getMessageDescription( const BabelFishMessage &msg );

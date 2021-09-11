@@ -16,7 +16,7 @@ time t
 duration d
 geometry_msgs/Point[] point_arr # more comment
 
-bool FLAG1 = 1
-bool FLAG2 = 0
-bool FLAG3 = True
+bool FLAG1 =1
+bool FLAG2= 0
+bool FLAG3=True
 bool FLAG4 = False

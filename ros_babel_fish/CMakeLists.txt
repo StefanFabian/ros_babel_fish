@@ -1,5 +1,5 @@
-cmake_minimum_required(VERSION 3.0)
-project(ros_babel_fish)
+cmake_minimum_required(VERSION 3.5.1)
+project(ros_babel_fish VERSION 0.9.1)
 
 # If the value doesn't fit, an exception is thrown in any case because that could result in unexpected behavior and can not be ignored lightly
 option(WARN_ON_INCOMPATIBLE_TYPE "If ON a warning is printed if a value message is set or accessed with a type that does not allow casting without loss of information" ON)
@@ -145,8 +145,10 @@ install(DIRECTORY include/${PROJECT_NAME}/
 #############
 
 if (CATKIN_ENABLE_TESTING)
-  find_package(catkin REQUIRED COMPONENTS rostest rosapi ros_babel_fish_test_msgs)
-  include_directories(${ros_babel_fish_test_msgs_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS})
+  find_package(rostest REQUIRED)
+  find_package(rosapi REQUIRED)
+  find_package(ros_babel_fish_test_msgs REQUIRED)
+  include_directories(${ros_babel_fish_test_msgs_INCLUDE_DIRS} ${rosapi_INCLUDE_DIRS} ${rostest_INCLUDE_DIRS})
 
   add_rostest_gtest(${PROJECT_NAME}_test_message test/test_message.test test/message.cpp)
   target_link_libraries(${PROJECT_NAME}_test_message ${PROJECT_NAME})

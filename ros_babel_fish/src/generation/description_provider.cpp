@@ -220,15 +220,15 @@ MessageTemplate::Ptr DescriptionProvider::createTemplate( const MessageSpec &spe
     {
       if ( constant.val == "True" )
       {
-        value = std::make_shared<ValueMessage<uint8_t>>( 1 );
+        value = std::make_shared<ValueMessage<bool>>( true );
       }
       else if ( constant.val == "False" )
       {
-        value = std::make_shared<ValueMessage<uint8_t>>( 0 );
+        value = std::make_shared<ValueMessage<bool>>( false );
       }
       else
       {
-        value = std::make_shared<ValueMessage<uint8_t>>( static_cast<uint8_t>(std::stoi( constant.val )));
+        value = std::make_shared<ValueMessage<bool>>( static_cast<bool>(std::stoi( constant.val )));
       }
     }
     else if ( constant.type == "int8" || constant.type == "byte" )

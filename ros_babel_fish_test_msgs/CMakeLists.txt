@@ -1,5 +1,5 @@
-cmake_minimum_required(VERSION 2.8.3)
-project(ros_babel_fish_test_msgs)
+cmake_minimum_required(VERSION 3.5.1)
+project(ros_babel_fish_test_msgs VERSION 0.9.1)
 
 find_package(catkin REQUIRED COMPONENTS actionlib_msgs message_generation std_msgs geometry_msgs)
 

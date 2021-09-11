@@ -51,7 +51,18 @@ constexpr inBounds( const T &val )
 template<typename T, typename U>
 typename std::enable_if<
   std::is_integral<T>::value &&
-  !std::numeric_limits<T>::is_signed && std::numeric_limits<U>::is_signed, bool>::type
+  !std::numeric_limits<T>::is_signed && std::numeric_limits<U>::is_signed &&
+  std::numeric_limits<T>::digits >= std::numeric_limits<U>::digits, bool>::type
+constexpr inBounds( const T &val )
+{
+  return val <= static_cast<T>(std::numeric_limits<U>::max());
+}
+
+template<typename T, typename U>
+typename std::enable_if<
+  std::is_integral<T>::value &&
+  !std::numeric_limits<T>::is_signed && std::numeric_limits<U>::is_signed &&
+  std::numeric_limits<T>::digits < std::numeric_limits<U>::digits, bool>::type
 constexpr inBounds( const T &val )
 {
   return val <= std::numeric_limits<U>::max();

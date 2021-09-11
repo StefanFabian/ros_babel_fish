@@ -19,6 +19,8 @@
 #include <geometry_msgs/Vector3Stamped.h>
 #include <geometry_msgs/WrenchStamped.h>
 
+#include <ros_babel_fish_test_msgs/TestMessage.h>
+
 #include <std_msgs/Bool.h>
 #include <std_msgs/Byte.h>
 #include <std_msgs/ByteMultiArray.h>
@@ -143,6 +145,8 @@ TEST( MessageLookupTest, integratedDescriptionProvider )
   EXPECT_TRUE((compareDescription<std_msgs::Float32, IntegratedDescriptionProvider>()));
   EXPECT_TRUE((compareDescription<std_msgs::String, IntegratedDescriptionProvider>()));
   EXPECT_TRUE((compareDescription<std_msgs::Time, IntegratedDescriptionProvider>()));
+
+  EXPECT_TRUE((compareDescription<ros_babel_fish_test_msgs::TestMessage, IntegratedDescriptionProvider>()));
 }
 
 TEST( MessageLookupTest, messageOnlyDescriptionProvider )
@@ -154,6 +158,28 @@ TEST( MessageLookupTest, messageOnlyDescriptionProvider )
   EXPECT_NO_THROW( provider.getMessageDescription( mt::datatype<visualization_msgs::Marker>()));
   EXPECT_THROW( provider.getMessageDescription( mt::datatype<visualization_msgs::InteractiveMarker>()),
                 BabelFishException );
+}
+
+TEST( MessageLookupTest, constants )
+{
+  namespace mt = ros::message_traits;
+  MessageOnlyDescriptionProvider provider;
+  auto description = provider.registerMessageByDefinition( mt::datatype<ros_babel_fish_test_msgs::TestMessage>(),
+                                                           mt::definition<ros_babel_fish_test_msgs::TestMessage>());
+  std::map<std::string, Message::ConstPtr> constant_map = description->message_template->constants;
+  ASSERT_EQ( constant_map.size(), 4 );
+  ASSERT_NE( constant_map.find( "FLAG1" ), constant_map.end());
+  ASSERT_EQ( constant_map["FLAG1"]->type(), MessageTypes::Bool );
+  ASSERT_EQ( constant_map["FLAG1"]->value<bool>(), ros_babel_fish_test_msgs::TestMessage::FLAG1 );
+  ASSERT_NE( constant_map.find( "FLAG2" ), constant_map.end());
+  ASSERT_EQ( constant_map["FLAG2"]->type(), MessageTypes::Bool );
+  ASSERT_EQ( constant_map["FLAG2"]->value<bool>(), ros_babel_fish_test_msgs::TestMessage::FLAG2 );
+  ASSERT_NE( constant_map.find( "FLAG3" ), constant_map.end());
+  ASSERT_EQ( constant_map["FLAG3"]->type(), MessageTypes::Bool );
+  ASSERT_EQ( constant_map["FLAG3"]->value<bool>(), ros_babel_fish_test_msgs::TestMessage::FLAG3 );
+  ASSERT_NE( constant_map.find( "FLAG4" ), constant_map.end());
+  ASSERT_EQ( constant_map["FLAG4"]->type(), MessageTypes::Bool );
+  ASSERT_EQ( constant_map["FLAG4"]->value<bool>(), ros_babel_fish_test_msgs::TestMessage::FLAG4 );
 }
 
 int main( int argc, char **argv )

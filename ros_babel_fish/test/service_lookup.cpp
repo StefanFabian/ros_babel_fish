@@ -14,6 +14,7 @@
 #include <rosapi/DeleteParam.h>
 #include <rosapi/GetActionServers.h>
 
+// Workaround because GetParamRequest has a member called default which is a reserved keyword in C++
 #define default mdefault
 
 #include <rosapi/GetParam.h>

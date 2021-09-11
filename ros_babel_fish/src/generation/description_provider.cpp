@@ -212,9 +212,24 @@ MessageTemplate::Ptr DescriptionProvider::createTemplate( const MessageSpec &spe
   for ( auto &constant : spec.constants )
   {
     Message::Ptr value;
-    if ( constant.type == "bool" || constant.type == "uint8" || constant.type == "char" )
+    if ( constant.type == "uint8" || constant.type == "char" )
     {
       value = std::make_shared<ValueMessage<uint8_t>>( static_cast<uint8_t>(std::stoi( constant.val )));
+    }
+    else if ( constant.type == "bool" )
+    {
+      if ( constant.val == "True" )
+      {
+        value = std::make_shared<ValueMessage<bool>>( true );
+      }
+      else if ( constant.val == "False" )
+      {
+        value = std::make_shared<ValueMessage<bool>>( false );
+      }
+      else
+      {
+        value = std::make_shared<ValueMessage<bool>>( static_cast<bool>(std::stoi( constant.val )));
+      }
     }
     else if ( constant.type == "int8" || constant.type == "byte" )
     {

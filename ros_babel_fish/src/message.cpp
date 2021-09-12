@@ -105,7 +105,7 @@ template<typename T, typename U>
 void assignValue( Message *m, const T &value )
 {
   using namespace message_type_traits;
-  if ( m->type() != message_type<T>::value && !isCompatible<T, U>() )
+  if ( !isCompatible<T, U>() )
   {
     if ( !inBounds<T, U>( value ) )
     {
@@ -124,7 +124,7 @@ template<typename T>
 void assignToValueMessage( Message *m, const T &value )
 {
   using namespace message_type_traits;
-  switch ( m->type())
+  switch ( m->type() )
   {
     case MessageTypes::Bool:
       throw BabelFishException( "Can not assign non-boolean value to a boolean ValueMessage!" );
@@ -270,7 +270,7 @@ U obtainValue( const Message *m )
 {
   using namespace message_type_traits;
   T val = m->as<ValueMessage<T>>().getValue();
-  if ( m->type() != message_type<U>::value && !isCompatible<T, U>() )
+  if ( !isCompatible<T, U>() )
   {
     if ( !inBounds<T, U>( val ) )
     {

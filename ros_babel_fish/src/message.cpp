@@ -65,7 +65,7 @@ typename std::enable_if<
   std::numeric_limits<T>::digits < std::numeric_limits<U>::digits, bool>::type
 constexpr inBounds( const T &val )
 {
-  return val <= std::numeric_limits<U>::max();
+  return static_cast<U>(val) <= std::numeric_limits<U>::max();
 }
 
 template<typename T, typename U>

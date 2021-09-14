@@ -88,7 +88,7 @@ constexpr inBounds( const T &val )
 }
 
 /**
- * Returns true if type T can always be stored in U without truncation or loss of precision.
+ * Returns true if type T can always be stored in U without overflowing.
  */
 template<typename T, typename U>
 typename std::enable_if<std::is_arithmetic<T>::value && std::is_arithmetic<U>::value, bool>::type
@@ -97,7 +97,8 @@ constexpr isCompatible()
   // See https://en.cppreference.com/w/cpp/types/numeric_limits/digits
   // + 1 added because ::digits returns nbits-1 for signed types.
   return std::is_same<rm_cvref_t<T>, rm_cvref_t<U>>::value ||
-         ((std::is_integral<T>::value || std::is_floating_point<U>::value) &&
+         std::is_floating_point<U>::value ||
+         (std::is_integral<T>::value &&
           (std::numeric_limits<T>::digits + 1 < std::numeric_limits<U>::digits));
 }
 

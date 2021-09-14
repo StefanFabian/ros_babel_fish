@@ -691,18 +691,17 @@ TEST( MessageTest, arrayMessage )
   }
 }
 
-namespace {
-
 // Backport of C++20's std::remove_cvref
-template< class T >
-struct rm_cvref {
+template<class T>
+struct rm_cvref
+{
   typedef typename std::remove_cv<typename std::remove_reference<T>::type>::type type;
 };
 template<class T>
 using rm_cvref_t = typename rm_cvref<T>::type;
 
 /**
- * Returns true if type T can always be stored in U without truncation or loss of precision.
+ * Returns true if type T can always be stored in U without overflowing.
  */
 template<typename T, typename U>
 typename std::enable_if<std::is_arithmetic<T>::value && std::is_arithmetic<U>::value, bool>::type
@@ -711,120 +710,119 @@ constexpr isCompatible()
   // See https://en.cppreference.com/w/cpp/types/numeric_limits/digits
   // + 1 added because ::digits returns nbits-1 for signed types.
   return std::is_same<rm_cvref_t<T>, rm_cvref_t<U>>::value ||
-         ((std::is_integral<T>::value || std::is_floating_point<U>::value) &&
+         std::is_floating_point<U>::value ||
+         (std::is_integral<T>::value &&
           (std::numeric_limits<T>::digits + 1 < std::numeric_limits<U>::digits));
-}
-
 }
 
 TEST( MessageTest, isCompatible )
 {
-  ASSERT_EQ( (isCompatible<bool, bool>()), true );
-  ASSERT_EQ( (isCompatible<bool, uint8_t>()), true );
-  ASSERT_EQ( (isCompatible<bool, float>()), true );
-  ASSERT_EQ( (isCompatible<uint8_t, bool>()), false );
-  ASSERT_EQ( (isCompatible<int8_t, bool>()), false );
-  ASSERT_EQ( (isCompatible<float, bool>()), false );
-  ASSERT_EQ( (isCompatible<uint8_t, uint8_t>()), true );
-  ASSERT_EQ( (isCompatible<uint8_t, uint16_t>()), true );
-  ASSERT_EQ( (isCompatible<uint8_t, uint32_t>()), true );
-  ASSERT_EQ( (isCompatible<uint8_t, uint64_t>()), true );
-  ASSERT_EQ( (isCompatible<uint8_t, int8_t>()), false );
-  ASSERT_EQ( (isCompatible<uint8_t, int16_t>()), true );
-  ASSERT_EQ( (isCompatible<uint8_t, int32_t>()), true );
-  ASSERT_EQ( (isCompatible<uint8_t, int64_t>()), true );
-  ASSERT_EQ( (isCompatible<uint8_t, float>()), true );
-  ASSERT_EQ( (isCompatible<uint8_t, double>()), true );
-  ASSERT_EQ( (isCompatible<uint16_t, uint8_t>()), false );
-  ASSERT_EQ( (isCompatible<uint16_t, uint16_t>()), true );
-  ASSERT_EQ( (isCompatible<uint16_t, uint32_t>()), true );
-  ASSERT_EQ( (isCompatible<uint16_t, uint64_t>()), true );
-  ASSERT_EQ( (isCompatible<uint16_t, int8_t>()), false );
-  ASSERT_EQ( (isCompatible<uint16_t, int16_t>()), false );
-  ASSERT_EQ( (isCompatible<uint16_t, int32_t>()), true );
-  ASSERT_EQ( (isCompatible<uint16_t, int64_t>()), true );
-  ASSERT_EQ( (isCompatible<uint16_t, float>()), true );
-  ASSERT_EQ( (isCompatible<uint16_t, double>()), true );
-  ASSERT_EQ( (isCompatible<uint32_t, uint8_t>()), false );
-  ASSERT_EQ( (isCompatible<uint32_t, uint16_t>()), false );
-  ASSERT_EQ( (isCompatible<uint32_t, uint32_t>()), true );
-  ASSERT_EQ( (isCompatible<uint32_t, uint64_t>()), true );
-  ASSERT_EQ( (isCompatible<uint32_t, int8_t>()), false );
-  ASSERT_EQ( (isCompatible<uint32_t, int16_t>()), false );
-  ASSERT_EQ( (isCompatible<uint32_t, int32_t>()), false );
-  ASSERT_EQ( (isCompatible<uint32_t, int64_t>()), true );
-  ASSERT_EQ( (isCompatible<uint32_t, float>()), false );
-  ASSERT_EQ( (isCompatible<uint32_t, double>()), true );
-  ASSERT_EQ( (isCompatible<uint64_t, uint8_t>()), false );
-  ASSERT_EQ( (isCompatible<uint64_t, uint16_t>()), false );
-  ASSERT_EQ( (isCompatible<uint64_t, uint32_t>()), false );
-  ASSERT_EQ( (isCompatible<uint64_t, uint64_t>()), true );
-  ASSERT_EQ( (isCompatible<uint64_t, int8_t>()), false );
-  ASSERT_EQ( (isCompatible<uint64_t, int16_t>()), false );
-  ASSERT_EQ( (isCompatible<uint64_t, int32_t>()), false );
-  ASSERT_EQ( (isCompatible<uint64_t, int64_t>()), false );
-  ASSERT_EQ( (isCompatible<uint64_t, float>()), false );
-  ASSERT_EQ( (isCompatible<uint64_t, double>()), false );
-  ASSERT_EQ( (isCompatible<int8_t, uint8_t>()), false );
-  ASSERT_EQ( (isCompatible<int8_t, uint16_t>()), true );
-  ASSERT_EQ( (isCompatible<int8_t, uint32_t>()), true );
-  ASSERT_EQ( (isCompatible<int8_t, uint64_t>()), true );
-  ASSERT_EQ( (isCompatible<int8_t, int8_t>()), true );
-  ASSERT_EQ( (isCompatible<int8_t, int16_t>()), true );
-  ASSERT_EQ( (isCompatible<int8_t, int32_t>()), true );
-  ASSERT_EQ( (isCompatible<int8_t, int64_t>()), true );
-  ASSERT_EQ( (isCompatible<int8_t, float>()), true );
-  ASSERT_EQ( (isCompatible<int8_t, double>()), true );
-  ASSERT_EQ( (isCompatible<int16_t, uint8_t>()), false );
-  ASSERT_EQ( (isCompatible<int16_t, uint16_t>()), false );
-  ASSERT_EQ( (isCompatible<int16_t, uint32_t>()), true );
-  ASSERT_EQ( (isCompatible<int16_t, uint64_t>()), true );
-  ASSERT_EQ( (isCompatible<int16_t, int8_t>()), false );
-  ASSERT_EQ( (isCompatible<int16_t, int16_t>()), true );
-  ASSERT_EQ( (isCompatible<int16_t, int32_t>()), true );
-  ASSERT_EQ( (isCompatible<int16_t, int64_t>()), true );
-  ASSERT_EQ( (isCompatible<int16_t, float>()), true );
-  ASSERT_EQ( (isCompatible<int16_t, double>()), true );
-  ASSERT_EQ( (isCompatible<int32_t, uint8_t>()), false );
-  ASSERT_EQ( (isCompatible<int32_t, uint16_t>()), false );
-  ASSERT_EQ( (isCompatible<int32_t, uint32_t>()), false );
-  ASSERT_EQ( (isCompatible<int32_t, uint64_t>()), true );
-  ASSERT_EQ( (isCompatible<int32_t, int8_t>()), false );
-  ASSERT_EQ( (isCompatible<int32_t, int16_t>()), false );
-  ASSERT_EQ( (isCompatible<int32_t, int32_t>()), true );
-  ASSERT_EQ( (isCompatible<int32_t, int64_t>()), true );
-  ASSERT_EQ( (isCompatible<int32_t, float>()), false );
-  ASSERT_EQ( (isCompatible<int32_t, double>()), true );
-  ASSERT_EQ( (isCompatible<int64_t, uint8_t>()), false );
-  ASSERT_EQ( (isCompatible<int64_t, uint16_t>()), false );
-  ASSERT_EQ( (isCompatible<int64_t, uint32_t>()), false );
-  ASSERT_EQ( (isCompatible<int64_t, uint64_t>()), false );
-  ASSERT_EQ( (isCompatible<int64_t, int8_t>()), false );
-  ASSERT_EQ( (isCompatible<int64_t, int16_t>()), false );
-  ASSERT_EQ( (isCompatible<int64_t, int32_t>()), false );
-  ASSERT_EQ( (isCompatible<int64_t, int64_t>()), true );
-  ASSERT_EQ( (isCompatible<int64_t, float>()), false );
-  ASSERT_EQ( (isCompatible<int64_t, double>()), false );
-  ASSERT_EQ( (isCompatible<float, uint8_t>()), false );
-  ASSERT_EQ( (isCompatible<float, uint16_t>()), false );
-  ASSERT_EQ( (isCompatible<float, uint32_t>()), false );
-  ASSERT_EQ( (isCompatible<float, uint64_t>()), false );
-  ASSERT_EQ( (isCompatible<float, int8_t>()), false );
-  ASSERT_EQ( (isCompatible<float, int16_t>()), false );
-  ASSERT_EQ( (isCompatible<float, int32_t>()), false );
-  ASSERT_EQ( (isCompatible<float, int64_t>()), false );
-  ASSERT_EQ( (isCompatible<float, float>()), true );
-  ASSERT_EQ( (isCompatible<float, double>()), true );
-  ASSERT_EQ( (isCompatible<double, uint8_t>()), false );
-  ASSERT_EQ( (isCompatible<double, uint16_t>()), false );
-  ASSERT_EQ( (isCompatible<double, uint32_t>()), false );
-  ASSERT_EQ( (isCompatible<double, uint64_t>()), false );
-  ASSERT_EQ( (isCompatible<double, int8_t>()), false );
-  ASSERT_EQ( (isCompatible<double, int16_t>()), false );
-  ASSERT_EQ( (isCompatible<double, int32_t>()), false );
-  ASSERT_EQ( (isCompatible<double, int64_t>()), false );
-  ASSERT_EQ( (isCompatible<double, float>()), false );
-  ASSERT_EQ( (isCompatible<double, double>()), true );
+  ASSERT_EQ((isCompatible<bool, bool>()), true );
+  ASSERT_EQ((isCompatible<bool, uint8_t>()), true );
+  ASSERT_EQ((isCompatible<bool, float>()), true );
+  ASSERT_EQ((isCompatible<uint8_t, bool>()), false );
+  ASSERT_EQ((isCompatible<int8_t, bool>()), false );
+  ASSERT_EQ((isCompatible<float, bool>()), false );
+  ASSERT_EQ((isCompatible<uint8_t, uint8_t>()), true );
+  ASSERT_EQ((isCompatible<uint8_t, uint16_t>()), true );
+  ASSERT_EQ((isCompatible<uint8_t, uint32_t>()), true );
+  ASSERT_EQ((isCompatible<uint8_t, uint64_t>()), true );
+  ASSERT_EQ((isCompatible<uint8_t, int8_t>()), false );
+  ASSERT_EQ((isCompatible<uint8_t, int16_t>()), true );
+  ASSERT_EQ((isCompatible<uint8_t, int32_t>()), true );
+  ASSERT_EQ((isCompatible<uint8_t, int64_t>()), true );
+  ASSERT_EQ((isCompatible<uint8_t, float>()), true );
+  ASSERT_EQ((isCompatible<uint8_t, double>()), true );
+  ASSERT_EQ((isCompatible<uint16_t, uint8_t>()), false );
+  ASSERT_EQ((isCompatible<uint16_t, uint16_t>()), true );
+  ASSERT_EQ((isCompatible<uint16_t, uint32_t>()), true );
+  ASSERT_EQ((isCompatible<uint16_t, uint64_t>()), true );
+  ASSERT_EQ((isCompatible<uint16_t, int8_t>()), false );
+  ASSERT_EQ((isCompatible<uint16_t, int16_t>()), false );
+  ASSERT_EQ((isCompatible<uint16_t, int32_t>()), true );
+  ASSERT_EQ((isCompatible<uint16_t, int64_t>()), true );
+  ASSERT_EQ((isCompatible<uint16_t, float>()), true );
+  ASSERT_EQ((isCompatible<uint16_t, double>()), true );
+  ASSERT_EQ((isCompatible<uint32_t, uint8_t>()), false );
+  ASSERT_EQ((isCompatible<uint32_t, uint16_t>()), false );
+  ASSERT_EQ((isCompatible<uint32_t, uint32_t>()), true );
+  ASSERT_EQ((isCompatible<uint32_t, uint64_t>()), true );
+  ASSERT_EQ((isCompatible<uint32_t, int8_t>()), false );
+  ASSERT_EQ((isCompatible<uint32_t, int16_t>()), false );
+  ASSERT_EQ((isCompatible<uint32_t, int32_t>()), false );
+  ASSERT_EQ((isCompatible<uint32_t, int64_t>()), true );
+  ASSERT_EQ((isCompatible<uint32_t, float>()), true );
+  ASSERT_EQ((isCompatible<uint32_t, double>()), true );
+  ASSERT_EQ((isCompatible<uint64_t, uint8_t>()), false );
+  ASSERT_EQ((isCompatible<uint64_t, uint16_t>()), false );
+  ASSERT_EQ((isCompatible<uint64_t, uint32_t>()), false );
+  ASSERT_EQ((isCompatible<uint64_t, uint64_t>()), true );
+  ASSERT_EQ((isCompatible<uint64_t, int8_t>()), false );
+  ASSERT_EQ((isCompatible<uint64_t, int16_t>()), false );
+  ASSERT_EQ((isCompatible<uint64_t, int32_t>()), false );
+  ASSERT_EQ((isCompatible<uint64_t, int64_t>()), false );
+  ASSERT_EQ((isCompatible<uint64_t, float>()), true );
+  ASSERT_EQ((isCompatible<uint64_t, double>()), true );
+  ASSERT_EQ((isCompatible<int8_t, uint8_t>()), false );
+  ASSERT_EQ((isCompatible<int8_t, uint16_t>()), true );
+  ASSERT_EQ((isCompatible<int8_t, uint32_t>()), true );
+  ASSERT_EQ((isCompatible<int8_t, uint64_t>()), true );
+  ASSERT_EQ((isCompatible<int8_t, int8_t>()), true );
+  ASSERT_EQ((isCompatible<int8_t, int16_t>()), true );
+  ASSERT_EQ((isCompatible<int8_t, int32_t>()), true );
+  ASSERT_EQ((isCompatible<int8_t, int64_t>()), true );
+  ASSERT_EQ((isCompatible<int8_t, float>()), true );
+  ASSERT_EQ((isCompatible<int8_t, double>()), true );
+  ASSERT_EQ((isCompatible<int16_t, uint8_t>()), false );
+  ASSERT_EQ((isCompatible<int16_t, uint16_t>()), false );
+  ASSERT_EQ((isCompatible<int16_t, uint32_t>()), true );
+  ASSERT_EQ((isCompatible<int16_t, uint64_t>()), true );
+  ASSERT_EQ((isCompatible<int16_t, int8_t>()), false );
+  ASSERT_EQ((isCompatible<int16_t, int16_t>()), true );
+  ASSERT_EQ((isCompatible<int16_t, int32_t>()), true );
+  ASSERT_EQ((isCompatible<int16_t, int64_t>()), true );
+  ASSERT_EQ((isCompatible<int16_t, float>()), true );
+  ASSERT_EQ((isCompatible<int16_t, double>()), true );
+  ASSERT_EQ((isCompatible<int32_t, uint8_t>()), false );
+  ASSERT_EQ((isCompatible<int32_t, uint16_t>()), false );
+  ASSERT_EQ((isCompatible<int32_t, uint32_t>()), false );
+  ASSERT_EQ((isCompatible<int32_t, uint64_t>()), true );
+  ASSERT_EQ((isCompatible<int32_t, int8_t>()), false );
+  ASSERT_EQ((isCompatible<int32_t, int16_t>()), false );
+  ASSERT_EQ((isCompatible<int32_t, int32_t>()), true );
+  ASSERT_EQ((isCompatible<int32_t, int64_t>()), true );
+  ASSERT_EQ((isCompatible<int32_t, float>()), true );
+  ASSERT_EQ((isCompatible<int32_t, double>()), true );
+  ASSERT_EQ((isCompatible<int64_t, uint8_t>()), false );
+  ASSERT_EQ((isCompatible<int64_t, uint16_t>()), false );
+  ASSERT_EQ((isCompatible<int64_t, uint32_t>()), false );
+  ASSERT_EQ((isCompatible<int64_t, uint64_t>()), false );
+  ASSERT_EQ((isCompatible<int64_t, int8_t>()), false );
+  ASSERT_EQ((isCompatible<int64_t, int16_t>()), false );
+  ASSERT_EQ((isCompatible<int64_t, int32_t>()), false );
+  ASSERT_EQ((isCompatible<int64_t, int64_t>()), true );
+  ASSERT_EQ((isCompatible<int64_t, float>()), true );
+  ASSERT_EQ((isCompatible<int64_t, double>()), true );
+  ASSERT_EQ((isCompatible<float, uint8_t>()), false );
+  ASSERT_EQ((isCompatible<float, uint16_t>()), false );
+  ASSERT_EQ((isCompatible<float, uint32_t>()), false );
+  ASSERT_EQ((isCompatible<float, uint64_t>()), false );
+  ASSERT_EQ((isCompatible<float, int8_t>()), false );
+  ASSERT_EQ((isCompatible<float, int16_t>()), false );
+  ASSERT_EQ((isCompatible<float, int32_t>()), false );
+  ASSERT_EQ((isCompatible<float, int64_t>()), false );
+  ASSERT_EQ((isCompatible<float, float>()), true );
+  ASSERT_EQ((isCompatible<float, double>()), true );
+  ASSERT_EQ((isCompatible<double, uint8_t>()), false );
+  ASSERT_EQ((isCompatible<double, uint16_t>()), false );
+  ASSERT_EQ((isCompatible<double, uint32_t>()), false );
+  ASSERT_EQ((isCompatible<double, uint64_t>()), false );
+  ASSERT_EQ((isCompatible<double, int8_t>()), false );
+  ASSERT_EQ((isCompatible<double, int16_t>()), false );
+  ASSERT_EQ((isCompatible<double, int32_t>()), false );
+  ASSERT_EQ((isCompatible<double, int64_t>()), false );
+  ASSERT_EQ((isCompatible<double, float>()), true );
+  ASSERT_EQ((isCompatible<double, double>()), true );
 }
 
 int main( int argc, char **argv )

@@ -42,7 +42,7 @@ MessageDescription::ConstPtr DescriptionProvider::getMessageDescription( const s
   return getMessageDescriptionImpl( type );
 }
 
-MessageDescription::ConstPtr DescriptionProvider::getMessageDescription( const BabelFishMessage &msg )
+MessageDescription::ConstPtr DescriptionProvider::getMessageDescription( const IBabelFishMessage &msg )
 {
   const std::string &type = msg.dataType();
   const std::string &md5 = msg.md5Sum();
@@ -198,7 +198,7 @@ MessageDescription::ConstPtr DescriptionProvider::getMessageDescriptionImpl( con
   return registerMessage( spec, computeFullText( spec ));
 }
 
-MessageDescription::ConstPtr DescriptionProvider::getMessageDescriptionImpl( const BabelFishMessage &msg )
+MessageDescription::ConstPtr DescriptionProvider::getMessageDescriptionImpl( const IBabelFishMessage &msg )
 {
   return getMessageDescriptionImpl( msg.dataType(), msg.definition());
 }

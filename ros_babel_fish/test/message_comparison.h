@@ -63,7 +63,7 @@ const char *MessageTypeName( ros_babel_fish::MessageType type )
 
 
 template<typename MessageType>
-::testing::AssertionResult MessageTypeEqual( const ros_babel_fish::BabelFishMessage &a, const MessageType & )
+::testing::AssertionResult MessageTypeEqual( const ros_babel_fish::IBabelFishMessage &a, const MessageType & )
 {
   using namespace ros::message_traits;
   if ( a.dataType() != DataType<MessageType>::value())
@@ -89,27 +89,27 @@ template<typename MessageType>
 }
 
 template<typename MessageType>
-::testing::AssertionResult MessageTypeEqual( const ros_babel_fish::BabelFishMessage &a,
+::testing::AssertionResult MessageTypeEqual( const ros_babel_fish::IBabelFishMessage &a,
                                              const std::shared_ptr<const MessageType> &b )
 {
   return MessageTypeEqual( a, *b );
 }
 
 template<typename MessageType>
-::testing::AssertionResult MessageTypeEqual( const ros_babel_fish::BabelFishMessage::ConstPtr &a, const MessageType &b )
+::testing::AssertionResult MessageTypeEqual( const ros_babel_fish::IBabelFishMessage::ConstPtr &a, const MessageType &b )
 {
   return MessageTypeEqual( *a, b );
 }
 
 template<typename MessageType>
 ::testing::AssertionResult MessageTypeEqual( const MessageType &b,
-                                             const ros_babel_fish::BabelFishMessage &a )
+                                             const ros_babel_fish::IBabelFishMessage &a )
 {
   return MessageTypeEqual( a, b );
 }
 
 template<typename MessageType>
-::testing::AssertionResult MessageTypeEqual( const MessageType &b, const ros_babel_fish::BabelFishMessage::ConstPtr &a )
+::testing::AssertionResult MessageTypeEqual( const MessageType &b, const ros_babel_fish::IBabelFishMessage::ConstPtr &a )
 {
   return MessageTypeEqual( *a, b );
 }

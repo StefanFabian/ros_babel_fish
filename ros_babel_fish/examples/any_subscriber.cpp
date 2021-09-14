@@ -10,8 +10,8 @@
 
 /*!
  * The following example demonstrates how to subscribe to a topic of any type, retrieve type information such as the
- * topic's datatype the MD% sum and the message definition, and traverse the message's content.
- * The datatype, md5 sum, message definition and the message's content are dumped to the console whenever a new message
+ * topic's datatype, the MD5 sum and the message definition, and traverse the message's content.
+ * The datatype, MD5 sum, message definition and the message's content are dumped to the console whenever a new message
  * is received.
  */
 

@@ -94,6 +94,8 @@ public:
 
   SubMessageLocation retrieveLocationForPath( const std::string &base_msg, const std::string &path );
 
+  SubMessageLocation retrieveLocationForPath( const IBabelFishMessage &msg, const std::string &path );
+
   TranslatedMessage::Ptr extractMessage( const IBabelFishMessage::ConstPtr &msg, const SubMessageLocation &location );
 
   Message::Ptr extractMessage( const IBabelFishMessage &msg, const SubMessageLocation &location );

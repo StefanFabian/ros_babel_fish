@@ -296,6 +296,13 @@ SubMessageLocation MessageExtractor::retrieveLocationForPath( const std::string 
   return retrieveLocationForPath( description->message_template, path );
 }
 
+SubMessageLocation MessageExtractor::retrieveLocationForPath( const IBabelFishMessage &msg, const std::string &path )
+{
+  MessageDescription::ConstPtr description = fish_.descriptionProvider()->getMessageDescription( msg );
+  if ( description == nullptr ) throw BabelFishException( "Failed to lookup msg of type '" + msg.dataType() + "'!" );
+  return retrieveLocationForPath( description->message_template, path );
+}
+
 TranslatedMessage::Ptr MessageExtractor::extractMessage( const IBabelFishMessage::ConstPtr &msg,
                                                          const SubMessageLocation &location )
 {

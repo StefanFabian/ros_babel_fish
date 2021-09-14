@@ -43,6 +43,9 @@ public:
 
   MessageDescription::ConstPtr getMessageDescription( const IBabelFishMessage &msg );
 
+  MessageDescription::ConstPtr getMessageDescription( const std::string &type, const std::string &md5,
+                                                      const std::string &definition );
+
   ServiceDescription::ConstPtr getServiceDescription( const std::string &type );
 
   bool isBuiltIn( const std::string &type ) const;

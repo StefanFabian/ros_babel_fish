@@ -31,8 +31,9 @@ namespace
 {
 
 // Backport of C++20's std::remove_cvref
-template< class T >
-struct rm_cvref {
+template<class T>
+struct rm_cvref
+{
   typedef typename std::remove_cv<typename std::remove_reference<T>::type>::type type;
 };
 template<class T>
@@ -41,8 +42,8 @@ using rm_cvref_t = typename rm_cvref<T>::type;
 // is_integral is necessary to avoid a CLang tidy warning
 template<typename T, typename U>
 typename std::enable_if<
-    std::is_integral<T>::value &&
-    std::numeric_limits<T>::is_signed && !std::numeric_limits<U>::is_signed, bool>::type
+  std::is_integral<T>::value &&
+  std::numeric_limits<T>::is_signed && !std::numeric_limits<U>::is_signed, bool>::type
 constexpr inBounds( const T &val )
 {
   return val >= 0 && static_cast<typename std::make_unsigned<T>::type >( val ) <= std::numeric_limits<U>::max();
@@ -106,26 +107,26 @@ template<typename T, typename U>
 void assignValue( Message *m, const T &value )
 {
   using namespace message_type_traits;
-  if ( !isCompatible<T, U>() )
+  if ( !isCompatible<T, U>())
   {
-    if ( !inBounds<T, U>( value ) )
+    if ( !inBounds<T, U>( value ))
     {
       throw BabelFishException(
-          "Value does not fit into value message! Make sure you're using the correct type or at least stay within the range of values for the message type!");
+        "Value does not fit into value message! Make sure you're using the correct type or at least stay within the range of values for the message type!" );
     }
 #if RBF_WARN_ON_INCOMPATIBLE_TYPE
     ROS_WARN_ONCE_NAMED( "RosBabelFish",
                          "Assigned value fits but the type of the assignment can not be converted without loss of information in some cases! This message is printed only once!" );
 #endif
   }
-  m->as<ValueMessage<U>>().setValue( static_cast<U>(value) );
+  m->as<ValueMessage<U>>().setValue( static_cast<U>(value));
 }
 
 template<typename T>
 void assignToValueMessage( Message *m, const T &value )
 {
   using namespace message_type_traits;
-  switch ( m->type() )
+  switch ( m->type())
   {
     case MessageTypes::Bool:
       throw BabelFishException( "Can not assign non-boolean value to a boolean ValueMessage!" );
@@ -271,9 +272,9 @@ U obtainValue( const Message *m )
 {
   using namespace message_type_traits;
   T val = m->as<ValueMessage<T>>().getValue();
-  if ( !isCompatible<T, U>() )
+  if ( !isCompatible<T, U>())
   {
-    if ( !inBounds<T, U>( val ) )
+    if ( !inBounds<T, U>( val ))
     {
       throw BabelFishException( "Value does not fit into casted type!" );
     }

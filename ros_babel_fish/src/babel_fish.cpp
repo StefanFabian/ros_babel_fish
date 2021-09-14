@@ -61,7 +61,7 @@ Message::Ptr BabelFish::translateMessage( const BabelFishMessage &msg )
   const MessageTemplate::ConstPtr &msg_template = message_description->message_template;
   const uint8_t *stream = msg.buffer();
   size_t bytes_read = 0;
-  if (stream == nullptr)
+  if ( stream == nullptr )
   {
     return std::make_shared<CompoundMessage>( msg_template );
   }

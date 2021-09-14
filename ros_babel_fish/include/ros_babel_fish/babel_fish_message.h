@@ -25,9 +25,9 @@ public:
 
   BabelFishMessage();
 
-  BabelFishMessage(const BabelFishMessage &other);
+  BabelFishMessage( const BabelFishMessage &other );
 
-  BabelFishMessage &operator=(const BabelFishMessage &other);
+  BabelFishMessage &operator=( const BabelFishMessage &other );
 
   virtual ~BabelFishMessage();
 

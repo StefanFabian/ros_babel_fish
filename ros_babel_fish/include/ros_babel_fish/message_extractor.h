@@ -23,7 +23,7 @@ enum MessageOffsetType
   ArrayElement // If pointing to specific array element, will check if array has enough elements
 };
 }
-using MessageOffsetType  = MessageOffsetTypes::MessageOffsetType;
+using MessageOffsetType = MessageOffsetTypes::MessageOffsetType;
 
 class MessageOffset
 {

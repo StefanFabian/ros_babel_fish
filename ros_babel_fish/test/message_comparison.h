@@ -362,23 +362,23 @@ bool MessageContentEqualImpl( const ros_babel_fish::Message &a, const geometry_m
   return MessageContentEqualImpl( a["pose"], b.pose, path + ".pose", result );
 }
 
-template <>
+template<>
 bool MessageContentEqualImpl( const ros_babel_fish::Message &a, const ros_babel_fish_test_msgs::TestMessage &b,
                               const std::string &path, ::testing::AssertionResult &result )
 {
-  if (!MessageContentEqualImpl( a["header"], b.header, path + ".header", result)) return false;
-  if (!MessageContentEqualImpl<bool>( a["b"], b.b, path + ".b", result)) return false;
-  if (!MessageContentEqualImpl( a["ui8"], b.ui8, path + ".ui8", result)) return false;
-  if (!MessageContentEqualImpl( a["ui16"], b.ui16, path + ".ui16", result)) return false;
-  if (!MessageContentEqualImpl( a["ui32"], b.ui32, path + ".ui32", result)) return false;
-  if (!MessageContentEqualImpl( a["ui64"], b.ui64, path + ".ui64", result)) return false;
-  if (!MessageContentEqualImpl( a["i8"], b.i8, path + ".i8", result)) return false;
-  if (!MessageContentEqualImpl( a["i16"], b.i16, path + ".i16", result)) return false;
-  if (!MessageContentEqualImpl( a["i32"], b.i32, path + ".i32", result)) return false;
-  if (!MessageContentEqualImpl( a["i64"], b.i64, path + ".i64", result)) return false;
-  if (!MessageContentEqualImpl( a["str"], b.str, path + ".str", result)) return false;
-  if (!MessageContentEqualImpl( a["t"], b.t, path + ".t", result)) return false;
-  return MessageContentEqualImpl(a["d"], b.d, path + ".d", result);
+  if ( !MessageContentEqualImpl( a["header"], b.header, path + ".header", result )) return false;
+  if ( !MessageContentEqualImpl<bool>( a["b"], b.b, path + ".b", result )) return false;
+  if ( !MessageContentEqualImpl( a["ui8"], b.ui8, path + ".ui8", result )) return false;
+  if ( !MessageContentEqualImpl( a["ui16"], b.ui16, path + ".ui16", result )) return false;
+  if ( !MessageContentEqualImpl( a["ui32"], b.ui32, path + ".ui32", result )) return false;
+  if ( !MessageContentEqualImpl( a["ui64"], b.ui64, path + ".ui64", result )) return false;
+  if ( !MessageContentEqualImpl( a["i8"], b.i8, path + ".i8", result )) return false;
+  if ( !MessageContentEqualImpl( a["i16"], b.i16, path + ".i16", result )) return false;
+  if ( !MessageContentEqualImpl( a["i32"], b.i32, path + ".i32", result )) return false;
+  if ( !MessageContentEqualImpl( a["i64"], b.i64, path + ".i64", result )) return false;
+  if ( !MessageContentEqualImpl( a["str"], b.str, path + ".str", result )) return false;
+  if ( !MessageContentEqualImpl( a["t"], b.t, path + ".t", result )) return false;
+  return MessageContentEqualImpl( a["d"], b.d, path + ".d", result );
 }
 
 template<>

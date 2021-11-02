@@ -23,11 +23,7 @@ class RosbagBabelFishMessage : public IBabelFishMessage
 {
 public:
   // Always copy the MessageInstance since it pretty much only contains pointers.
-  RosbagBabelFishMessage( rosbag::MessageInstance msg ) : mi_( std::move( msg )), buffer_( mi_.size())
-  {
-    ros::serialization::OStream stream( buffer_.data(), buffer_.size());
-    mi_.write( stream );
-  }
+  RosbagBabelFishMessage( rosbag::MessageInstance msg ) : mi_( std::move( msg )) { }
 
   const std::string &topic() const { return mi_.getTopic(); }
 
@@ -41,9 +37,18 @@ public:
 
   std::string callerId() const { return mi_.getCallerId(); }
 
-  uint32_t size() const final { return buffer_.size(); }
+  uint32_t size() const final { return mi_.size(); }
 
-  const uint8_t *buffer() const final { return buffer_.data(); }
+  const uint8_t *buffer() const final
+  {
+    if ( buffer_.empty() and size() > 0 )
+    {
+      buffer_.resize( size());
+      ros::serialization::OStream stream( buffer_.data(), buffer_.size());
+      mi_.write( stream );
+    }
+    return buffer_.data();
+  }
 
   template<class T>
   boost::shared_ptr<T> instantiate() const { mi_.template instantiate<T>(); }

@@ -13,12 +13,18 @@
 #include <unordered_set>
 
 /*!
- * The following example demonstrates how to efficiently process unknown messages in a rosbag.
+ * The following example demonstrates efficient processing of messages of unspecified type in a rosbag.
  * Given a rosbag as input, dumps the frame_id for each topic that has a header.
  */
 
 using namespace ros_babel_fish;
 
+/*!
+ * Thin wrapper around rosbag::MessageInstance to make it compatible with BabelFishMessage.
+ * This avoids the need for a conversion to a BabelFishMessage instance, which would mean always copying
+ * the message body, definition, type name, etc for each individual message.
+ * Instead, only the message body is lazily read from the bag when necessary.
+ */
 class RosbagBabelFishMessage : public IBabelFishMessage
 {
 public:
@@ -55,7 +61,7 @@ public:
 
 private:
   const rosbag::MessageInstance mi_;
-  std::vector<uint8_t> buffer_;
+  mutable std::vector<uint8_t> buffer_;
 };
 
 int main( int argc, char **argv )
@@ -92,6 +98,7 @@ int main( int argc, char **argv )
     if ( topics.find( mi.getTopic()) == topics.end())
       continue;
     RosbagBabelFishMessage msg( mi );
+    // Not that useful here, but the field location should usually be cached based on the message type.
     SubMessageLocation location = extractor.retrieveLocationForPath( msg, "header.frame_id" );
     auto frame_id = extractor.extractValue<std::string>( msg, location );
     std::cout << msg.topic() << ": " << frame_id << std::endl;

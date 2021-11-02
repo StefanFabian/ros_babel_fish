@@ -11,7 +11,7 @@ endif ()
 ## Compile as C++11, supported in ROS Kinetic and newer
 add_compile_options(-std=c++11)
 
-add_definitions(-Wall -Wextra -Wno-pragmas)
+add_definitions(-Wall -Wextra)
 
 #set(CMAKE_BUILD_TYPE "Debug")
 

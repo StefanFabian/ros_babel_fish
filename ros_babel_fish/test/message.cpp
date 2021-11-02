@@ -712,6 +712,7 @@ constexpr isCompatible()
   return std::is_same<rm_cvref_t<T>, rm_cvref_t<U>>::value ||
          std::is_floating_point<U>::value ||
          (std::is_integral<T>::value &&
+          !(std::is_signed<T>::value && std::is_unsigned<U>::value) &&
           (std::numeric_limits<T>::digits + 1 < std::numeric_limits<U>::digits));
 }
 

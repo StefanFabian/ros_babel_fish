@@ -82,10 +82,7 @@ template<typename T, typename U>
 typename std::enable_if<std::is_floating_point<T>::value, bool>::type
 constexpr inBounds( const T &val )
 {
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wimplicit-int-float-conversion"
-  return std::numeric_limits<U>::min() <= val && val <= std::numeric_limits<U>::max();
-#pragma GCC diagnostic pop
+  return static_cast<T>(std::numeric_limits<U>::min()) <= val && val <= static_cast<T>(std::numeric_limits<U>::max());
 }
 
 /**

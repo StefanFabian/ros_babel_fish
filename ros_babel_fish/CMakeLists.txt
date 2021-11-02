@@ -110,9 +110,9 @@ set_target_properties(${PROJECT_NAME}_action_client PROPERTIES OUTPUT_NAME actio
 find_package(rosbag_storage)
 if (rosbag_storage_FOUND)
   include_directories(${rosbag_storage_INCLUDE_DIRS})
-  add_executable(${PROJECT_NAME}_rosbag examples/rosbag.cpp)
+  add_executable(${PROJECT_NAME}_rosbag examples/rosbag_frame_ids.cpp)
   target_link_libraries(${PROJECT_NAME}_rosbag ${PROJECT_NAME} ${LIBRARIES} ${rosbag_storage_LIBRARIES} )
-  set_target_properties(${PROJECT_NAME}_rosbag PROPERTIES OUTPUT_NAME rosbag PREFIX "")
+  set_target_properties(${PROJECT_NAME}_rosbag PROPERTIES OUTPUT_NAME rosbag_frame_ids PREFIX "")
 endif ()
 
 

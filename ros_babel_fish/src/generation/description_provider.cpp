@@ -42,11 +42,15 @@ MessageDescription::ConstPtr DescriptionProvider::getMessageDescription( const s
   return getMessageDescriptionImpl( type );
 }
 
-MessageDescription::ConstPtr DescriptionProvider::getMessageDescription( const BabelFishMessage &msg )
+MessageDescription::ConstPtr DescriptionProvider::getMessageDescription( const IBabelFishMessage &msg )
 {
-  const std::string &type = msg.dataType();
-  const std::string &md5 = msg.md5Sum();
+  return getMessageDescription( msg.dataType(), msg.md5Sum(), msg.definition());
+}
 
+MessageDescription::ConstPtr
+DescriptionProvider::getMessageDescription( const std::string &type, const std::string &md5,
+                                            const std::string &definition )
+{
   // Check cache
   auto it = message_descriptions_.find( type );
   if ( it != message_descriptions_.end())
@@ -58,7 +62,7 @@ MessageDescription::ConstPtr DescriptionProvider::getMessageDescription( const B
     return it->second;
   }
 
-  return getMessageDescriptionImpl( msg );
+  return getMessageDescriptionImpl( type, definition );
 }
 
 ServiceDescription::ConstPtr DescriptionProvider::getServiceDescription( const std::string &type )
@@ -198,7 +202,7 @@ MessageDescription::ConstPtr DescriptionProvider::getMessageDescriptionImpl( con
   return registerMessage( spec, computeFullText( spec ));
 }
 
-MessageDescription::ConstPtr DescriptionProvider::getMessageDescriptionImpl( const BabelFishMessage &msg )
+MessageDescription::ConstPtr DescriptionProvider::getMessageDescriptionImpl( const IBabelFishMessage &msg )
 {
   return getMessageDescriptionImpl( msg.dataType(), msg.definition());
 }

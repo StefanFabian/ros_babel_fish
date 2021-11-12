@@ -25,10 +25,10 @@ struct TranslatedMessage
   typedef std::shared_ptr<TranslatedMessage> Ptr;
   typedef std::shared_ptr<const TranslatedMessage> ConstPtr;
 
-  TranslatedMessage( BabelFishMessage::ConstPtr input, Message::Ptr translated )
+  TranslatedMessage( IBabelFishMessage::ConstPtr input, Message::Ptr translated )
     : input_message( std::move( input )), translated_message( std::move( translated )) { }
 
-  BabelFishMessage::ConstPtr input_message;
+  IBabelFishMessage::ConstPtr input_message;
   Message::Ptr translated_message;
 };
 
@@ -61,7 +61,7 @@ public:
    * @param msg The received BabelFishMessage
    * @return A struct containing the input and the translated message.
    */
-  TranslatedMessage::Ptr translateMessage( const BabelFishMessage::ConstPtr &msg );
+  TranslatedMessage::Ptr translateMessage( const IBabelFishMessage::ConstPtr &msg );
 
   /*!
    * Translates the given BabelFishMessage into a translated message.
@@ -71,7 +71,7 @@ public:
    * @param msg The received BabelFishMessage
    * @return The translated message.
    */
-  Message::Ptr translateMessage( const BabelFishMessage &msg );
+  Message::Ptr translateMessage( const IBabelFishMessage &msg );
 
   /*!
    * Translates a message created by BabelFish into a BabelFishMessage that can be sent using the implementations

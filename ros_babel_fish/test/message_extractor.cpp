@@ -26,13 +26,13 @@ TEST( MessageExtractorTest, calculateOffset )
     EXPECT_FALSE( location.isValid());
     location = extractor.retrieveLocationForPath( "ros_babel_fish_test_msgs/TestArray", "bools" );
     EXPECT_TRUE( location.isValid());
-    EXPECT_EQ( location.calculateOffset( {} ), 0 );
+    EXPECT_EQ( location.calculateOffset( BabelFishMessage()), 0 );
     ASSERT_EQ( location.messageTemplate()->type, MessageTypes::Array );
     EXPECT_EQ( location.messageTemplate()->array.element_type, MessageTypes::Bool );
   }
   {
     SubMessageLocation location = extractor.retrieveLocationForPath( "ros_babel_fish_test_msgs/TestArray", ".bools" );
-    EXPECT_EQ( location.calculateOffset( {} ), 0 );
+    EXPECT_EQ( location.calculateOffset( BabelFishMessage()), 0 );
     ASSERT_EQ( location.messageTemplate()->type, MessageTypes::Array );
     EXPECT_EQ( location.messageTemplate()->array.element_type, MessageTypes::Bool );
   }

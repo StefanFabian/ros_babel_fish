@@ -59,7 +59,7 @@ public:
   explicit SubMessageLocation( std::string root_type, MessageTemplate::ConstPtr msg_template,
                                std::vector<message_extraction::MessageOffset> offsets );
 
-  std::ptrdiff_t calculateOffset( const BabelFishMessage &msg ) const;
+  std::ptrdiff_t calculateOffset( const IBabelFishMessage &msg ) const;
 
   const MessageTemplate::ConstPtr &messageTemplate() const { return msg_template_; }
 
@@ -94,12 +94,14 @@ public:
 
   SubMessageLocation retrieveLocationForPath( const std::string &base_msg, const std::string &path );
 
-  TranslatedMessage::Ptr extractMessage( const BabelFishMessage::ConstPtr &msg, const SubMessageLocation &location );
+  SubMessageLocation retrieveLocationForPath( const IBabelFishMessage &msg, const std::string &path );
 
-  Message::Ptr extractMessage( const BabelFishMessage &msg, const SubMessageLocation &location );
+  TranslatedMessage::Ptr extractMessage( const IBabelFishMessage::ConstPtr &msg, const SubMessageLocation &location );
+
+  Message::Ptr extractMessage( const IBabelFishMessage &msg, const SubMessageLocation &location );
 
   template<typename T>
-  T extractValue( const BabelFishMessage &msg, const SubMessageLocation &location )
+  T extractValue( const IBabelFishMessage &msg, const SubMessageLocation &location )
   {
     if ( msg.dataType() != location.rootType())
       throw InvalidLocationException( "Location is not valid for this message type!" );
@@ -111,7 +113,7 @@ public:
   }
 
   template<typename T>
-  T extractValue( const BabelFishMessage::ConstPtr &msg, const SubMessageLocation &location )
+  T extractValue( const IBabelFishMessage::ConstPtr &msg, const SubMessageLocation &location )
   {
     return extractValue<T>( *msg, location );
   }
@@ -121,13 +123,13 @@ private:
 };
 
 template<>
-std::string MessageExtractor::extractValue( const BabelFishMessage &msg, const SubMessageLocation &location );
+std::string MessageExtractor::extractValue( const IBabelFishMessage &msg, const SubMessageLocation &location );
 
 template<>
-ros::Time MessageExtractor::extractValue( const BabelFishMessage &msg, const SubMessageLocation &location );
+ros::Time MessageExtractor::extractValue( const IBabelFishMessage &msg, const SubMessageLocation &location );
 
 template<>
-ros::Duration MessageExtractor::extractValue( const BabelFishMessage &msg, const SubMessageLocation &location );
+ros::Duration MessageExtractor::extractValue( const IBabelFishMessage &msg, const SubMessageLocation &location );
 } // ros_babel_fish
 
 #endif //ROS_BABEL_FISH_MESSAGE_EXTRACTOR_H

@@ -65,7 +65,7 @@ SubMessageLocation::SubMessageLocation( std::string root_type, MessageTemplate::
                                         std::vector<message_extraction::MessageOffset> offsets )
   : offsets_( std::move( offsets )), msg_template_( std::move( msg_template )), root_type_( std::move( root_type )) { }
 
-std::ptrdiff_t SubMessageLocation::calculateOffset( const BabelFishMessage &msg ) const
+std::ptrdiff_t SubMessageLocation::calculateOffset( const IBabelFishMessage &msg ) const
 {
   std::ptrdiff_t offset = 0;
   const uint8_t *buffer = msg.buffer();
@@ -296,7 +296,14 @@ SubMessageLocation MessageExtractor::retrieveLocationForPath( const std::string 
   return retrieveLocationForPath( description->message_template, path );
 }
 
-TranslatedMessage::Ptr MessageExtractor::extractMessage( const BabelFishMessage::ConstPtr &msg,
+SubMessageLocation MessageExtractor::retrieveLocationForPath( const IBabelFishMessage &msg, const std::string &path )
+{
+  MessageDescription::ConstPtr description = fish_.descriptionProvider()->getMessageDescription( msg );
+  if ( description == nullptr ) throw BabelFishException( "Failed to lookup msg of type '" + msg.dataType() + "'!" );
+  return retrieveLocationForPath( description->message_template, path );
+}
+
+TranslatedMessage::Ptr MessageExtractor::extractMessage( const IBabelFishMessage::ConstPtr &msg,
                                                          const SubMessageLocation &location )
 {
   if ( msg->dataType() != location.rootType())
@@ -308,7 +315,7 @@ TranslatedMessage::Ptr MessageExtractor::extractMessage( const BabelFishMessage:
   return std::make_shared<TranslatedMessage>( msg, translated );
 }
 
-Message::Ptr MessageExtractor::extractMessage( const BabelFishMessage &msg, const SubMessageLocation &location )
+Message::Ptr MessageExtractor::extractMessage( const IBabelFishMessage &msg, const SubMessageLocation &location )
 {
   if ( msg.dataType() != location.rootType())
     throw InvalidLocationException( "Location is not valid for this message type!" );
@@ -320,7 +327,7 @@ Message::Ptr MessageExtractor::extractMessage( const BabelFishMessage &msg, cons
 
 
 template<>
-std::string MessageExtractor::extractValue( const BabelFishMessage &msg, const SubMessageLocation &location )
+std::string MessageExtractor::extractValue( const IBabelFishMessage &msg, const SubMessageLocation &location )
 {
   if ( msg.dataType() != location.rootType())
     throw InvalidLocationException( "Location is not valid for this message type!" );
@@ -333,7 +340,7 @@ std::string MessageExtractor::extractValue( const BabelFishMessage &msg, const S
 }
 
 template<>
-ros::Time MessageExtractor::extractValue( const BabelFishMessage &msg, const SubMessageLocation &location )
+ros::Time MessageExtractor::extractValue( const IBabelFishMessage &msg, const SubMessageLocation &location )
 {
   if ( msg.dataType() != location.rootType())
     throw InvalidLocationException( "Location is not valid for this message type!" );
@@ -347,7 +354,7 @@ ros::Time MessageExtractor::extractValue( const BabelFishMessage &msg, const Sub
 }
 
 template<>
-ros::Duration MessageExtractor::extractValue( const BabelFishMessage &msg, const SubMessageLocation &location )
+ros::Duration MessageExtractor::extractValue( const IBabelFishMessage &msg, const SubMessageLocation &location )
 {
   if ( msg.dataType() != location.rootType())
     throw InvalidLocationException( "Location is not valid for this message type!" );

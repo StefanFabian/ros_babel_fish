@@ -41,7 +41,10 @@ public:
 
   MessageDescription::ConstPtr getMessageDescription( const std::string &type );
 
-  MessageDescription::ConstPtr getMessageDescription( const BabelFishMessage &msg );
+  MessageDescription::ConstPtr getMessageDescription( const IBabelFishMessage &msg );
+
+  MessageDescription::ConstPtr getMessageDescription( const std::string &type, const std::string &md5,
+                                                      const std::string &definition );
 
   ServiceDescription::ConstPtr getServiceDescription( const std::string &type );
 
@@ -54,7 +57,7 @@ protected:
   virtual MessageDescription::ConstPtr getMessageDescriptionImpl( const std::string &type,
                                                                   const std::string &definition );
 
-  virtual MessageDescription::ConstPtr getMessageDescriptionImpl( const BabelFishMessage &msg );
+  virtual MessageDescription::ConstPtr getMessageDescriptionImpl( const IBabelFishMessage &msg );
 
   virtual ServiceDescription::ConstPtr getServiceDescriptionImpl( const std::string &type ) = 0;
 

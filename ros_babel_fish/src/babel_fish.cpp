@@ -27,7 +27,7 @@ BabelFish::BabelFish( DescriptionProvider::Ptr description_provider )
 
 BabelFish::~BabelFish() = default;
 
-TranslatedMessage::Ptr BabelFish::translateMessage( const BabelFishMessage::ConstPtr &msg )
+TranslatedMessage::Ptr BabelFish::translateMessage( const IBabelFishMessage::ConstPtr &msg )
 {
   const MessageDescription::ConstPtr &message_description = description_provider_->getMessageDescription( *msg );
   if ( message_description == nullptr )
@@ -50,7 +50,7 @@ TranslatedMessage::Ptr BabelFish::translateMessage( const BabelFishMessage::Cons
   return std::make_shared<TranslatedMessage>( msg, translated );
 }
 
-Message::Ptr BabelFish::translateMessage( const BabelFishMessage &msg )
+Message::Ptr BabelFish::translateMessage( const IBabelFishMessage &msg )
 {
   const MessageDescription::ConstPtr &message_description = description_provider_->getMessageDescription( msg );
   if ( message_description == nullptr )

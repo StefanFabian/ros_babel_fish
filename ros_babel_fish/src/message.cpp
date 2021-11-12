@@ -1,12 +1,12 @@
 // Copyright (c) 2019 Stefan Fabian. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+#include "ros_babel_fish/message.h"
+#include "ros_babel_fish/messages/internal/value_compatibility.h"
 #include "ros_babel_fish/messages/compound_message.h"
 #include "ros_babel_fish/messages/value_message.h"
 #include "ros_babel_fish/babel_fish.h"
-#include "ros_babel_fish/message.h"
 
-#include <limits>
 
 namespace ros_babel_fish
 {
@@ -31,95 +31,21 @@ namespace
 {
 
 template<typename T, typename U>
-typename std::enable_if<std::numeric_limits<T>::is_signed != std::numeric_limits<U>::is_signed, bool>::type
-inBounds() { return false; }
-
-template<typename T, typename U>
-typename std::enable_if<std::numeric_limits<T>::is_signed == std::numeric_limits<U>::is_signed, bool>::type inBounds()
-{
-  return std::numeric_limits<U>::min() <= std::numeric_limits<T>::min() &&
-         std::numeric_limits<T>::max() <= std::numeric_limits<U>::max();
-}
-
-template<typename T, typename U>
-typename std::enable_if<std::is_integral<U>::value, bool>::type isCompatible()
-{
-  if ( std::is_same<T, U>::value ) return true;
-  if ( std::is_floating_point<T>::value ) return false;
-  if ( std::numeric_limits<T>::is_signed && !std::numeric_limits<U>::is_signed )
-    return false;
-  return inBounds<T, U>();
-}
-
-template<typename T, typename U>
-typename std::enable_if<std::is_floating_point<U>::value, bool>::type isCompatible()
-{
-  return std::is_same<T, U>::value || !std::is_same<T, double>::value;
-}
-
-template<>
-bool isCompatible<float, double>() { return true; }
-
-template<typename T, typename U>
-typename std::enable_if<std::is_floating_point<T>::value, bool>::type
-inBounds( const T & )
-{
-  return false;
-}
-
-
-// is_integral is necessary to avoid a CLang tidy warning
-template<typename T, typename U>
-typename std::enable_if<
-  std::is_integral<T>::value && std::numeric_limits<T>::is_signed && !std::numeric_limits<U>::is_signed, bool>::type
-inBounds( const T &val )
-{
-  return val >= 0 && static_cast<typename std::make_unsigned<T>::type >(val) <= std::numeric_limits<U>::max();
-}
-
-template<typename T, typename U>
-typename std::enable_if<
-  std::is_integral<T>::value && !std::numeric_limits<T>::is_signed && std::numeric_limits<U>::is_signed, bool>::type
-inBounds( const T &val )
-{
-  return val <= std::numeric_limits<U>::max();
-}
-
-template<typename T, typename U>
-typename std::enable_if<
-  std::is_integral<T>::value && std::numeric_limits<T>::is_signed == std::numeric_limits<U>::is_signed, bool>::type
-inBounds( const T &val )
-{
-  return std::numeric_limits<U>::min() <= val &&
-         val <= std::numeric_limits<U>::max();
-}
-
-template<typename T, typename U>
-typename std::enable_if<std::is_integral<U>::value, bool>::type isCompatible( const T &val )
-{
-  if ( std::is_same<T, U>::value ) return true;
-  if ( std::is_floating_point<T>::value ) return false;
-  return inBounds<T, U>( val );
-}
-
-template<typename T, typename U>
-typename std::enable_if<std::is_floating_point<U>::value, bool>::type isCompatible( const T & )
-{
-  return std::is_integral<T>::value || sizeof( T ) <= sizeof( U );
-}
-
-template<typename T, typename U>
 void assignValue( Message *m, const T &value )
 {
   using namespace message_type_traits;
-  if ( m->type() != message_type<T>::value && !isCompatible<T, U>( value ))
-    throw BabelFishException(
-      "Value does not fit into value message! Make sure you're using the correct type or at least stay within the range of values for the message type!" );
+  if ( !internal::isCompatible<T, U>())
+  {
+    if ( !internal::inBounds<T, U>( value ))
+    {
+      throw BabelFishException(
+        "Value does not fit into value message! Make sure you're using the correct type or at least stay within the range of values for the message type!" );
+    }
 #if RBF_WARN_ON_INCOMPATIBLE_TYPE
-  if ( m->type() != message_type<T>::value && !isCompatible<T, U>())
     ROS_WARN_ONCE_NAMED( "RosBabelFish",
                          "Assigned value fits but the type of the assignment can not be converted without loss of information in some cases! This message is printed only once!" );
 #endif
+  }
   m->as<ValueMessage<U>>().setValue( static_cast<U>(value));
 }
 
@@ -273,13 +199,17 @@ U obtainValue( const Message *m )
 {
   using namespace message_type_traits;
   T val = m->as<ValueMessage<T>>().getValue();
-  if ( m->type() != message_type<U>::value && !isCompatible<T, U>( val ))
-    throw BabelFishException( "Value does not fit into casted type!" );
+  if ( !internal::isCompatible<T, U>())
+  {
+    if ( !internal::inBounds<T, U>( val ))
+    {
+      throw BabelFishException( "Value does not fit into casted type!" );
+    }
 #if RBF_WARN_ON_INCOMPATIBLE_TYPE
-  if ( m->type() != message_type<T>::value && !isCompatible<T, U>())
     ROS_WARN_ONCE_NAMED( "RosBabelFish",
                          "Value fits into casted type but it is smaller than the message type which may lead to catastrophic failure in the future! This message is printed only once!" );
 #endif
+  }
   return static_cast<U>(val);
 }
 

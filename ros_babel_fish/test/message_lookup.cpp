@@ -167,7 +167,7 @@ TEST( MessageLookupTest, constants )
   auto description = provider.registerMessageByDefinition( mt::datatype<ros_babel_fish_test_msgs::TestMessage>(),
                                                            mt::definition<ros_babel_fish_test_msgs::TestMessage>());
   std::map<std::string, Message::ConstPtr> constant_map = description->message_template->constants;
-  ASSERT_EQ( constant_map.size(), 4 );
+  ASSERT_EQ( constant_map.size(), 4U );
   ASSERT_NE( constant_map.find( "FLAG1" ), constant_map.end());
   ASSERT_EQ( constant_map["FLAG1"]->type(), MessageTypes::Bool );
   ASSERT_EQ( constant_map["FLAG1"]->value<bool>(), ros_babel_fish_test_msgs::TestMessage::FLAG1 );

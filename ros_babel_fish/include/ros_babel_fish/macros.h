@@ -4,7 +4,7 @@
 #ifndef ROS_BABEL_FISH_MACROS_H
 #define ROS_BABEL_FISH_MACROS_H
 
-#define RBF_TEMPLATE_CALL(function, type, args...) { \
+#define RBF_TEMPLATE_CALL( function, type, args... ) { \
   switch (type) \
   { \
     case MessageTypes::Compound: \
@@ -58,7 +58,7 @@
   } \
 }
 
-#define RBF_TEMPLATE_CALL_VALUE_TYPES(function, type, args...) { \
+#define RBF_TEMPLATE_CALL_VALUE_TYPES( function, type, args... ) { \
   switch (type) \
   { \
     case MessageTypes::Bool: \

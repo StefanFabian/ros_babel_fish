@@ -18,7 +18,7 @@ int main( int argc, char **argv )
 
   BabelFish babel_fish;
   MessageDescription::ConstPtr message_description = babel_fish.descriptionProvider()->getMessageDescription( argv[1] );
-  if (message_description == nullptr)
+  if ( message_description == nullptr )
   {
     std::cerr << "No message definition for '" << argv[1] << "' found!" << std::endl;
     return 1;

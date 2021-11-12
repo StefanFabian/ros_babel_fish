@@ -107,7 +107,7 @@ add_executable(${PROJECT_NAME}_action_client examples/action_client.cpp)
 target_link_libraries(${PROJECT_NAME}_action_client ${PROJECT_NAME} ${LIBRARIES})
 set_target_properties(${PROJECT_NAME}_action_client PROPERTIES OUTPUT_NAME action_client PREFIX "")
 
-find_package(rosbag_storage)
+find_package(rosbag_storage QUIET)
 if (rosbag_storage_FOUND)
   include_directories(${rosbag_storage_INCLUDE_DIRS})
   add_executable(${PROJECT_NAME}_rosbag examples/rosbag_frame_ids.cpp)

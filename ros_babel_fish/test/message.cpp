@@ -4,13 +4,14 @@
 
 #include "message_comparison.h"
 
-#include <ros_babel_fish/babel_fish.h>
 #include <ros_babel_fish/generation/message_creation.h>
+#include <ros_babel_fish/generation/message_template.h>
+#include <ros_babel_fish/messages/internal/value_compatibility.h>
+#include <ros_babel_fish/babel_fish.h>
 
 #include <rosgraph_msgs/Log.h>
 #include <gtest/gtest.h>
 #include <ros/ros.h>
-#include <ros_babel_fish/generation/message_template.h>
 
 using namespace ros_babel_fish;
 
@@ -691,33 +692,9 @@ TEST( MessageTest, arrayMessage )
   }
 }
 
-// Backport of C++20's std::remove_cvref
-template<class T>
-struct rm_cvref
-{
-  typedef typename std::remove_cv<typename std::remove_reference<T>::type>::type type;
-};
-template<class T>
-using rm_cvref_t = typename rm_cvref<T>::type;
-
-/**
- * Returns true if type T can always be stored in U without overflowing.
- */
-template<typename T, typename U>
-typename std::enable_if<std::is_arithmetic<T>::value && std::is_arithmetic<U>::value, bool>::type
-constexpr isCompatible()
-{
-  // See https://en.cppreference.com/w/cpp/types/numeric_limits/digits
-  // + 1 added because ::digits returns nbits-1 for signed types.
-  return std::is_same<rm_cvref_t<T>, rm_cvref_t<U>>::value ||
-         std::is_floating_point<U>::value ||
-         (std::is_integral<T>::value &&
-          !(std::is_signed<T>::value && std::is_unsigned<U>::value) &&
-          (std::numeric_limits<T>::digits + 1 < std::numeric_limits<U>::digits));
-}
-
 TEST( MessageTest, isCompatible )
 {
+  using namespace ros_babel_fish::internal;
   ASSERT_EQ((isCompatible<bool, bool>()), true );
   ASSERT_EQ((isCompatible<bool, uint8_t>()), true );
   ASSERT_EQ((isCompatible<bool, float>()), true );

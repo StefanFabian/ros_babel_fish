@@ -2,6 +2,22 @@
 Changelog for package ros_babel_fish
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Better rosbag support + example (`#7 <https://github.com/StefanFabian/ros_babel_fish/issues/7>`_)
+  * Accept a more general IBabelFishMessage interface in read-only functions.
+  * Add a rosbag example, add some useful method overloads.
+* Add noetic to CI, improvements to type safety checking (`#6 <https://github.com/StefanFabian/ros_babel_fish/issues/6>`_)
+  * Add noetic to CI.
+  * Simplify isCompatible() and inBounds() checks, add tests.
+  * Moved compatibility checks to header and internal namespace.
+  Co-authored-by: Stefan Fabian <fabian@sim.tu-darmstadt.de>
+* Accept True and False as boolean constants (`#4 <https://github.com/StefanFabian/ros_babel_fish/issues/4>`_)
+  Co-authored-by: Stefan Fabian <fabian@sim.tu-darmstadt.de>
+* Added more explicit warning if message type is not a valid message name.
+* Made BabelFishMessageException subclass of BabelFishException.
+* Contributors: Martin Valgur, Stefan Fabian
+
 0.9.1 (2020-10-29)
 ------------------
 * Added missing build depend for openssl headers to fix build for noetic.

@@ -2,8 +2,8 @@
 Changelog for package ros_babel_fish
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.9.2 (2021-12-22)
+------------------
 * Better rosbag support + example (`#7 <https://github.com/StefanFabian/ros_babel_fish/issues/7>`_)
   * Accept a more general IBabelFishMessage interface in read-only functions.
   * Add a rosbag example, add some useful method overloads.

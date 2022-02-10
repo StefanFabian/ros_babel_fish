@@ -59,7 +59,7 @@ struct BabelFishActionGoal_
     auto it = std::find( action_goal_description->message_template->compound.names.begin(),
                          action_goal_description->message_template->compound.names.end(), "goal" );
     if ( it == action_goal_description->message_template->compound.names.end())
-      throw BabelFishException( "Did not find goal in ActionGoal message!" );
+      throw BabelFishException( "Did not find goal in ActionGoal message of type '" + datatype + "'!" );
     int goal_index = std::distance( action_goal_description->message_template->compound.names.begin(), it );
     MessageDescription::ConstPtr goal_description = provider.getMessageDescription(
       action_goal_description->message_template->compound.types[goal_index]->compound.datatype );

@@ -104,11 +104,12 @@ public:
   T extractValue( const IBabelFishMessage &msg, const SubMessageLocation &location )
   {
     if ( msg.dataType() != location.rootType())
-      throw InvalidLocationException( "Location is not valid for this message type!" );
+      throw InvalidLocationException(  "Message is of type '" + msg.dataType() +
+                                      "' but location is for messages of type '" + location.rootType() + "'!" );
     if ( message_type_traits::message_type<T>::value != location.messageTemplate()->type )
-      throw BabelFishException( "Tried to extract incompatible type!" );
+      throw BabelFishException( "Tried to extract incompatible type from '" + msg.dataType() + "' message!" );
     std::ptrdiff_t offset = location.calculateOffset( msg );
-    if ( offset == -1 ) throw BabelFishException( "Failed to locate submessage!" );
+    if ( offset == -1 ) throw BabelFishException( "Failed to locate submessage in '" + msg.dataType() + "' message!" );
     return *reinterpret_cast<const T *>(msg.buffer() + offset);
   }
 

@@ -46,7 +46,7 @@ TranslatedMessage::Ptr BabelFish::translateMessage( const IBabelFishMessage::Con
 
   Message::Ptr translated( CompoundMessage::fromStream( msg_template, stream, msg->size(), bytes_read ));
   if ( bytes_read != msg->size())
-    throw BabelFishException( "Translated message did not consume all message bytes!" );
+    throw BabelFishException( "Translated message of type '" + msg->dataType() + "' did not consume all message bytes!" );
   return std::make_shared<TranslatedMessage>( msg, translated );
 }
 
@@ -68,7 +68,7 @@ Message::Ptr BabelFish::translateMessage( const IBabelFishMessage &msg )
 
   Message::Ptr translated( CompoundMessage::fromStream( msg_template, stream, msg.size(), bytes_read ));
   if ( bytes_read != msg.size())
-    throw BabelFishException( "Translated message did not consume all message bytes!" );
+    throw BabelFishException( "Translated message of type '" + msg.dataType() + "' did not consume all message bytes!" );
   return translated;
 }
 
@@ -200,7 +200,8 @@ bool BabelFish::callService( const std::string &service, const Message::ConstPtr
   const std::string &datatype = req->as<CompoundMessage>().datatype();
   if ( strcmp( datatype.c_str() + datatype.length() - 7, "Request" ) != 0 )
   {
-    throw BabelFishException( "BabelFish can't call a service with a message that is not a request!" );
+    throw BabelFishException(  "BabelFish can't call a service with a message that is not a request! "
+                              "Message Type: " + datatype );
   }
   const std::string &service_type = datatype.substr( 0, datatype.length() - 7 );
   const ServiceDescription::ConstPtr &description = description_provider_->getServiceDescription( service_type );

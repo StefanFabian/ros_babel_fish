@@ -57,7 +57,8 @@ DescriptionProvider::getMessageDescription( const std::string &type, const std::
   {
     if ( it->second->md5 != md5 )
     {
-      throw BabelFishException( "Message found but MD5 sum differed!" );
+      throw BabelFishException( "Message '" + type +"' found but MD5 sum differed!\n" +
+                                md5 + " (provided) vs " + it->second->md5 + " (cached)." );
     }
     return it->second;
   }

@@ -65,7 +65,7 @@ public:
 
   BabelFishMessage &operator=( const BabelFishMessage &other );
 
-  ~BabelFishMessage();
+  ~BabelFishMessage() override;
 
   const std::string &md5Sum() const final;
 

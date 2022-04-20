@@ -2,6 +2,12 @@
 Changelog for package ros_babel_fish
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Added some more information to exception messages.
+* Add libssl-dev as a build-export dependency
+* Contributors: AR Dabbour, Stefan Fabian
+
 0.9.2 (2021-12-22)
 ------------------
 * Better rosbag support + example (`#7 <https://github.com/StefanFabian/ros_babel_fish/issues/7>`_)

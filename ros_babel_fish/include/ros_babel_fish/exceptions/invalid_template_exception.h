@@ -9,7 +9,7 @@
 namespace ros_babel_fish
 {
 
-class InvalidTemplateException : ros::Exception
+class InvalidTemplateException : public ros::Exception
 {
 public:
   explicit InvalidTemplateException( const std::string &msg ) : ros::Exception( msg ) { }

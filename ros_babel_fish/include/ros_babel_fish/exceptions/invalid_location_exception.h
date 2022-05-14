@@ -9,7 +9,7 @@
 namespace ros_babel_fish
 {
 
-class InvalidLocationException : ros::Exception
+class InvalidLocationException : public ros::Exception
 {
 public:
   explicit InvalidLocationException( const std::string &msg ) : ros::Exception( msg ) { }

@@ -9,7 +9,7 @@
 namespace ros_babel_fish
 {
 
-class InvalidMessagePathException : ros::Exception
+class InvalidMessagePathException : public ros::Exception
 {
 public:
   explicit InvalidMessagePathException( const std::string &msg ) : ros::Exception( msg ) { }

@@ -4,15 +4,15 @@
 #ifndef ROS_BABEL_FISH_INVALID_LOCATION_EXCEPTION_H
 #define ROS_BABEL_FISH_INVALID_LOCATION_EXCEPTION_H
 
-#include <ros/exception.h>
+#include "babel_fish_exception.h"
 
 namespace ros_babel_fish
 {
 
-class InvalidLocationException : public ros::Exception
+class InvalidLocationException : public BabelFishException
 {
 public:
-  explicit InvalidLocationException( const std::string &msg ) : ros::Exception( msg ) { }
+  explicit InvalidLocationException( const std::string &msg ) : BabelFishException( msg ) { }
 };
 } // ros_babel_fish
 

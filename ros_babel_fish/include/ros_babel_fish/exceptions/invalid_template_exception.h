@@ -4,15 +4,15 @@
 #ifndef ROS_BABEL_FISH_INVALID_TEMPLATE_EXCEPTION_H
 #define ROS_BABEL_FISH_INVALID_TEMPLATE_EXCEPTION_H
 
-#include <ros/exception.h>
+#include "babel_fish_exception.h"
 
 namespace ros_babel_fish
 {
 
-class InvalidTemplateException : ros::Exception
+class InvalidTemplateException : public BabelFishException
 {
 public:
-  explicit InvalidTemplateException( const std::string &msg ) : ros::Exception( msg ) { }
+  explicit InvalidTemplateException( const std::string &msg ) : BabelFishException( msg ) { }
 };
 } // ros_babel_fish
 

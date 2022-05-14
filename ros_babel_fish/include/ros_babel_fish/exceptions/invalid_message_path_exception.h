@@ -4,15 +4,15 @@
 #ifndef ROS_BABEL_FISH_INVALID_MESSAGE_PATH_EXCEPTION_H
 #define ROS_BABEL_FISH_INVALID_MESSAGE_PATH_EXCEPTION_H
 
-#include <ros/exception.h>
+#include "babel_fish_exception.h"
 
 namespace ros_babel_fish
 {
 
-class InvalidMessagePathException : ros::Exception
+class InvalidMessagePathException : public BabelFishException
 {
 public:
-  explicit InvalidMessagePathException( const std::string &msg ) : ros::Exception( msg ) { }
+  explicit InvalidMessagePathException( const std::string &msg ) : BabelFishException( msg ) { }
 };
 } // ros_babel_fish
 

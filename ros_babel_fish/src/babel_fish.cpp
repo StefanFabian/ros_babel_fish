@@ -79,6 +79,11 @@ BabelFishMessage::Ptr BabelFish::translateMessage( const Message::ConstPtr &msg 
 
 BabelFishMessage::Ptr BabelFish::translateMessage( const Message &msg )
 {
+  return translateMessage( msg, false );
+}
+
+BabelFishMessage::Ptr BabelFish::translateMessage( const Message &msg, bool latched )
+{
   auto compound_msg = dynamic_cast<const CompoundMessage *>(&msg);
   if ( compound_msg == nullptr )
     throw BabelFishException( "Tried to translate message that is not a compound message!" );
@@ -90,7 +95,7 @@ BabelFishMessage::Ptr BabelFish::translateMessage( const Message &msg )
   {
     throw BabelFishException( "BabelFish doesn't know a message of type: " + compound_msg->datatype());
   }
-  result->morph( description->md5, description->datatype, description->message_definition, "0" );
+  result->morph( description->md5, description->datatype, description->message_definition, latched );
   result->allocate( msg._sizeInBytes());
   msg.writeToStream( result->buffer());
   return result;
@@ -107,7 +112,7 @@ bool BabelFish::translateMessage( const Message &msg, BabelFishMessage &result )
   {
     throw BabelFishException( "BabelFish doesn't know a message of type: " + compound_msg->datatype());
   }
-  result.morph( description->md5, description->datatype, description->message_definition, "0" );
+  result.morph( description->md5, description->datatype, description->message_definition, false );
   result.allocate( msg._sizeInBytes());
   msg.writeToStream( result.buffer());
   return true;

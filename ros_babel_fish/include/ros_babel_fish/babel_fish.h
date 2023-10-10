@@ -87,6 +87,12 @@ public:
   BabelFishMessage::Ptr translateMessage( const Message &msg );
 
   /*!
+   * @copydoc BabelFish::translateMessage(const Message::ConstPtr&)
+   * @param latched This bool is passed to the headers
+   */
+  BabelFishMessage::Ptr translateMessage( const Message &msg, bool latched );
+
+  /*!
    * @copydetails BabelFish::translateMessage(const Message::ConstPtr&)
    * @param msg The input message
    * @param result Container for the serialized ROS compatible message

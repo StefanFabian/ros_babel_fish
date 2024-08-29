@@ -15,6 +15,9 @@ If you are using this module in a scientific context, feel free to cite this pap
 ## ROS BabelFish
 This library enables ROS nodes written in C++ to communicate using message types that are unknown at compile time.
 
+> [!IMPORTANT]
+> The ROS2 version was moved and can be found [here](https://github.com/LOEWE-emergenCITY/ros_babel_fish).
+
 You can subscribe and even publish any available message type.  
 It also supports both providing and calling a service.
 
